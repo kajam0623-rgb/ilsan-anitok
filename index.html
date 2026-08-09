@@ -866,8 +866,15 @@ class Component extends DCLogic {
       const smooth = (t) => t * t * (3 - 2 * t);
       const target = () => {
         const r = track.getBoundingClientRect();
-        const span = r.height - window.innerHeight;
-        return span > 0 ? clamp01(-r.top / span) : 0;
+        const vh = window.innerHeight;
+        const span = r.height - vh;
+        // tall sticky track (desktop): progress = how far we've scrolled inside it
+        if (span > 0) return clamp01(-r.top / span);
+        // short / auto-height track (mobile <=860px, or very tall viewport):
+        // drive from how far the section has travelled up through the viewport,
+        // otherwise every circle after 01 stays frozen at 6% opacity.
+        const denom = vh * 0.5 + r.height * 0.6;
+        return denom > 0 ? clamp01((vh - r.top) / denom) : 1;
       };
       let eased = target();
       let raf = null;
