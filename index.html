@@ -39,6 +39,22 @@
     [data-group] { padding: 22px 18px !important; }
     footer { padding-bottom: 96px !important; }
   }
+  /* narrow phones: drop the English school name so the header CTA never gets clipped */
+  @media (max-width: 560px) {
+    header > div { padding: 0 14px !important; gap: 10px !important; }
+    [data-hlogoen] { display: none !important; }
+    [data-hlogoko] { font-size: 15px !important; }
+    [data-hlogoimg] { width: 33px !important; height: 33px !important; }
+    [data-hlogo] { gap: 9px !important; }
+    [data-hcta] { font-size: 13px !important; padding: 10px 16px !important; }
+  }
+  @media (max-width: 390px) {
+    header > div { padding: 0 11px !important; gap: 8px !important; }
+    [data-hlogoko] { font-size: 13.5px !important; }
+    [data-hlogoimg] { width: 29px !important; height: 29px !important; }
+    [data-hlogo] { gap: 7px !important; }
+    [data-hcta] { font-size: 12px !important; padding: 9px 12px !important; }
+  }
   @media (max-width: 520px) {
     #top h1 { font-size: 34px !important; }
     [data-passgrid] { grid-template-columns: 1fr !important; }
@@ -96,11 +112,11 @@
 
   <header style="position:sticky;top:0;z-index:60;background:#D6202A;box-shadow:0 2px 20px rgba(0,0,0,.4)">
     <div style="max-width:1400px;margin:0 auto;padding:0 clamp(16px,3vw,36px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px">
-      <a href="#top" style="display:flex;align-items:center;gap:11px;color:#FFFFFF" style-hover="text-decoration:none;color:#FFFFFF">
-        <img src="gal/logo.webp" alt="일산애니톡 만화학원" style="display:block;width:38px;height:38px;background:#FFFFFF;border-radius:50%" />
-        <span style="display:flex;flex-direction:column;line-height:1.06">
-          <span style="font-size:18px;font-weight:800;letter-spacing:-.02em">일산애니톡만화애니학원</span>
-          <span style="font-size:9px;font-weight:700;letter-spacing:.08em;opacity:.86">ANIMATION CARTOON PROFESSIONAL SCHOOL</span>
+      <a href="#top" data-hlogo="1" style="display:flex;align-items:center;gap:11px;color:#FFFFFF;min-width:0" style-hover="text-decoration:none;color:#FFFFFF">
+        <img data-hlogoimg="1" src="gal/logo.webp" alt="일산애니톡 만화학원" style="display:block;width:38px;height:38px;flex:0 0 auto;background:#FFFFFF;border-radius:50%" />
+        <span style="display:flex;flex-direction:column;line-height:1.06;min-width:0">
+          <span data-hlogoko="1" style="font-size:18px;font-weight:800;letter-spacing:-.02em;white-space:nowrap">일산애니톡만화애니학원</span>
+          <span data-hlogoen="1" style="font-size:9px;font-weight:700;letter-spacing:.08em;opacity:.86;white-space:nowrap">ANIMATION CARTOON PROFESSIONAL SCHOOL</span>
         </span>
       </a>
       <nav style="display:flex;align-items:center;gap:clamp(12px,1.6vw,26px);flex:0 1 auto;min-width:0">
@@ -110,7 +126,7 @@
         <a href="#process" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">수업과정</a>
         <a href="#visit" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">오시는 길</a>
       </nav>
-      <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FFFFFF;color:#D6202A;font-size:14px;font-weight:800;padding:11px 22px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-2px) scale(1.02)">네이버 예약 상담</a>
+      <a href="{{ bookingUrl }}" target="_blank" rel="noopener" data-hcta="1" style="display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;white-space:nowrap;background:#FFFFFF;color:#D6202A;font-size:14px;font-weight:800;padding:11px 22px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-2px) scale(1.02)">네이버 예약 상담</a>
     </div>
   </header>
 
