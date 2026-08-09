@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #000000; scroll-behavior: smooth; }
+  * { box-sizing: border-box; }
+  h1, h2, h3, p, figcaption { word-break: keep-all; text-wrap: pretty; }
+  a[href], [data-pill] { white-space: nowrap; flex: 0 0 auto; word-break: keep-all; }
+  a { color: #D6202A; text-decoration: none; }
+  a:hover { color: #B01820; text-decoration: underline; }
+  @keyframes atk-kenburns { 0% { transform: scale(1.06) translate3d(0,0,0); } 50% { transform: scale(1.16) translate3d(-1.6%,-1.2%,0); } 100% { transform: scale(1.06) translate3d(0,0,0); } }
+  @keyframes atk-heroglow { 0%, 100% { opacity: .25; transform: translate(-18%,-10%) scale(1); } 50% { opacity: .5; transform: translate(-12%,-6%) scale(1.15); } }
+  @keyframes atk-shine { 0% { background-position: -220% 0; } 100% { background-position: 220% 0; } }
+  @keyframes atk-dot { 0% { transform: translateY(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+  @keyframes atk-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(214,32,42,.55); } 70% { box-shadow: 0 0 0 22px rgba(214,32,42,0); } }
+
+  @media (max-width: 860px) {
+    header nav { display: none !important; }
+    header [data-mobilenav] { display: inline-flex !important; }
+    aside[data-rail] { display: none !important; }
+    #top { height: auto !important; min-height: 620px !important; padding: 96px 0 72px !important; }
+    [data-steptrack] { height: auto !important; }
+    [data-steptrack] > div { position: static !important; height: auto !important; padding: 84px clamp(20px,5vw,32px) !important; }
+    [data-steprow] { grid-template-columns: repeat(2,1fr) !important; max-width: 340px !important; }
+    [data-group] { padding: 22px 18px !important; }
+    footer { padding-bottom: 96px !important; }
+  }
+  @media (max-width: 520px) {
+    #top h1 { font-size: 34px !important; }
+    [data-passgrid] { grid-template-columns: 1fr !important; }
+    [data-galgrid] { grid-template-columns: repeat(2,1fr) !important; }
+  }
+  @media (prefers-reduced-motion: reduce) { [data-parallax] { animation: none !important; } }
+</style>
+<meta name="ext-resource-dependency" content="gal/c0.webp" data-resource-id="c0" />
+<meta name="ext-resource-dependency" content="gal/c2.webp" data-resource-id="c2" />
+<meta name="ext-resource-dependency" content="gal/c3.webp" data-resource-id="c3" />
+<meta name="ext-resource-dependency" content="gal/g0.webp" data-resource-id="g0" />
+<meta name="ext-resource-dependency" content="gal/g4.webp" data-resource-id="g4" />
+<meta name="ext-resource-dependency" content="gal/g5.webp" data-resource-id="g5" />
+<meta name="ext-resource-dependency" content="gal/g8.webp" data-resource-id="g8" />
+<meta name="ext-resource-dependency" content="gal/j0.webp" data-resource-id="j0" />
+<meta name="ext-resource-dependency" content="gal/j1.webp" data-resource-id="j1" />
+<meta name="ext-resource-dependency" content="gal/j2.webp" data-resource-id="j2" />
+<meta name="ext-resource-dependency" content="gal/j3.webp" data-resource-id="j3" />
+<meta name="ext-resource-dependency" content="gal/j4.webp" data-resource-id="j4" />
+<meta name="ext-resource-dependency" content="gal/j5.webp" data-resource-id="j5" />
+<meta name="ext-resource-dependency" content="gal/j6.webp" data-resource-id="j6" />
+<meta name="ext-resource-dependency" content="gal/j7.webp" data-resource-id="j7" />
+<meta name="ext-resource-dependency" content="gal/j8.webp" data-resource-id="j8" />
+<meta name="ext-resource-dependency" content="gal/h0.webp" data-resource-id="h0" />
+<meta name="ext-resource-dependency" content="gal/h1.webp" data-resource-id="h1" />
+<meta name="ext-resource-dependency" content="gal/h2.webp" data-resource-id="h2" />
+<meta name="ext-resource-dependency" content="gal/h3.webp" data-resource-id="h3" />
+<meta name="ext-resource-dependency" content="gal/h4.webp" data-resource-id="h4" />
+<meta name="ext-resource-dependency" content="gal/k0.webp" data-resource-id="k0" />
+<meta name="ext-resource-dependency" content="gal/k1.webp" data-resource-id="k1" />
+<meta name="ext-resource-dependency" content="gal/k2.webp" data-resource-id="k2" />
+<meta name="ext-resource-dependency" content="gal/k3.webp" data-resource-id="k3" />
+<meta name="ext-resource-dependency" content="gal/k4.webp" data-resource-id="k4" />
+<meta name="ext-resource-dependency" content="gal/k5.webp" data-resource-id="k5" />
+<meta name="ext-resource-dependency" content="gal/k6.webp" data-resource-id="k6" />
+<meta name="ext-resource-dependency" content="gal/k7.webp" data-resource-id="k7" />
+<meta name="ext-resource-dependency" content="gal/k9.webp" data-resource-id="k9" />
+<meta name="ext-resource-dependency" content="gal/h5.webp" data-resource-id="h5" />
+</helmet>
+
+<template id="__bundler_thumbnail" data-bg-color="#000000">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#000000" />
+    <circle cx="600" cy="360" r="200" fill="#FFD400" stroke="#D6202A" stroke-width="22" />
+    <circle cx="530" cy="310" r="26" fill="#D6202A" />
+    <circle cx="670" cy="310" r="26" fill="#D6202A" />
+    <path d="M540 390a62 62 0 0 0 120 0" fill="none" stroke="#D6202A" stroke-width="22" stroke-linecap="round" />
+    <text x="600" y="660" text-anchor="middle" fill="#FFFFFF" font-family="sans-serif" font-size="86" font-weight="800">ANITALK</text>
+  </svg>
+</template>
+
+<div style="position:relative;background:#000000;color:#FFFFFF;font-family:'Pretendard Variable',Pretendard,sans-serif;letter-spacing:-.03em;-webkit-font-smoothing:antialiased;overflow-x:clip">
+
+  <div data-progress="1" style="position:fixed;top:0;left:0;height:3px;width:0%;background:#D6202A;z-index:80"></div>
+
+  <header style="position:sticky;top:0;z-index:60;background:#D6202A;box-shadow:0 2px 20px rgba(0,0,0,.4)">
+    <div style="max-width:1400px;margin:0 auto;padding:0 clamp(16px,3vw,36px);height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px">
+      <a href="#top" style="display:flex;align-items:center;gap:11px;color:#FFFFFF" style-hover="text-decoration:none;color:#FFFFFF">
+        <img src="gal/logo.webp" alt="일산애니톡 만화학원" style="display:block;width:38px;height:38px;background:#FFFFFF;border-radius:50%" />
+        <span style="display:flex;flex-direction:column;line-height:1.06">
+          <span style="font-size:18px;font-weight:800;letter-spacing:-.02em">일산애니톡만화애니학원</span>
+          <span style="font-size:9px;font-weight:700;letter-spacing:.08em;opacity:.86">ANIMATION CARTOON PROFESSIONAL SCHOOL</span>
+        </span>
+      </a>
+      <nav style="display:flex;align-items:center;gap:clamp(12px,1.6vw,26px);flex:0 1 auto;min-width:0">
+        <a href="#results" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">합격실적</a>
+        <a href="#college" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">수업과목</a>
+        <a href="#gallery-junior" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">작품 갤러리</a>
+        <a href="#process" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">수업과정</a>
+        <a href="#visit" data-nav="1" style="flex:0 0 auto;white-space:nowrap;word-break:keep-all;color:#FFFFFF;font-size:14px;font-weight:600;padding:4px 0;border-bottom:2px solid transparent;transition:opacity 340ms cubic-bezier(.16,1,.3,1), color 340ms ease" style-hover="color:#FFFFFF;text-decoration:none;opacity:.72">오시는 길</a>
+      </nav>
+      <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#FFFFFF;color:#D6202A;font-size:14px;font-weight:800;padding:11px 22px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-2px) scale(1.02)">네이버 예약 상담</a>
+    </div>
+  </header>
+
+  <aside data-rail="1" style="position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:70;display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+    <a href="#results" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden;transition:background 320ms ease, border-color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1), transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#D6202A;border-color:#D6202A;color:#FFFFFF;text-decoration:none;transform:translateX(-4px);box-shadow:0 12px 34px rgba(214,32,42,.5)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M20 6 9 17l-5-5" /></svg>
+      <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">합격결과</span>
+    </a>
+    <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:#D6202A;border:1px solid #D6202A;color:#FFFFFF;box-shadow:0 8px 28px rgba(214,32,42,.42);overflow:hidden;transition:background 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1), transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#FFFFFF;border-color:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateX(-4px);box-shadow:0 12px 36px rgba(255,255,255,.32)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+      <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">예약상담</span>
+    </a>
+    <a href="tel:031-994-3134" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden;transition:background 320ms ease, border-color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1), transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#D6202A;border-color:#D6202A;color:#FFFFFF;text-decoration:none;transform:translateX(-4px);box-shadow:0 12px 34px rgba(214,32,42,.5)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z" /></svg>
+      <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">전화문의</span>
+    </a>
+    <a href="https://anitok.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden;transition:background 320ms ease, border-color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1), transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#D6202A;border-color:#D6202A;color:#FFFFFF;text-decoration:none;transform:translateX(-4px);box-shadow:0 12px 34px rgba(214,32,42,.5)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9" /><path d="M3.6 9h16.8M3.6 15h16.8" /><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z" /></svg>
+      <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">애니톡 홈페이지</span>
+    </a>
+    <a href="#top" data-totop="1" style="display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:background 320ms ease, border-color 320ms ease, opacity 420ms ease, transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#FFFFFF;border-color:#FFFFFF;color:#111111;text-decoration:none;transform:translateY(-3px)">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5" /><path d="m5 12 7-7 7 7" /></svg>
+    </a>
+  </aside>
+
+  <section id="top" style="position:relative;overflow:hidden;height:min(96vh,1040px);min-height:800px">
+    <img data-parallax="0.25" src="gal/hero2.webp" alt="애니톡 학생 작품" style="position:absolute;inset:0;width:100%;height:112%;object-fit:cover;object-position:center 30%;animation:atk-kenburns 26s cubic-bezier(.4,0,.6,1) infinite;will-change:transform" />
+    <div style="position:absolute;top:0;left:0;width:70vw;height:70vw;max-width:900px;max-height:900px;background:radial-gradient(circle, rgba(214,32,42,.55) 0%, rgba(0,0,0,0) 66%);animation:atk-heroglow 14s ease-in-out infinite;pointer-events:none;mix-blend-mode:screen"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.34) 46%, rgba(0,0,0,0) 100%)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 34%, rgba(0,0,0,.7) 100%)"></div>
+    <div style="position:relative;max-width:1400px;margin:0 auto;height:100%;padding:0 clamp(20px,4vw,56px);display:flex;flex-direction:column;justify-content:center">
+      <div data-pill="1" data-reveal="0" style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;background:rgba(214,32,42,.92);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;margin-bottom:24px">고양교육지원청 등록 제6164호 · 교과과목 만화</div>
+      <h1 data-reveal="80" style="margin:0;font-size:clamp(38px,5.4vw,72px);line-height:1.12;letter-spacing:-.05em;font-weight:800;text-shadow:0 6px 34px rgba(0,0,0,.8)"><span style="display:block;font-size:.56em;font-weight:700;letter-spacing:-.03em;margin-bottom:10px;color:#FFFFFF">취미부터 입시까지</span>만화애니 학원의 정답!<br /><span style="color:#FF3B45">일산애니톡!</span></h1>
+      <p data-reveal="160" style="margin:24px 0 0;font-size:clamp(16px,1.6vw,21px);font-weight:700;text-shadow:0 2px 16px rgba(0,0,0,.85)">Since 2011 오직 만화애니 전문 교육 기관 · 일산 캠퍼스</p>
+      <div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
+        <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:#D6202A;color:#FFFFFF;font-size:16px;font-weight:800;padding:16px 32px;border-radius:999px;animation:atk-pulse 2.6s ease-out infinite;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateY(-3px) scale(1.03)">네이버 예약 상담 신청 →</a>
+        <a href="tel:031-994-3134" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.4);color:#FFFFFF;font-size:16px;font-weight:700;padding:16px 32px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#111111;text-decoration:none">031-994-3134</a>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);width:22px;height:34px;border:1px solid rgba(255,255,255,.5);border-radius:999px;display:flex;justify-content:center;padding-top:7px">
+      <div style="width:3px;height:6px;border-radius:2px;background:#FFFFFF;animation:atk-dot 1.9s cubic-bezier(.2,.8,.2,1) infinite"></div>
+    </div>
+  </section>
+
+  <section id="about" style="background:#000000;padding:clamp(106px,12vw,168px) clamp(20px,4vw,48px)">
+    <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(32px,5vw,72px);align-items:center">
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:14px">
+        <div data-reveal="0" style="grid-column:1 / -1;border-radius:18px;overflow:hidden">
+          <img src="gal/hero-a.webp" alt="일산애니톡 리셉션" loading="lazy" decoding="async" style="display:block;width:100%;height:clamp(200px,24vw,300px);object-fit:cover" />
+        </div>
+        <div data-reveal="80" style="border-radius:18px;overflow:hidden">
+          <img src="gal/hero-b.webp" alt="입시반 실기실" loading="lazy" decoding="async" style="display:block;width:100%;height:clamp(150px,17vw,210px);object-fit:cover" />
+        </div>
+        <div data-reveal="160" style="border-radius:18px;overflow:hidden">
+          <img src="gal/hero-c.webp" alt="디지털드로잉실" loading="lazy" decoding="async" style="display:block;width:100%;height:clamp(150px,17vw,210px);object-fit:cover" />
+        </div>
+      </div>
+
+      <div style="text-align:left">
+        <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8A8A8A">Ilsan Campus</div>
+        <h2 data-reveal="60" style="margin:16px 0 0;font-size:clamp(26px,3.2vw,40px);line-height:1.32;letter-spacing:-.04em;font-weight:800">그림 하나로<br />하루를 채우는 공간</h2>
+        <p data-reveal="120" style="margin:22px 0 0;font-size:16px;line-height:1.85;color:#B5B5B5">일산애니톡은 만화 · 애니메이션만 가르치는 전문 학원입니다. 입시생을 위한 실기실, 신티크와 아이패드를 갖춘 디지털드로잉실, 초 · 중등 주니어반 교실을 따로 두고 목표에 맞는 자리에서 수업합니다.</p>
+        <p data-reveal="180" style="margin:16px 0 0;font-size:16px;line-height:1.85;color:#B5B5B5">2011년부터 쌓아온 애니톡의 커리큘럼을 일산에서 직영으로 운영합니다. 학원에 오시면 합격생 재현작품과 자체 제작한 합격 브로슈어를 직접 보실 수 있습니다.</p>
+
+        <div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:30px">
+          <span data-pill="1" style="font-size:13px;font-weight:700;color:#EDEDED;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px">고양교육지원청 등록 제6164호</span>
+          <span data-pill="1" style="font-size:13px;font-weight:700;color:#EDEDED;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px">애니톡 직영 5호 캠퍼스</span>
+          <span data-pill="1" style="font-size:13px;font-weight:700;color:#EDEDED;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:9px 16px">일산 유일 초 · 중등 전문반</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" style="background:#000000;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">
+    <div style="max-width:1200px;margin:0 auto;text-align:center">
+      <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8A8A8A">Admission Results</div>
+      <h2 data-reveal="60" style="margin:16px 0 0;font-size:clamp(26px,3.2vw,40px);line-height:1.35;letter-spacing:-.04em;font-weight:800">결과로 증명하는<br />만화 · 애니 입시 전문 교육</h2>
+      <a data-reveal="120" href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:#D6202A;color:#FFFFFF;font-size:14px;font-weight:700;padding:13px 30px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateY(-3px) scale(1.03)">2026 합격생 명단 보러가기 →</a>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:20px;margin-top:78px;align-items:stretch">
+        <div data-reveal="0" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:28px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="display:inline-block;background:#D6202A;color:#FFFFFF;font-size:13px;font-weight:800;line-height:1.35;padding:9px 18px;border-radius:999px">2026 일산<br />미대 합격</div>
+          <div style="font-size:46px;font-weight:800;letter-spacing:-.05em;margin-top:20px"><span data-count="4">0</span>년 연속</div>
+          <div style="font-size:22px;font-weight:800;margin-top:2px">전원 합격</div>
+          <div style="font-size:12px;color:#8A8A8A;margin-top:auto;padding-top:16px;line-height:1.6;word-break:keep-all">상명대 · 청강대 · 한성대<br />명지대 · 계원예대 포함</div>
+        </div>
+        <div data-reveal="80" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:28px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="display:inline-block;background:#D6202A;color:#FFFFFF;font-size:13px;font-weight:800;line-height:1.35;padding:9px 18px;border-radius:999px">2024-2026<br />누적 합격</div>
+          <div style="font-size:46px;font-weight:800;letter-spacing:-.05em;margin-top:20px"><span data-count="50">0</span>명 이상</div>
+          <div style="font-size:22px;font-weight:800;margin-top:2px">합격</div>
+          <div style="font-size:12px;color:#8A8A8A;margin-top:auto;padding-top:16px;line-height:1.6;word-break:keep-all">한양여대 · 순천향대 · 호서대<br />인덕대 · 중부대 · 용인대 · 동양대</div>
+        </div>
+        <div data-reveal="160" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:28px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="display:inline-block;background:#D6202A;color:#FFFFFF;font-size:13px;font-weight:800;line-height:1.35;padding:9px 18px;border-radius:999px">애니고 · 예고<br />합격 명가</div>
+          <div style="font-size:15px;font-weight:700;line-height:1.75;margin-top:20px;letter-spacing:-.03em;word-break:keep-all">2026 한국애니고 2명<br />2026 경기예고 1명<br />2025 강원애니고 3명<br />2024 경기예고 1명</div>
+          <div style="font-size:12px;color:#8A8A8A;margin-top:auto;padding-top:16px;line-height:1.6;word-break:keep-all">한국애니메이션고등학교 애니메이션과<br />강원애니고 3명 합격</div>
+        </div>
+        <div data-reveal="240" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:28px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="display:inline-block;background:#D6202A;color:#FFFFFF;font-size:13px;font-weight:800;line-height:1.35;padding:9px 18px;border-radius:999px">청강대<br />합격 전문</div>
+          <div style="font-size:46px;font-weight:800;letter-spacing:-.05em;margin-top:20px"><span data-count="4">0</span>년 연속</div>
+          <div style="font-size:22px;font-weight:800;margin-top:2px">합격</div>
+          <div style="font-size:12px;color:#8A8A8A;margin-top:auto;padding-top:16px;line-height:1.6;word-break:keep-all">청강문화산업대학교<br />애니메이션 · 웹툰만화 · 게임</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background:#0F0F11;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">
+    <div style="max-width:1200px;margin:0 auto">
+      <div style="text-align:center">
+        <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Pass List</div>
+        <h2 data-reveal="60" style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800">일산애니톡 합격생 명단</h2>
+        <p data-reveal="120" style="margin:14px 0 0;font-size:15px;color:#9A9A9A">2024 · 2025 · 2026학년도 일산 캠퍼스 실적입니다</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px;margin-top:66px" data-passgrid="1">{{ passList }}</div>
+    </div>
+  </section>
+
+  <section id="college" style="position:relative;background:#0F0F11;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px);overflow:hidden">
+    <div data-drift="1" style="position:absolute;top:-20%;left:-10%;width:70vw;height:70vw;max-width:900px;max-height:900px;border-radius:50%;background:radial-gradient(circle, rgba(214,32,42,.16) 0%, rgba(15,15,17,0) 68%);pointer-events:none"></div>
+    <div data-drift="2" style="position:absolute;bottom:-25%;right:-12%;width:60vw;height:60vw;max-width:760px;max-height:760px;border-radius:50%;background:radial-gradient(circle, rgba(255,86,60,.1) 0%, rgba(15,15,17,0) 66%);pointer-events:none"></div>
+    <div style="position:relative;max-width:1200px;margin:0 auto">
+      <div style="text-align:center">
+        <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Class</div>
+        <h2 data-reveal="60" style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800">수업과목</h2>
+        <p data-reveal="120" style="margin:14px 0 0;font-size:15px;color:#9A9A9A">2011년부터 이어진 합격 데이터와 체계적인 커리큘럼</p>
+      </div>
+      {{ classGroups }}
+    </div>
+  </section>
+
+  <section id="gallery-high" style="background:#000000;padding:clamp(115px,14.4vw,162px) 0;overflow:hidden">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,48px);text-align:center">
+      <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">High School Class Gallery</div>
+      <h2 data-reveal="60" style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800">고등반 작품 · 수업</h2>
+      <p data-reveal="120" style="margin:14px 0 0;font-size:15px;color:#9A9A9A">미대입시와 애니고 · 예고를 준비하는 고등반 학생들의 실기 작품입니다</p>
+    </div>
+    <div style="max-width:1200px;margin:60px auto 0;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(3,1fr);gap:22px 18px" data-galgrid="1">{{ highA }}</div>
+  </section>
+
+  <section id="gallery-junior" style="background:#0F0F11;padding:clamp(115px,14.4vw,162px) 0;overflow:hidden">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,48px);text-align:center">
+      <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Junior Class Gallery</div>
+      <h2 data-reveal="60" style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800">주니어반 작품 · 수업 갤러리</h2>
+      <p data-reveal="120" style="margin:14px 0 0;font-size:15px;color:#9A9A9A">초등 · 중등 주니어반 학생들이 직접 그린 작품입니다</p>
+    </div>
+    <div style="max-width:1200px;margin:60px auto 0;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(5,1fr);gap:22px 18px" data-galgrid="1">{{ galleryA }}</div>
+  </section>
+
+  <section style="background:#000000;padding:clamp(115px,14.4vw,162px) 0;overflow:hidden">
+    <div style="max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,48px);text-align:center">
+      <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Hobby Class Gallery</div>
+      <h2 data-reveal="60" style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800">성인취미반 작품 · 수업</h2>
+      <p data-reveal="120" style="margin:14px 0 0;font-size:15px;color:#9A9A9A">대학생 · 직장인 수강생이 신티크와 아이패드로 완성한 작품입니다</p>
+    </div>
+    <div style="max-width:1200px;margin:60px auto 0;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(5,1fr);gap:22px 18px" data-galgrid="1">{{ hobbyA }}</div>
+  </section>
+
+  <section id="process" data-steptrack="1" style="position:relative;background:#000000;height:125vh">
+    <div style="position:sticky;top:64px;height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 clamp(20px,4vw,48px)">
+    <div data-stepglow="1" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70vw;height:40vw;max-width:900px;background:radial-gradient(circle, rgba(214,32,42,.2) 0%, rgba(0,0,0,0) 68%);pointer-events:none"></div>
+    <div style="position:relative;max-width:1200px;margin:0 auto;text-align:center;width:100%">
+      <h2 data-reveal="0" style="margin:0;font-size:clamp(22px,2.4vw,30px);line-height:1.5;letter-spacing:-.04em;font-weight:600;color:#E6E6E6">그림의 <strong style="font-weight:800;color:#FFFFFF">첫 시작</strong>부터 <strong style="font-weight:800;color:#FFFFFF">입시</strong>와 <strong style="font-weight:800;color:#FFFFFF">합격</strong><br />그리고 <strong style="font-weight:800;color:#FFFFFF">취미와 취업</strong>까지</h2>
+      <div data-steprow="1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(20px,3vw,40px) clamp(16px,4vw,64px);margin-top:78px;max-width:660px;margin-left:auto;margin-right:auto;justify-items:center">{{ steps }}</div>
+    </div>
+  </section>
+
+  <section id="visit" style="background:#000000;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px);text-align:center">
+    <div style="max-width:1100px;margin:0 auto">
+      <img data-reveal="0" src="gal/logo.webp" alt="애니톡" style="display:block;width:78px;height:78px;margin:0 auto;background:#FFFFFF;border-radius:50%" />
+      <div data-reveal="60" style="margin-top:18px;font-size:26px;font-weight:800;letter-spacing:.02em">일산애니톡만화애니학원</div>
+      <div data-reveal="60" style="font-size:10px;font-weight:700;letter-spacing:.14em;color:#9A9A9A;margin-top:4px">ANIMATION CARTOON PROFESSIONAL SCHOOL</div>
+
+      <div data-reveal="120" style="display:flex;justify-content:center;gap:12px;margin-top:24px">
+        <a href="https://naver.me/xMjI1z3s" target="_blank" rel="noopener" aria-label="네이버 플레이스 · 오시는 길" style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#D6202A;color:#FFFFFF;font-size:17px;font-weight:800;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateY(-3px) scale(1.03)">N</a>
+        <a href="https://www.instagram.com/anitalk_ilsan" target="_blank" rel="noopener" aria-label="인스타그램" style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#D6202A;color:#FFFFFF;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateY(-3px) scale(1.03)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>
+        </a>
+        <a href="https://blog.naver.com/anitalk-ilsan" target="_blank" rel="noopener" aria-label="블로그" style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:#D6202A;color:#FFFFFF;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#FFFFFF;color:#D6202A;text-decoration:none;transform:translateY(-3px) scale(1.03)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" /><path d="M8 12h8" /><path d="M8 16h5" /></svg>
+        </a>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px;margin-top:70px;align-items:stretch">
+        <div data-reveal="0" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="font-size:19px;font-weight:800;letter-spacing:-.03em">오시는 길</div>
+          <div style="font-size:14px;color:#666666;margin-top:12px;line-height:1.7;word-break:keep-all">경기도 고양시 일산동구<br />일산로 200 3층</div>
+          <div style="height:22px"></div>
+          <a href="https://naver.me/xMjI1z3s" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#D6202A;color:#FFFFFF;font-size:14px;font-weight:800;padding:12px 24px;border-radius:999px;margin-top:auto;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-3px) scale(1.03)">네이버 지도로 보기 →</a>
+        </div>
+        <div data-reveal="80" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="font-size:19px;font-weight:800;letter-spacing:-.03em">온라인 상담문의</div>
+          <div style="font-size:14px;color:#666666;margin-top:12px;line-height:1.7;word-break:keep-all">네이버 예약으로<br />편하게 상담 신청하세요.</div>
+          <div style="height:22px"></div>
+          <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#D6202A;color:#FFFFFF;font-size:14px;font-weight:800;padding:12px 24px;border-radius:999px;margin-top:auto;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-3px) scale(1.03)">예약 상담 신청 →</a>
+        </div>
+        <div data-reveal="160" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:32px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
+          <div style="font-size:19px;font-weight:800;letter-spacing:-.03em">전화문의</div>
+          <div style="font-size:14px;color:#666666;margin-top:12px;line-height:1.7;word-break:keep-all">13:00 - 22:00<br />일요일 · 월요일 휴무</div>
+          <div style="height:22px"></div>
+          <a href="tel:0319943134" style="display:inline-flex;align-items:center;gap:8px;background:#D6202A;color:#FFFFFF;font-size:14px;font-weight:800;padding:12px 24px;border-radius:999px;margin-top:auto;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease" style-hover="background:#111111;color:#FFFFFF;text-decoration:none;transform:translateY(-3px) scale(1.03)">031-994-3134</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:#000000;padding:54px clamp(20px,4vw,48px) 66px;text-align:center;border-top:1px solid #1E1E1E">
+    <div style="font-size:12px;color:#7A7A7A;line-height:1.9">상호 : 일산애니톡만화애니학원 · 대표 : 이은혜, 김동성 · 사업자등록번호 : 766-96-01214<br />일산캠퍼스 : 경기도 고양시 일산동구 일산로 200 3층 · 전화 : <a href="tel:0319943134" style="color:#9A9A9A">031-994-3134</a><br />고양교육지원청 등록 제6164호 · 교과과목 만화 · 분당 단가 145.83~239.58원</div>
+    <div style="font-size:12px;color:#5A5A5A;margin-top:18px">© 2026. ANITALK ILSAN. All rights reserved.</div>
+    <div style="margin-top:22px">
+      <a href="https://anitok.com/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#FFFFFF;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:11px 22px;transition:background 220ms ease, border-color 220ms ease, color 220ms ease" style-hover="background:#D6202A;border-color:#D6202A;color:#FFFFFF;text-decoration:none">애니톡 공식 홈페이지 바로가기 →</a>
+    </div>
+  </footer>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const STEPS = [
+  ['01', '상담 및 등록'],
+  ['02', '기본기 수업'],
+  ['03', '드로잉 수업'],
+  ['04', '스토리 수업'],
+  ['05', '연출 수업'],
+  ['06', '합격 / 취업']
+];
+
+function RES(path, id) { return (window.__resources && window.__resources[id]) || path; }
+
+const CLASS_GROUPS = [
+  {
+    name: '고등반',
+    range: '고1 ~ 고3',
+    lead: '기초 실기부터 대학 합격까지, 목표한 학교의 실기 유형에 맞춰 단계별로 올라갑니다.',
+    items: [
+      ['고1~2반', '입시 기초 과정', '인체 구조와 명암, 투시를 처음부터 잡습니다. 입시 실기의 뼈대를 만드는 반입니다.', RES('gal/c0.webp', 'c0')],
+      ['미대입시반', '고3 · N수', '한예종, 청강대, 경기대, 상명대, 세종대, 홍익대 등 목표 대학 전형에 맞춘 수시·정시 실기.', RES('gal/g4.webp', 'g4')],
+      ['애니고 · 예고반', '중3 예고입시', '한국애니고, 경기예고, 강원애니고 실기와 면접까지 준비합니다.', RES('gal/g8.webp', 'g8')]
+    ]
+  },
+  {
+    name: '주니어반',
+    range: '초3 ~ 중3',
+    lead: '초, 중학생만을 위한 웹툰 · 일러스트 · 캐릭터 수업. 창의력과 표현력을 함께 키웁니다.',
+    items: [
+      ['초등반', '초3 ~ 초6', '좋아하는 캐릭터를 그리는 것에서 시작해 나만의 그림으로 완성해 갑니다.', RES('gal/c3.webp', 'c3')],
+      ['중등반', '중1 ~ 중3', '만화 콘티와 채색까지, 예비 작가로서 기본기를 탄탄히 쌓는 과정입니다.', RES('gal/j1.webp', 'j1')]
+    ]
+  },
+  {
+    name: '성인취미반',
+    range: '대학생 · 직장인 · 누구나',
+    lead: '취미로 시작해 데뷔와 취업까지. 원하는 분야만 골라서 배우실 수 있습니다.',
+    items: [
+      ['웹툰', '스토리 · 연출', '콘티부터 컷 연출, 완성 원고까지 한 편의 웹툰을 직접 만들어 봅니다.', RES('gal/h2.webp', 'h2')],
+      ['디지털드로잉', '신티크 · 아이패드', '와콤 신티크와 아이패드로 클립스튜디오 · 프로크리에이트를 익힙니다.', RES('gal/h0.webp', 'h0')],
+      ['일러스트', '캐릭터 · 채색', '캐릭터 디자인과 채색, 배경 연출까지 한 장의 완성작으로 마무리합니다.', RES('gal/h3.webp', 'h3')],
+      ['취업포트폴리오', '웹툰 · 게임 실무', '업계 기준에 맞춘 포트폴리오를 완성해 취업과 데뷔를 준비하는 고급 과정.', RES('gal/h1.webp', 'h1')]
+    ]
+  }
+];
+
+const GALLERY = [
+  [RES('gal/j0.webp', 'j0'), '주니어반 학생작품 · 초3'],
+  [RES('gal/j1.webp', 'j1'), '주니어반 수업'],
+  [RES('gal/j2.webp', 'j2'), '주니어반 학생작품 · 초5'],
+  [RES('gal/j3.webp', 'j3'), '수채 채색 수업'],
+  [RES('gal/j4.webp', 'j4'), '주니어반 학생작품 · 초5'],
+  [RES('gal/j5.webp', 'j5'), '만화 콘티 수업'],
+  [RES('gal/j6.webp', 'j6'), '주니어반 학생작품 · 중2'],
+  [RES('gal/j7.webp', 'j7'), '주니어반 학생작품 · 중3'],
+  [RES('gal/j8.webp', 'j8'), '주니어반 학생작품 · 중3'],
+  [RES('gal/c3.webp', 'c3'), '주니어반 교실'],
+];
+
+const PASS = [
+  ['2026', '청강문화산업대학교 게임스쿨', '김 · 혁', '가좌고'],
+  ['2026', '상명대학교 디지털만화영상', '권 · 경', '주엽고'],
+  ['2026', '한성대학교 ITC디자인학부', '김 · 하', '검정고시'],
+  ['2026', '명지대학교 애니메이션학부', '김 · 혁', '가좌고'],
+  ['2026', '계원예술대학교 애니메이션', '김 · 윤', '풍동고'],
+  ['2026', '계원예술대학교 게임과', '김 · 하', '검정고시'],
+  ['2026', '중부대학교 자율전공', '김 · 민', '백신고'],
+  ['2026', '용인대학교', '김 · 민', '백신고'],
+  ['2026', '한양여자대학교 웹툰과', '권 · 경', '주엽고'],
+  ['2026', '한양여자대학교 웹툰과', '김 · 민', '백신고'],
+  ['2026', '인덕대학교 웹툰만화학과', '김 · 비', '화정고'],
+  ['2026', '순천향대학교 애니메이션과', '최 · 윤', '정발고'],
+  ['2026', '동양대학교 웹툰애니메이션과', '조 · 형', '백석고'],
+  ['2026', '동양대학교 웹툰애니메이션과', '이 · ', '백석고'],
+  ['2026', '한국애니고 애니메이션과', '정 · 은', '백마중'],
+  ['2026', '한국애니고 애니메이션과', '이 · 빈', '저동중'],
+  ['2026', '경기예술고 만화애니메이션과', '최 · 진', '백신중'],
+  ['2026', '강원애니고 애니메이션과', '정 · 희', '백마중'],
+  ['2026', '강원애니고 애니메이션과', '안 · 연', '백석중'],
+  ['2026', '강원애니고 만화창작과', '김 · 령', '산내중'],
+  ['2025', '청강문화산업대학교 애니메이션스쿨', '김 · 우', '풍동고'],
+  ['2025', '청강문화산업대학교 웹툰만화 웹소설', '김 · 연', '백신고'],
+  ['2025', '인덕대학교 웹툰만화학과', '천 · 영', '풍동고'],
+  ['2025', '계원예술대학교 멀티디자인과', '김 · 우', '검정고시'],
+  ['2024', '청강문화산업대학교 웹툰만화스쿨', '이 · 윤', '백마고'],
+  ['2024', '청강문화산업대학교 웹툰만화스쿨', '김 · 나', '백신고'],
+  ['2024', '경기예술고 만화애니메이션과', '이 · 비', '지산중'],
+  ['2024', '인덕대학교 웹툰만화학과', '공 · 환', '풍동고'],
+  ['2024', '호서대학교 애니메이션과', '오 · 민', '검정고시'],
+  ['2024', '계원예술대학교 애니메이션', '오 · 민', '검정고시']
+];
+
+const HIGH = [
+  [RES('gal/k0.webp', 'k0'), '고등반 학생작품'],
+  [RES('gal/k1.webp', 'k1'), '입시 실기 준비 수업'],
+  [RES('gal/k2.webp', 'k2'), '고등반 학생작품'],
+  [RES('gal/k3.webp', 'k3'), '애니톡 합격 작품전'],
+  [RES('gal/k4.webp', 'k4'), '고등반 학생작품'],
+  [RES('gal/k5.webp', 'k5'), '상황표현 문제풀이 수업']
+];
+
+const HOBBY = [
+  [RES('gal/h2.webp', 'h2'), '성인취미반 학생작품'],
+  [RES('gal/h0.webp', 'h0'), '신티크 디지털드로잉 수업'],
+  [RES('gal/h3.webp', 'h3'), '성인취미반 학생작품'],
+  [RES('gal/h1.webp', 'h1'), '클립스튜디오 실습'],
+  [RES('gal/h4.webp', 'h4'), '성인취미반 학생작품', 'rot180'],
+  [RES('gal/c2.webp', 'c2'), '아이패드 드로잉 수업'],
+  [RES('gal/k9.webp', 'k9'), '성인취미반 학생작품'],
+  [RES('gal/h5.webp', 'h5'), '성인취미반 학생작품'],
+  [RES('gal/k6.webp', 'k6'), '성인취미반 학생작품'],
+  [RES('gal/k7.webp', 'k7'), '성인취미반 학생작품']
+];
+
+class Component extends DCLogic {
+  state = { step: 0 };
+
+  stepEls() {
+    const out = [];
+    STEPS.forEach(([n, label], i) => {
+      out.push(React.createElement('div', {
+        key: 's' + i,
+        'data-step': String(i),
+        style: {
+          width: 'clamp(84px,8.6vw,124px)', height: 'clamp(84px,8.6vw,124px)', borderRadius: '50%', flex: '0 0 auto',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '5px',
+          background: '#33383F',
+          color: '#FFFFFF',
+          opacity: 0,
+          transform: 'scale(.5)',
+          willChange: 'transform, opacity, background, box-shadow'
+        }
+      },
+        React.createElement('div', { style: { fontSize: 'clamp(16px,1.7vw,22px)', fontWeight: 800 } }, n),
+        React.createElement('div', { style: { fontSize: 'clamp(11px,1.05vw,13px)', fontWeight: 600, opacity: .92, wordBreak: 'keep-all' } }, label)
+      ));
+    });
+    return out;
+  }
+
+  classGroupEls() {
+    return CLASS_GROUPS.map((g, gi) => React.createElement('div', {
+      key: 'g' + gi,
+      'data-group': '1',
+      style: {
+        marginTop: gi === 0 ? '64px' : '28px',
+        background: gi % 2 ? '#0B0B0D' : '#131317',
+        border: '1px solid rgba(255,255,255,.07)',
+        borderRadius: '24px',
+        padding: 'clamp(24px,3vw,40px)',
+        position: 'relative', overflow: 'hidden'
+      }
+    },
+      React.createElement('div', {
+        style: {
+          position: 'absolute', top: 0, left: 0, width: '4px', height: '100%',
+          background: 'linear-gradient(180deg,#D6202A,rgba(214,32,42,0))'
+        }
+      }),
+      React.createElement('div', {
+        'data-reveal': '0',
+        style: {
+          display: 'flex', alignItems: 'baseline', gap: '14px', flexWrap: 'wrap',
+          paddingBottom: '20px', borderBottom: '1px solid rgba(255,255,255,.1)', textAlign: 'left'
+        }
+      },
+        React.createElement('span', {
+          style: {
+            fontSize: '12px', fontWeight: 800, color: '#D6202A', letterSpacing: '.16em',
+            alignSelf: 'center'
+          }
+        }, 'CLASS 0' + (gi + 1)),
+        React.createElement('span', { style: { fontSize: 'clamp(24px,2.6vw,32px)', fontWeight: 800, letterSpacing: '-.04em' } }, g.name),
+        React.createElement('span', {
+          style: {
+            fontSize: '12px', fontWeight: 800, color: '#FFFFFF', background: '#D6202A',
+            padding: '5px 12px', borderRadius: '999px', whiteSpace: 'nowrap'
+          }
+        }, g.range),
+        React.createElement('span', {
+          style: { flex: '1 1 260px', minWidth: 0, fontSize: '14px', color: '#8C8C8C', wordBreak: 'keep-all', lineHeight: 1.6 }
+        }, g.lead)
+      ),
+      React.createElement('div', {
+        style: {
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,175px),1fr))',
+          gap: '16px', marginTop: '24px'
+        }
+      }, g.items.map(([title, kind, desc, img], i) => React.createElement('div', {
+        key: 'i' + i, 'data-reveal': String(i * 70), 'data-lift': '1',
+        style: {
+          background: '#1F1F25', border: '1px solid rgba(255,255,255,.09)', color: '#FFFFFF',
+          borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', textAlign: 'left'
+        }
+      },
+        React.createElement('div', { style: { overflow: 'hidden' } },
+          React.createElement('img', {
+            src: img, alt: title, 'data-zoom': '1',
+            style: { display: 'block', width: '100%', height: '170px', objectFit: 'cover' }
+          })
+        ),
+        React.createElement('div', { style: { padding: '20px 20px 22px', display: 'flex', flexDirection: 'column', flex: 1 } },
+          React.createElement('div', {
+            style: { fontSize: '11px', fontWeight: 700, letterSpacing: '.14em', color: '#D6202A', textTransform: 'uppercase' }
+          }, kind),
+          React.createElement('div', {
+            style: { marginTop: '8px', fontSize: '19px', fontWeight: 800, letterSpacing: '-.03em', wordBreak: 'keep-all' }
+          }, title),
+          React.createElement('p', {
+            style: { margin: '10px 0 0', fontSize: '13px', lineHeight: 1.7, color: '#9A9A9A', wordBreak: 'keep-all' }
+          }, desc)
+        )
+      )))
+    ));
+  }
+
+  passEls() {
+    return PASS.map(([yr, school, name, hs], i) => React.createElement('div', {
+      key: 'pass' + i,
+      'data-reveal': String((i % 12) * 62),
+      'data-fx': 'flip',
+      style: {
+        background: '#1A1A1D', border: '1px solid rgba(255,255,255,.07)', borderRadius: '12px',
+        padding: '18px 20px', display: 'flex', alignItems: 'center', gap: '14px', textAlign: 'left'
+      }
+    },
+      React.createElement('span', {
+        style: {
+          flex: '0 0 auto', background: '#D6202A', color: '#FFFFFF', fontSize: '12px', fontWeight: 800,
+          padding: '5px 10px', borderRadius: '999px'
+        }
+      }, yr),
+      React.createElement('span', {
+        style: { flex: '1 1 auto', minWidth: 0, fontSize: '14.5px', fontWeight: 700, letterSpacing: '-.03em', wordBreak: 'keep-all', lineHeight: 1.45 }
+      }, school),
+      React.createElement('span', {
+        style: { flex: '0 1 auto', minWidth: 0, fontSize: '13px', fontWeight: 600, color: '#9A9A9A', wordBreak: 'keep-all', textAlign: 'right' }
+      }, name + ' (' + hs + ')')
+    ));
+  }
+
+  figureEls(prefix, list) {
+    return list.map(([src, label, fx], i) => React.createElement('figure', {
+      key: prefix + i, style: { margin: 0 }
+    },
+      React.createElement('div', { style: { borderRadius: '8px', overflow: 'hidden', background: '#111' } },
+        React.createElement('img', {
+          src: src, alt: label, decoding: 'async',
+          style: {
+            display: 'block', width: '100%', height: '200px', objectFit: 'cover',
+            transform: fx === 'rot180' ? 'rotate(180deg)' : 'none'
+          }
+        })
+      ),
+      React.createElement('figcaption', {
+        style: {
+          marginTop: '10px', color: '#C9C9C9', fontSize: '13px', fontWeight: 600, letterSpacing: '-.02em',
+          padding: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', wordBreak: 'keep-all'
+        }
+      }, label)
+    ));
+  }
+
+  componentDidMount() {
+    // only a hard opt-out (?motion=off) disables motion; a reduce hint just softens it
+    const reduce = /(?:\?|&)motion=off/.test(location.search);
+    const soft = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const EASE = 'cubic-bezier(.16,1,.3,1)';
+
+    const splitUnits = (el) => {
+      if (el.__units) return el.__units;
+      el.__split = 1;
+      const units = [];
+      const walk = (node) => {
+        Array.from(node.childNodes).forEach(ch => {
+          if (ch.nodeType === 3) {
+            const parts = ch.textContent.split(/(\s+)/).filter(t => t.length);
+            if (!parts.length) return;
+            const frag = document.createDocumentFragment();
+            parts.forEach(p => {
+              if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+              const s = document.createElement('span');
+              s.textContent = p;
+              s.style.display = 'inline-block';
+              s.style.willChange = 'transform, opacity, filter';
+              frag.appendChild(s);
+              units.push(s);
+            });
+            node.replaceChild(frag, ch);
+          } else if (ch.nodeType === 1) {
+            if (ch.tagName === 'BR') return;
+            const d = getComputedStyle(ch).display;
+            if (d === 'block' || d === 'flex' || d === 'grid') { walk(ch); return; }
+            if (!ch.style.display) ch.style.display = 'inline-block';
+            ch.style.willChange = 'transform, opacity, filter';
+            units.push(ch);
+          }
+        });
+      };
+      walk(el);
+      el.__units = units;
+      return units;
+    };
+
+    const kindOf = (el) => {
+      const t = el.tagName;
+      if (el.getAttribute('data-fx') === 'flip') return 'flip';
+      if (t === 'IMG' || t === 'FIGURE') return 'media';
+      if (t === 'H1' || t === 'H2' || t === 'H3') return 'head';
+      return 'body';
+    };
+
+    const prep = (el) => {
+      const kind = kindOf(el);
+      el.__kind = kind;
+      if (kind === 'head') {
+        splitUnits(el).forEach(u => {
+          u.style.opacity = '0';
+          u.style.transform = 'translateY(.62em)';
+          u.style.transition = 'opacity 420ms ease-out, transform 620ms ' + EASE;
+        });
+        return;
+      }
+      if (kind === 'flip') {
+        el.style.opacity = '0';
+        el.style.transformOrigin = '50% 100%';
+        el.style.transform = 'perspective(900px) rotateX(-72deg) translateY(26px) scale(.96)';
+        el.style.willChange = 'transform, opacity';
+        el.style.transition = 'opacity 460ms ease-out, transform 760ms cubic-bezier(.2,1.25,.34,1)';
+        return;
+      }
+      if (kind === 'media') {
+        el.style.clipPath = 'inset(0 0 100% 0)';
+        el.style.transform = 'scale(1.09)';
+        el.style.opacity = '0';
+        el.style.willChange = 'clip-path, transform, opacity';
+        el.style.transition = 'clip-path 720ms ' + EASE + ', transform 900ms ' + EASE + ', opacity 340ms ease-out';
+        return;
+      }
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(24px)';
+      el.style.willChange = 'transform, opacity';
+      el.style.transition = 'opacity 380ms ease-out, transform 580ms ' + EASE;
+    };
+
+    const play = (el) => {
+      const base = parseInt(el.getAttribute('data-reveal'), 10) || 0;
+      if (el.__kind === 'head') {
+        splitUnits(el).forEach((u, i) => {
+          u.style.transitionDelay = (base + i * 38) + 'ms';
+          u.style.opacity = '1';
+          u.style.transform = 'translateY(0)';
+        });
+        return;
+      }
+      el.style.transitionDelay = base + 'ms';
+      if (el.__kind === 'flip') {
+        el.style.opacity = '1';
+        el.style.transform = 'perspective(900px) rotateX(0deg) translateY(0) scale(1)';
+        return;
+      }
+      if (el.__kind === 'media') {
+        el.style.clipPath = 'inset(0 0 0% 0)';
+        el.style.transform = 'scale(1)';
+        el.style.opacity = '1';
+        return;
+      }
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    };
+    this._play = play;
+
+    const SEL = 'h1, h2, h3, p, img, figure, figcaption, a, span, strong, div';
+    const autoTag = () => {
+      // only walk sections that haven't been tagged yet
+      const fresh = Array.from(document.querySelectorAll('section')).filter(sec => !sec.__atkSec);
+      if (!fresh.length) return;
+      const pool = [];
+      fresh.forEach(sec => { sec.__atkSec = 1; pool.push.apply(pool, sec.querySelectorAll(SEL)); });
+      pool.forEach(el => {
+        if (el.__atkAuto) return;
+        el.__atkAuto = 1;
+        if (el.hasAttribute('data-reveal') || el.hasAttribute('data-parallax')) return;
+        if (el.closest('header') || el.closest('aside')) return;
+        if (el.closest('[data-noreveal]')) return;
+        if (el.closest('[data-reveal]')) return;
+        const txt = (el.textContent || '').trim();
+        const isImg = el.tagName === 'IMG' || el.tagName === 'FIGURE';
+        if (!isImg && !txt) return;
+        if (el.tagName === 'DIV' && el.children.length > 3) return;
+        if (el.tagName === 'SPAN' && el.parentElement && el.parentElement.closest('h1, h2, h3')) return;
+        const sibs = el.parentElement ? Array.from(el.parentElement.children).filter(c => c.hasAttribute('data-reveal') || c === el) : [el];
+        el.setAttribute('data-reveal', String(Math.min(sibs.indexOf(el), 6) * 70));
+      });
+    };
+
+    const wire = () => {
+      if (this._wiring) return;
+      this._wiring = 1;
+      autoTag();
+      const els = Array.from(document.querySelectorAll('[data-reveal]')).filter(el => !el.__atk);
+      els.forEach(el => {
+        el.__atk = 1;
+        if (reduce) return;
+        prep(el);
+        if (!this._pending) this._pending = new Set();
+        this._pending.add(el);
+        this._io.observe(el);
+      });
+
+      Array.from(document.querySelectorAll('[data-count]')).filter(el => !el.__atk).forEach(el => {
+        el.__atk = 1;
+        this._cio.observe(el);
+      });
+
+      Array.from(document.querySelectorAll('[data-lift]')).filter(el => !el.__atkL).forEach(card => {
+        card.__atkL = 1;
+        const img = card.querySelector('[data-zoom]');
+        card.style.transition = 'none';
+        card.style.willChange = 'transform, box-shadow';
+        if (img) { img.style.transition = 'none'; img.style.willChange = 'transform'; }
+
+        // spring state: k = stiffness, d = damping
+        const S = { v: 0, x: 0, tx: 0, rx: 0, ry: 0, trx: 0, try_: 0, raf: null };
+        const K = 0.13, D = 0.78;
+
+        const frame = () => {
+          S.v += (S.tx - S.x) * K;
+          S.v *= D;
+          S.x += S.v;
+          S.rx += (S.trx - S.rx) * 0.16;
+          S.ry += (S.try_ - S.ry) * 0.16;
+          const lift = S.x;
+          card.style.transform =
+            'perspective(900px) translate3d(0,' + (-lift * 12).toFixed(2) + 'px,0)' +
+            ' rotateX(' + S.rx.toFixed(3) + 'deg) rotateY(' + S.ry.toFixed(3) + 'deg)' +
+            ' scale(' + (1 + lift * 0.022).toFixed(4) + ')';
+          card.style.boxShadow = lift > 0.004
+            ? '0 ' + (lift * 26).toFixed(1) + 'px ' + (lift * 52).toFixed(1) + 'px rgba(0,0,0,' + (lift * 0.5).toFixed(3) + ')'
+            : 'none';
+          if (img) img.style.transform = 'scale(' + (1 + lift * 0.075).toFixed(4) + ')';
+          const settled = Math.abs(S.tx - S.x) < 0.0012 && Math.abs(S.v) < 0.0012
+            && Math.abs(S.trx - S.rx) < 0.01 && Math.abs(S.try_ - S.ry) < 0.01;
+          S.raf = settled ? null : requestAnimationFrame(frame);
+        };
+        const kick = () => { if (S.raf == null) S.raf = requestAnimationFrame(frame); };
+
+        card.addEventListener('mouseenter', () => { S.tx = 1; kick(); });
+        card.addEventListener('mousemove', (ev) => {
+          const r = card.getBoundingClientRect();
+          const px = (ev.clientX - r.left) / r.width - 0.5;
+          const py = (ev.clientY - r.top) / r.height - 0.5;
+          S.try_ = px * 7;
+          S.trx = -py * 7;
+          kick();
+        });
+        card.addEventListener('mouseleave', () => { S.tx = 0; S.trx = 0; S.try_ = 0; kick(); });
+      });
+      this._wiring = 0;
+    };
+
+    this._io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        this._io.unobserve(e.target);
+        if (this._pending) this._pending.delete(e.target);
+        this._play(e.target);
+      });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.01 });
+
+    this._cio = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        this._cio.unobserve(el);
+        const target = parseInt(el.getAttribute('data-count'), 10) || 0;
+        if (reduce) { el.textContent = String(target); return; }
+        const dur = 1200, t0 = performance.now();
+        const tick = (t) => {
+          const p = Math.min(1, (t - t0) / dur);
+          el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+
+    // React owns this DOM — re-wire on update, never from a DOM observer
+    // (splitUnits() replaces text nodes with spans, which would re-trigger an observer forever)
+    this._wire = wire;
+    wire();
+
+    document.querySelectorAll('aside a').forEach(a => {
+      const lab = a.querySelector('[data-sidelabel]');
+      if (!lab) return;
+      a.addEventListener('mouseenter', () => { lab.style.maxWidth = '120px'; lab.style.opacity = '1'; lab.style.marginLeft = '9px'; });
+      a.addEventListener('mouseleave', () => { lab.style.maxWidth = '0'; lab.style.opacity = '0'; lab.style.marginLeft = '0'; });
+    });
+
+    const bar = document.querySelector('[data-progress]');
+    const para = document.querySelector('[data-parallax]');
+    const heroCopy = document.querySelector('#top > div:last-of-type') || null;
+    const heroInner = document.querySelector('#top h1');
+    const topBtn = document.querySelector('[data-totop]');
+    const heroBox = heroInner ? heroInner.parentElement : null;
+    // ys = damped scroll position; everything scroll-linked reads this one value
+    const measure = () => { this._docH = document.documentElement.scrollHeight - window.innerHeight; };
+    measure();
+    // page height grows as gallery images decode
+    [400, 1200, 3000].forEach(t => setTimeout(measure, t));
+    window.addEventListener('load', measure);
+    const paintHero = (ys) => {
+      const h = this._docH;
+      if (bar) bar.style.width = (h > 0 ? (ys / h) * 100 : 0) + '%';
+      if (topBtn) {
+        const on = ys > window.innerHeight * 0.7;
+        topBtn.style.opacity = on ? '1' : '0';
+        topBtn.style.pointerEvents = on ? 'auto' : 'none';
+      }
+      if (reduce) return;
+      if (para) {
+        const pz = Math.min(1, ys / (window.innerHeight * 1.05)) * (soft ? 0.5 : 1);
+        para.style.transform = 'translate3d(0,' + (ys * 0.22).toFixed(2) + 'px,0) scale(' + (1 + pz * 0.32).toFixed(4) + ')';
+        para.style.filter = 'brightness(' + (1 - pz * 0.25).toFixed(3) + ')';
+      }
+      if (heroBox) {
+        const p = Math.min(1, ys / (window.innerHeight * 0.85));
+        heroBox.style.transform = 'translate3d(0,' + (p * -70).toFixed(2) + 'px,0)';
+        heroBox.style.opacity = String(1 - p * 0.92);
+        heroBox.style.filter = 'blur(' + (p * 6).toFixed(2) + 'px)';
+      }
+    };
+    this._paintHero = paintHero;
+
+    const track = document.querySelector('[data-steptrack]');
+    const glow = document.querySelector('[data-stepglow]');
+    if (track) {
+      const N = STEPS.length;
+      const clamp01 = (v) => v < 0 ? 0 : v > 1 ? 1 : v;
+      const smooth = (t) => t * t * (3 - 2 * t);
+      const target = () => {
+        const r = track.getBoundingClientRect();
+        const span = r.height - window.innerHeight;
+        return span > 0 ? clamp01(-r.top / span) : 0;
+      };
+      let eased = target();
+      let raf = null;
+      const paint = () => {
+        // circles enter one after another, then light up as the head passes them
+        const head = eased * (N + 0.6) - 0.3;
+        if (!this._stepNodes) this._stepNodes = Array.from(document.querySelectorAll('[data-step]'));
+        this._stepNodes.forEach(el => {
+          const i = +el.getAttribute('data-step');
+          const enter = smooth(clamp01(head - i + 1.15));
+          const lit = smooth(clamp01((head - i) * 1.5));
+          const scale = 0.5 + enter * 0.5 + lit * 0.14;
+          el.style.opacity = String(0.06 + enter * 0.94);
+          el.style.transform = 'scale(' + scale.toFixed(3) + ') translateY(' + ((1 - enter) * 26).toFixed(2) + 'px)';
+          const g = Math.round(51 + (230 - 51) * lit);
+          const b = Math.round(63 + (46 - 63) * lit);
+          const rr = Math.round(51 + (232 - 51) * lit);
+          el.style.background = 'rgb(' + rr + ',' + Math.round(56 + (37 - 56) * lit) + ',' + b + ')';
+          el.style.boxShadow = lit > 0.02 ? '0 0 ' + (lit * 58).toFixed(0) + 'px rgba(232,37,48,' + (lit * 0.85).toFixed(2) + ')' : 'none';
+        });
+        if (glow) {
+          glow.style.opacity = String(0.45 + eased * 0.7);
+          glow.style.transform = 'translate(-50%,-50%) scale(' + (0.8 + eased * 0.45).toFixed(3) + ')';
+        }
+      };
+      this._stepTarget = target;
+      this._stepPaint = paint;
+      this._stepSet = (v) => { eased = v; };
+      this._stepGet = () => eased;
+      paint();
+    }
+
+    // ---- single rAF driver for every scroll-linked motion ----
+    let ys = window.pageYOffset;
+    let idle = 0;
+    const loop = () => {
+      const y = window.pageYOffset;
+      // critically-damped follow: motion keeps gliding after the wheel stops
+      ys += (y - ys) * 0.14;
+      if (Math.abs(y - ys) < 0.15) ys = y;
+      paintHero(ys);
+      // fail-safe: play anything that reached the viewport (observer can miss clipped nodes)
+      if (this._pending && this._pending.size) {
+        const vh = window.innerHeight;
+        this._pending.forEach(el => {
+          const r = el.getBoundingClientRect();
+          if (r.top < vh * 0.94 && r.bottom > 0) {
+            this._pending.delete(el);
+            this._io.unobserve(el);
+            this._play(el);
+          }
+        });
+      }
+      if (this._stepPaint) {
+        const t = this._stepTarget();
+        const e = this._stepGet();
+        this._stepSet(e + (t - e) * 0.12);
+        this._stepPaint();
+        if (Math.abs(t - this._stepGet()) > 0.0005) idle = 0;
+      }
+      if (Math.abs(y - ys) > 0.15) idle = 0; else idle++;
+      this._raf = idle > 90 ? null : requestAnimationFrame(loop);
+    };
+    this._kick = () => { idle = 0; if (this._raf == null) this._raf = requestAnimationFrame(loop); };
+    window.addEventListener('scroll', this._kick, { passive: true });
+    window.addEventListener('resize', () => { measure(); this._kick(); });
+    this._raf = requestAnimationFrame(loop);
+  }
+
+  componentWillUnmount() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    window.removeEventListener('scroll', this._kick);
+    window.removeEventListener('resize', this._kick);
+  }
+
+  renderVals() {
+    return {
+      bookingUrl: this.props.bookingUrl ?? 'https://booking.naver.com/booking/6/bizes/626887',
+      steps: this.stepEls(),
+      classGroups: this.classGroupEls(),
+      passList: this.passEls(),
+      highA: this.figureEls('ka', HIGH),
+      hobbyA: this.figureEls('ha', HOBBY),
+      galleryA: this.figureEls('ga', GALLERY)
+    };
+  }
+}
+</script>
+</body>
+</html>
