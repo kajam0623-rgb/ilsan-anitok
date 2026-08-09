@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- React is self-hosted so the page never depends on unpkg.com being up.
+     support.js skips its CDN fetch when window.React / window.ReactDOM already exist.
+     Files are byte-identical to unpkg's (SRI sha384 verified). -->
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
