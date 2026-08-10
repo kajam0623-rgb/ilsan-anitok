@@ -150,6 +150,25 @@ const preload = hero
   ? `<link rel="preload" as="image" href="${hero[1]}" fetchpriority="high">`
   : '';
 
+// og:image, twitter:image and the ld+json logo/image are absolute URLs written
+// against fixed filenames — they are not uuids, so the substitution above leaves
+// them pointing at paths that only existed in the previous hand-built gal/. Write
+// the hero and logo out under the names those tags expect as well, so a crawler
+// fetching the share thumbnail gets the image instead of a 404.
+const logo = template.match(/<img[^>]*src="([^"]+)"/i);
+const aliasFor = (re, sourcePath) => {
+  const m = template.match(re);
+  if (!m || !sourcePath) return;
+  const want = m[1];
+  const from = path.join(outDir, sourcePath.replace(/^\//, ''));
+  const to = path.join(outDir, want.replace(/^\//, ''));
+  if (path.resolve(from) === path.resolve(to)) return;
+  fs.copyFileSync(from, to);
+  console.log(`alias        ${want} <- ${sourcePath}`);
+};
+aliasFor(/<meta property="og:image" content="https?:\/\/[^/]+(\/[^"]+)"/i, hero && hero[1]);
+aliasFor(/"logo"\s*:\s*"https?:\/\/[^/]+(\/[^"]+)"/i, logo && logo[1]);
+
 // The loader injected __resources directly after <head>, which was harmless when
 // the template was only ever handed to DOMParser. Served as a real file it would
 // push <meta charset> past the 1024-byte prescan window, so hoist charset first.
