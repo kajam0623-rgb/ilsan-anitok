@@ -266,6 +266,21 @@ template =
   preload +
   template.slice(at);
 
+// The bundle keeps the entire SEO payload — title, description, keywords, robots,
+// canonical, the og/twitter set and the ld+json graph — inside a <helmet> element in
+// the BODY, and the app hoists it into <head> at runtime. A crawler that executes JS
+// sees the right head; one that does not sees a <head> with no title at all. Naver's
+// crawler is the weak one at JS rendering, and Naver is where the target queries are
+// searched, so hoist at build time instead. The runtime then finds an empty <helmet>
+// and has nothing left to move.
+const helmet = template.match(/(<helmet>)([\s\S]*?)(<\/helmet>)/i);
+if (helmet) {
+  const contents = helmet[2].trim();
+  template = template.replace(helmet[0], helmet[1] + helmet[3]);
+  template = template.replace(/<\/head>/i, contents + '\n</head>');
+  console.log(`hoist        <helmet> -> <head> (${contents.length} chars)`);
+}
+
 fs.writeFileSync(path.join(outDir, 'index.html'), template);
 
 // robots.txt and sitemap.xml ship beside the bundle and name the same authored
