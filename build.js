@@ -121,8 +121,6 @@ for (const [uuid, p] of pathByUuid) template = template.split(uuid).join(p);
 // than in index.html because index.html is generated — editing it would be undone
 // by the next build from the source bundle.
 const RED = { from: [214, 32, 42], to: [189, 13, 22] };
-// #E82530 is the lighter tint the bundle derives for glows; keep it the same
-// distance from the base so the highlight still reads as the same colour.
 // Colours the bundle derives from the base by a fixed offset: #E82530 is the
 // lighter glow tint, #B01820 the link hover. Both are carried by the same offset
 // so the glow still reads as a highlight and hover stays visibly darker than the
@@ -172,6 +170,26 @@ template = template.replace(
     return open + body.split(AUTHORED_AT).join(SITE) + close;
   }
 );
+
+// Search targets are the category phrases "일산만화학원" and "일산웹툰학원". The bundle
+// spells them out in the meta description but nowhere in <title>, where "일산 만화·웹툰"
+// breaks the phrase across a space and an interpunct — so the strongest on-page slot
+// carries neither target as a contiguous string. Lead with them, keep the registered
+// name after the divider.
+const TITLE = '일산만화학원 일산웹툰학원 | 일산애니톡만화애니학원';
+let seoEdits = 0;
+const seo = (re, build) =>
+  (template = template.replace(re, (...a) => (seoEdits++, build(...a))));
+
+seo(/<title>[^<]*<\/title>/i, () => `<title>${TITLE}</title>`);
+seo(/(<meta name="twitter:title" content=")[^"]*(")/i, (_, a, b) => a + TITLE + b);
+
+// 일산애니톡만화학원 is what people actually call the school; the registered name is
+// 일산애니톡만화애니학원. Both belong in the graph so either query resolves to this
+// organisation. The category phrases above are deliberately NOT added here — they are
+// not names of the business, and stuffing them into alternateName is the kind of thing
+// that gets structured data ignored.
+seo(/("alternateName":\[)/, (_, a) => a + '"일산애니톡만화학원",');
 
 // Every gallery thumbnail rendered through React.createElement('img') loaded
 // eagerly, which was invisible while the bytes were already inline but now costs
@@ -264,7 +282,8 @@ for (const name of ['robots.txt', 'sitemap.xml']) {
 const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';
 console.log(
   `index.html   ${kb(Buffer.byteLength(template))}  (${lazied} img -> lazy, ` +
-    `${recoloured} colour refs -> ${hex(RED.to)}, ${repointed} self-refs -> ${SITE})`
+    `${recoloured} colour refs -> ${hex(RED.to)}, ${repointed} self-refs -> ${SITE}, ` +
+    `${seoEdits} seo edits)`
 );
 console.log(`fonts/       ${kb(bytes.fonts)}  (${written.fonts} files)`);
 console.log(`gal/         ${kb(bytes.gal)}  (${written.gal} files)`);
