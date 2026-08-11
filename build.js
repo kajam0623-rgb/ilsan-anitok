@@ -193,12 +193,18 @@ seo(/("alternateName":\[)/, (_, a) => a + '"일산애니톡만화학원",');
 
 // Headings carried neither target phrase — the h1 read "만화애니 학원의 정답! 일산애니톡!"
 // and all nine h2s were mood copy. After <title>, headings are the next strongest
-// on-page signal, so both phrases go in the h1 and one h2 takes the 만화학원 phrase.
-// The rest of the headings are left alone: repeating the phrase down the page reads
-// as stuffing to a human and buys nothing from a ranker.
+// on-page signal, so the h1 and one h2 carry the school's wording for them. The rest
+// of the headings are left alone: repeating a phrase down the page reads as stuffing
+// to a human and buys nothing from a ranker.
+// Hero h1 and its subline are the school's own copy — keep the wording exactly as
+// given, only the markup around it is ours.
 seo(
   /만화애니 학원의 정답!<br>(<span style="color:#[0-9A-Fa-f]{6}">)일산애니톡!/,
-  (_, span) => `일산만화학원 · 일산웹툰학원<br>정답은 ${span}일산애니톡!`
+  (_, span) => `웹툰,애니 교육의 정답!<br>${span}일산애니톡 만화학원!`
+);
+seo(
+  /(data-reveal="160"[^>]*>)Since 2011 오직 만화애니 전문 교육 기관 · 일산 캠퍼스/,
+  (_, open) => open + '일산 백마학원가 대표 만화학원'
 );
 seo(/그림 하나로<br>하루를 채우는 공간/, () => '일산만화학원 애니톡<br>그림 하나로 하루를 채우는 공간');
 
