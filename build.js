@@ -107,6 +107,30 @@ for (const [uuid, entry] of Object.entries(manifest)) {
 // Covers uuids in markup, inline CSS url(), and inline JS alike.
 for (const [uuid, p] of pathByUuid) template = template.split(uuid).join(p);
 
+// Brand red. The bundle ships #D6202A; the ANITALK site at anitok.com uses
+// #BD0D16, which is the red this page is meant to match. Remapped here rather
+// than in index.html because index.html is generated — editing it would be undone
+// by the next build from the source bundle.
+const RED = { from: [214, 32, 42], to: [189, 13, 22] };
+// #E82530 is the lighter tint the bundle derives for glows; keep it the same
+// distance from the base so the highlight still reads as the same colour.
+const TINT = {
+  from: [232, 37, 48],
+  to: RED.to.map((c, i) => c + ([232, 37, 48][i] - RED.from[i])),
+};
+const hex = (c) => '#' + c.map((n) => n.toString(16).padStart(2, '0')).join('');
+let recoloured = 0;
+for (const { from, to } of [RED, TINT]) {
+  const h = new RegExp(hex(from), 'gi');
+  template = template.replace(h, () => (recoloured++, hex(to).toUpperCase()));
+  // Alpha is carried on the tail of the match, so only the triple is rewritten.
+  const rgb = new RegExp(`rgba?\\(\\s*${from[0]},\\s*${from[1]},\\s*${from[2]}`, 'g');
+  template = template.replace(rgb, (m) => {
+    recoloured++;
+    return m.replace(/\d+,\s*\d+,\s*\d+$/, to.join(','));
+  });
+}
+
 // Every gallery thumbnail rendered through React.createElement('img') loaded
 // eagerly, which was invisible while the bytes were already inline but now costs
 // ~2MB of requests on first paint. They all sit below the fold; the hero and logo
@@ -185,7 +209,10 @@ template =
 fs.writeFileSync(path.join(outDir, 'index.html'), template);
 
 const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';
-console.log(`index.html   ${kb(Buffer.byteLength(template))}  (${lazied} img -> lazy)`);
+console.log(
+  `index.html   ${kb(Buffer.byteLength(template))}  (${lazied} img -> lazy, ` +
+    `${recoloured} colour refs -> ${hex(RED.to)})`
+);
 console.log(`fonts/       ${kb(bytes.fonts)}  (${written.fonts} files)`);
 console.log(`gal/         ${kb(bytes.gal)}  (${written.gal} files)`);
 console.log(`js/          ${kb(bytes.js)}  (${written.js} files)`);
