@@ -191,6 +191,17 @@ seo(/(<meta name="twitter:title" content=")[^"]*(")/i, (_, a, b) => a + TITLE + 
 // that gets structured data ignored.
 seo(/("alternateName":\[)/, (_, a) => a + '"일산애니톡만화학원",');
 
+// Headings carried neither target phrase — the h1 read "만화애니 학원의 정답! 일산애니톡!"
+// and all nine h2s were mood copy. After <title>, headings are the next strongest
+// on-page signal, so both phrases go in the h1 and one h2 takes the 만화학원 phrase.
+// The rest of the headings are left alone: repeating the phrase down the page reads
+// as stuffing to a human and buys nothing from a ranker.
+seo(
+  /만화애니 학원의 정답!<br>(<span style="color:#[0-9A-Fa-f]{6}">)일산애니톡!/,
+  (_, span) => `일산만화학원 · 일산웹툰학원<br>정답은 ${span}일산애니톡!`
+);
+seo(/그림 하나로<br>하루를 채우는 공간/, () => '일산만화학원 애니톡<br>그림 하나로 하루를 채우는 공간');
+
 // Every gallery thumbnail rendered through React.createElement('img') loaded
 // eagerly, which was invisible while the bytes were already inline but now costs
 // ~2MB of requests on first paint. They all sit below the fold; the hero and logo
