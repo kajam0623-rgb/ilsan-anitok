@@ -114,13 +114,24 @@ for (const [uuid, p] of pathByUuid) template = template.split(uuid).join(p);
 const RED = { from: [214, 32, 42], to: [189, 13, 22] };
 // #E82530 is the lighter tint the bundle derives for glows; keep it the same
 // distance from the base so the highlight still reads as the same colour.
-const TINT = {
-  from: [232, 37, 48],
-  to: RED.to.map((c, i) => c + ([232, 37, 48][i] - RED.from[i])),
-};
+// Colours the bundle derives from the base by a fixed offset: #E82530 is the
+// lighter glow tint, #B01820 the link hover. Both are carried by the same offset
+// so the glow still reads as a highlight and hover stays visibly darker than the
+// link — at the new, already-darker base, reusing the old literals would leave
+// hover almost indistinguishable from rest.
+const derived = (from) => ({
+  from,
+  to: RED.to.map((c, i) => Math.max(0, c + (from[i] - RED.from[i]))),
+});
+const TINT = derived([232, 37, 48]);
+const HOVER = derived([176, 24, 32]);
+// #FF3B45 and the rgba(255,86,60) ambient glow are deliberately left alone: the
+// first is the on-dark variant used for the hero headline and links over the dark
+// sections, where the base red only reaches ~3:1 contrast, and the second is a
+// 10%-alpha warm glow rather than a brand colour.
 const hex = (c) => '#' + c.map((n) => n.toString(16).padStart(2, '0')).join('');
 let recoloured = 0;
-for (const { from, to } of [RED, TINT]) {
+for (const { from, to } of [RED, TINT, HOVER]) {
   const h = new RegExp(hex(from), 'gi');
   template = template.replace(h, () => (recoloured++, hex(to).toUpperCase()));
   // Alpha is carried on the tail of the match, so only the triple is rewritten.
