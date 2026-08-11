@@ -42,6 +42,15 @@ if (!manifest || !template) {
   process.exit(1);
 }
 
+// Where this page actually lives. The bundle was authored with every self-
+// reference pointing at https://anitok.com/, but that host serves the ANITALK head
+// office site — a different site. Leaving canonical there tells search engines this
+// page is a duplicate of the head office's and to credit that one instead, so the
+// Ilsan branch page would never rank on its own. Change this one constant if the
+// page moves to its own domain.
+const SITE = 'https://ilsan-anitok.vercel.app';
+const AUTHORED_AT = 'https://anitok.com';
+
 const EXT = {
   'font/woff2': '.woff2',
   'font/woff': '.woff',
@@ -142,6 +151,28 @@ for (const { from, to } of [RED, TINT, HOVER]) {
   });
 }
 
+// Repoint the self-references. The two <a href="https://anitok.com/"> links — the
+// nav's "애니톡 홈페이지" and the footer's — are deliberate outbound links to the head
+// office and must survive, so anchors are matched and left alone rather than caught
+// by a blanket replace.
+let repointed = 0;
+const repoint = (re, build) =>
+  (template = template.replace(re, (...a) => (repointed++, build(...a))));
+
+repoint(/(<link rel="canonical" href=")https?:\/\/[^"]*(")/i, (_, a, b) => a + SITE + '/' + b);
+repoint(
+  new RegExp(`(content=")${AUTHORED_AT}([^"]*")`, 'gi'),
+  (_, a, b) => a + SITE + b
+);
+// The ld+json graph keys every node off the authored origin (@id, url, image, logo).
+template = template.replace(
+  /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/i,
+  (_, open, body, close) => {
+    repointed += body.split(AUTHORED_AT).length - 1;
+    return open + body.split(AUTHORED_AT).join(SITE) + close;
+  }
+);
+
 // Every gallery thumbnail rendered through React.createElement('img') loaded
 // eagerly, which was invisible while the bytes were already inline but now costs
 // ~2MB of requests on first paint. They all sit below the fold; the hero and logo
@@ -219,10 +250,21 @@ template =
 
 fs.writeFileSync(path.join(outDir, 'index.html'), template);
 
+// robots.txt and sitemap.xml ship beside the bundle and name the same authored
+// origin, so they get the same treatment — a sitemap that declares the head
+// office's URL as this page's location would undo the canonical fix.
+for (const name of ['robots.txt', 'sitemap.xml']) {
+  const from = path.join(path.dirname(srcPath), name);
+  if (!fs.existsSync(from)) continue;
+  const body = fs.readFileSync(from, 'utf8');
+  repointed += body.split(AUTHORED_AT).length - 1;
+  fs.writeFileSync(path.join(outDir, name), body.split(AUTHORED_AT).join(SITE));
+}
+
 const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';
 console.log(
   `index.html   ${kb(Buffer.byteLength(template))}  (${lazied} img -> lazy, ` +
-    `${recoloured} colour refs -> ${hex(RED.to)})`
+    `${recoloured} colour refs -> ${hex(RED.to)}, ${repointed} self-refs -> ${SITE})`
 );
 console.log(`fonts/       ${kb(bytes.fonts)}  (${written.fonts} files)`);
 console.log(`gal/         ${kb(bytes.gal)}  (${written.gal} files)`);
