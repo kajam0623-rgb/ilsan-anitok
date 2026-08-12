@@ -208,6 +208,125 @@ seo(
 );
 seo(/그림 하나로<br>하루를 채우는 공간/, () => '일산만화학원 애니톡<br>그림 하나로 하루를 채우는 공간');
 
+// ── Mobile fixes ──
+// The bundle ships the pre-fix markup the previous hand-built site had already
+// moved past: the side rail is just hidden below 860px instead of becoming a bottom
+// bar, the about section keeps two photo columns on a phone, and the header lets its
+// CTA run off the right edge. Measured at 390px: the header needs 435px of content
+// in a 342px box, so the booking button is clipped by ~93px. Re-applied here so the
+// fixes survive every rebuild from the bundle.
+
+// The school asked for the English name to go, so it is removed outright rather
+// than hidden at a breakpoint.
+seo(
+  /<span style="font-size:9px;font-weight:700;letter-spacing:\.08em;opacity:\.86">ANIMATION CARTOON PROFESSIONAL SCHOOL<\/span>\s*/,
+  () => ''
+);
+// Dropping the English does not reclaim any width — the 18px Korean name is what
+// measures 231px — so the logo and CTA still need to shrink on narrow phones. Tag
+// them; inline styles need a selector and !important to be overridden.
+seo(/(<a href="#top" style="display:flex;align-items:center;gap:11px;color:#FFFFFF")/, (_, a) =>
+  a.replace('<a ', '<a data-hlogo="1" ') + ' '
+);
+seo(/(<img src="[^"]*" alt="일산애니톡 만화학원")/, (_, a) => a.replace('<img ', '<img data-hlogoimg="1" '));
+seo(/(<span style="font-size:18px;font-weight:800;letter-spacing:-\.02em">)/, (_, a) =>
+  a.replace('<span ', '<span data-hlogoko="1" ')
+);
+seo(/(<a href="\{\{ bookingUrl \}\}" target="_blank" rel="noopener")/, (_, a) =>
+  a + ' data-hcta="1"'
+);
+// The hero photo has a lit banner across the middle of the frame and the only scrim
+// over it runs left-to-right — opaque at the left edge, fully transparent by the
+// right. On desktop the headline sits in the dark left third. On a phone it spans
+// the full width and lands on the clear side, right over the banner, where the
+// on-dark red of the second line disappears into it.
+seo(
+  /(<div style="position:absolute;inset:0;background:linear-gradient\(90deg, rgba\(0,0,0,\.72\))/,
+  (_, a) => a.replace('<div ', '<div data-heroscrim="1" ')
+);
+seo(/(<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1\.05fr \.95fr)/, (_, a) =>
+  a.replace('<div ', '<div data-aboutgrid="1" ')
+);
+seo(/(<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:14px")/, (_, a) =>
+  a.replace('<div ', '<div data-aboutpics="1" ')
+);
+
+// Appended to the LAST style block, not the first: the bundle's own
+// `aside[data-rail] { display: none }` lives in a later block, and a rule inserted
+// into the earlier font stylesheet would lose to it on source order.
+const mobileCss = `
+  @media (max-width: 900px) {
+    [data-heroscrim] { background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.66) 50%, rgba(0,0,0,.82) 100%) !important; }
+  }
+  @media (max-width: 860px) {
+    /* side rail becomes a fixed bottom action bar */
+    aside[data-rail] {
+      display: flex !important;
+      right: 0 !important; left: 0 !important; top: auto !important; bottom: 0 !important;
+      transform: none !important;
+      flex-direction: row !important; align-items: stretch !important; gap: 4px !important;
+      padding: 7px 8px calc(7px + env(safe-area-inset-bottom, 0px)) !important;
+      background: rgba(9,9,11,.94) !important;
+      backdrop-filter: blur(16px) saturate(1.3);
+      border-top: 1px solid rgba(255,255,255,.12) !important;
+      box-shadow: 0 -6px 26px rgba(0,0,0,.5) !important;
+    }
+    aside[data-rail] > a {
+      flex: 1 1 0 !important; min-width: 0 !important;
+      height: 54px !important; padding: 0 2px !important;
+      flex-direction: column !important; justify-content: center !important; gap: 3px !important;
+      border-radius: 13px !important;
+      background: transparent !important; border: 1px solid transparent !important;
+      box-shadow: none !important; backdrop-filter: none !important;
+      transform: none !important;
+    }
+    aside[data-rail] > a:nth-of-type(2) {
+      background: ${hex(RED.to).toUpperCase()} !important; border-color: ${hex(RED.to).toUpperCase()} !important;
+      box-shadow: 0 4px 16px rgba(${RED.to.join(',')},.45) !important;
+    }
+    aside[data-rail] > a[data-totop] {
+      position: absolute !important; right: 12px !important; bottom: calc(100% + 12px) !important;
+      flex: 0 0 auto !important; width: 44px !important; height: 44px !important;
+      padding: 0 !important; border-radius: 999px !important;
+      background: rgba(20,20,22,.82) !important; border: 1px solid rgba(255,255,255,.16) !important;
+      box-shadow: 0 8px 26px rgba(0,0,0,.5) !important;
+    }
+    aside[data-rail] [data-sidelabel] {
+      max-width: none !important; opacity: 1 !important; margin-left: 0 !important;
+      font-size: 10.5px !important; font-weight: 700 !important; letter-spacing: -.045em !important;
+      overflow: visible !important;
+    }
+    aside[data-rail] svg { width: 20px !important; height: 20px !important; }
+    footer { padding-bottom: 96px !important; }
+    /* about: one column, photos one per row instead of a cramped pair */
+    [data-aboutgrid] { grid-template-columns: 1fr !important; gap: 32px !important; }
+    [data-aboutpics] { grid-template-columns: 1fr !important; }
+    [data-aboutpics] > div { grid-column: 1 / -1 !important; }
+    [data-aboutpics] img { height: clamp(190px,46vw,260px) !important; }
+  }
+  @media (max-width: 560px) {
+    header > div { padding: 0 14px !important; gap: 10px !important; }
+    [data-hlogo] { gap: 9px !important; min-width: 0 !important; }
+    [data-hlogoko] { font-size: 15px !important; white-space: nowrap !important; }
+    [data-hlogoimg] { width: 33px !important; height: 33px !important; flex: 0 0 auto !important; }
+    [data-hcta] { font-size: 13px !important; padding: 10px 16px !important; flex: 0 0 auto !important; white-space: nowrap !important; }
+  }
+  @media (max-width: 390px) {
+    header > div { padding: 0 11px !important; gap: 8px !important; }
+    [data-hlogo] { gap: 7px !important; }
+    [data-hlogoko] { font-size: 13.5px !important; }
+    [data-hlogoimg] { width: 29px !important; height: 29px !important; }
+    [data-hcta] { font-size: 12px !important; padding: 9px 12px !important; }
+  }
+`;
+const lastStyle = template.lastIndexOf('</style>');
+if (lastStyle < 0) {
+  console.error('no </style> to append mobile rules to');
+  process.exit(1);
+}
+template = template.slice(0, lastStyle) + mobileCss + template.slice(lastStyle);
+seoEdits++;
+
 // Every gallery thumbnail rendered through React.createElement('img') loaded
 // eagerly, which was invisible while the bytes were already inline but now costs
 // ~2MB of requests on first paint. They all sit below the fold; the hero and logo
