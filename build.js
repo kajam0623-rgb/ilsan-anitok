@@ -250,6 +250,12 @@ seo(/(<div style="max-width:1200px;margin:0 auto;display:grid;grid-template-colu
 seo(/(<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:14px")/, (_, a) =>
   a.replace('<div ', '<div data-aboutpics="1" ')
 );
+// The two hero buttons are inline-flex in a wrapping row. At 390px they add up to
+// more than the line, so they wrap to two rows of different widths; stacked
+// full-width reads cleaner and gives a bigger tap target.
+seo(/(<div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px")/, (_, a) =>
+  a.replace('<div ', '<div data-herocta="1" ')
+);
 
 // Appended to the LAST style block, not the first: the bundle's own
 // `aside[data-rail] { display: none }` lives in a later block, and a rule inserted
@@ -305,6 +311,26 @@ const mobileCss = `
     [data-aboutpics] img { height: clamp(190px,46vw,260px) !important; }
   }
   @media (max-width: 560px) {
+    /* Section rhythm. Every section sets padding: clamp(115px, 14.4vw, 198px) — the
+       clamp floor is a desktop value, so a phone gets 115px of empty space above and
+       below every band and the page runs to 18,000px. Only the vertical padding is
+       overridden; the horizontal clamp still does its job. */
+    section { padding-top: 66px !important; padding-bottom: 66px !important; }
+    [data-herocta] {
+      flex-direction: column !important; align-items: stretch !important;
+      gap: 10px !important; margin-top: 26px !important;
+    }
+    [data-herocta] > a { justify-content: center !important; padding: 15px 24px !important; }
+    /* Type floor. Sizes are baked into inline styles, so they can only be reached by
+       matching the declaration itself. 12–13px is a desktop caption size; on a phone
+       it is below what this audience reads comfortably. 14px and up are left alone.
+       Both spacings are matched on purpose: the markup ships "font-size:13px", but
+       React re-serialises the style attribute as "font-size: 13px" when it renders,
+       so the unspaced form alone matches nothing once the page is live. */
+    [style*="font-size:10px"], [style*="font-size: 10px"] { font-size: 11.5px !important; }
+    [style*="font-size:11px"], [style*="font-size: 11px"] { font-size: 12.5px !important; }
+    [style*="font-size:12px"], [style*="font-size: 12px"] { font-size: 13px !important; }
+    [style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 14.5px !important; }
     header > div { padding: 0 14px !important; gap: 10px !important; }
     [data-hlogo] { gap: 9px !important; min-width: 0 !important; }
     [data-hlogoko] { font-size: 15px !important; white-space: nowrap !important; }

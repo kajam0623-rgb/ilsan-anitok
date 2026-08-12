@@ -119,6 +119,26 @@
     [data-aboutpics] img { height: clamp(190px,46vw,260px) !important; }
   }
   @media (max-width: 560px) {
+    /* Section rhythm. Every section sets padding: clamp(115px, 14.4vw, 198px) — the
+       clamp floor is a desktop value, so a phone gets 115px of empty space above and
+       below every band and the page runs to 18,000px. Only the vertical padding is
+       overridden; the horizontal clamp still does its job. */
+    section { padding-top: 66px !important; padding-bottom: 66px !important; }
+    [data-herocta] {
+      flex-direction: column !important; align-items: stretch !important;
+      gap: 10px !important; margin-top: 26px !important;
+    }
+    [data-herocta] > a { justify-content: center !important; padding: 15px 24px !important; }
+    /* Type floor. Sizes are baked into inline styles, so they can only be reached by
+       matching the declaration itself. 12–13px is a desktop caption size; on a phone
+       it is below what this audience reads comfortably. 14px and up are left alone.
+       Both spacings are matched on purpose: the markup ships "font-size:13px", but
+       React re-serialises the style attribute as "font-size: 13px" when it renders,
+       so the unspaced form alone matches nothing once the page is live. */
+    [style*="font-size:10px"], [style*="font-size: 10px"] { font-size: 11.5px !important; }
+    [style*="font-size:11px"], [style*="font-size: 11px"] { font-size: 12.5px !important; }
+    [style*="font-size:12px"], [style*="font-size: 12px"] { font-size: 13px !important; }
+    [style*="font-size:13px"], [style*="font-size: 13px"] { font-size: 14.5px !important; }
     header > div { padding: 0 14px !important; gap: 10px !important; }
     [data-hlogo] { gap: 9px !important; min-width: 0 !important; }
     [data-hlogoko] { font-size: 15px !important; white-space: nowrap !important; }
@@ -195,7 +215,7 @@
       <div data-pill="1" data-reveal="0" style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;background:rgba(189,13,22,.92);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;margin-bottom:24px">고양교육지원청 등록 제6164호 · 교과과목 만화</div>
       <h1 data-reveal="80" style="margin:0;font-size:clamp(38px,5.4vw,72px);line-height:1.12;letter-spacing:-.05em;font-weight:800;text-shadow:0 6px 34px rgba(0,0,0,.8)"><span style="display:block;font-size:.56em;font-weight:700;letter-spacing:-.03em;margin-bottom:10px;color:#FFFFFF">취미부터 입시까지</span>웹툰,애니 교육의 정답!<br><span style="color:#FF3B45">일산애니톡 만화학원!</span></h1>
       <p data-reveal="160" style="margin:24px 0 0;font-size:clamp(16px,1.6vw,21px);font-weight:700;text-shadow:0 2px 16px rgba(0,0,0,.85)">일산 백마학원가 대표 만화학원</p>
-      <div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
+      <div data-herocta="1" data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:32px">
         <a href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;background:#BD0D16;color:#FFFFFF;font-size:16px;font-weight:800;padding:16px 32px;border-radius:999px;animation:atk-pulse 2.6s ease-out infinite;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#BD0D16;text-decoration:none;transform:translateY(-3px) scale(1.03)">네이버 예약 상담 신청 →</a>
         <a href="tel:031-994-3134" style="display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.4);color:#FFFFFF;font-size:16px;font-weight:700;padding:16px 32px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#111111;text-decoration:none">031-994-3134</a>
       </div>
