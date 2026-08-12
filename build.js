@@ -257,6 +257,43 @@ seo(/(<div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-
   a.replace('<div ', '<div data-herocta="1" ')
 );
 
+// Class shortcuts for phones. The 수업과목 section is ~4,000px down the page, so on a
+// phone the three classes are only reachable by a long scroll. A second bar above
+// the action bar jumps straight to each one.
+// The class blocks are built by CLASS_GROUPS.map(), not written into the markup, so
+// the anchors have to come from the React props rather than a tag rewrite.
+seo(/('data-group': '1',)/, (_, a) => a + " id: 'class-' + gi,");
+// Order is CLASS 01 고등반 / 02 주니어반 / 03 성인취미반, so the indices are fixed.
+// display:none inline keeps it off desktop; the mobile block below turns it on.
+const classNav =
+  '<nav data-classnav="1" aria-label="반 바로가기" style="display:none;position:fixed;left:0;right:0;z-index:69">' +
+  '<a href="#class-0">고등반</a>' +
+  '<a href="#class-1">주니어반</a>' +
+  '<a href="#class-2">취미반</a>' +
+  '</nav>';
+seo(/(<aside data-rail="1")/, (_, a) => classNav + '\n  ' + a);
+// A plain #anchor lands the class card flush with the top of the viewport, where the
+// 64px sticky header covers its "CLASS 01 고등반" title row — you arrive mid-sentence
+// with no way to tell which class you are looking at. scroll-margin-top does not fix
+// it here: the cards sit inside an overflow:hidden wrapper, so the margin resolves
+// against that scrollport rather than the viewport. Scroll them by hand instead.
+// This goes after </x-dc>, outside the tree React renders — a script inside it would
+// never run.
+const classNavScript =
+  '<script>document.addEventListener("click",function(e){' +
+  'var a=e.target.closest?e.target.closest("[data-classnav] a"):null;if(!a)return;' +
+  'var el=document.querySelector(a.getAttribute("href"));if(!el)return;' +
+  'e.preventDefault();' +
+  // offsetTop, not getBoundingClientRect: the cards carry data-reveal transforms that
+  // are still animating when the click lands, so a rect read at that moment is 20-30px
+  // out by the time the scroll settles. offsetTop ignores transforms.
+  'var y=0,n=el;while(n){y+=n.offsetTop;n=n.offsetParent;}' +
+  'window.scrollTo({top:y-76,' +
+  'behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});' +
+  '});</' +
+  'script>';
+seo(/<\/body>/, () => classNavScript + '</body>');
+
 // Appended to the LAST style block, not the first: the bundle's own
 // `aside[data-rail] { display: none }` lives in a later block, and a rule inserted
 // into the earlier font stylesheet would lose to it on source order.
@@ -290,8 +327,26 @@ const mobileCss = `
       background: ${hex(RED.to).toUpperCase()} !important; border-color: ${hex(RED.to).toUpperCase()} !important;
       box-shadow: 0 4px 16px rgba(${RED.to.join(',')},.45) !important;
     }
+    /* class shortcuts, stacked directly on top of the action bar */
+    [data-classnav] {
+      display: flex !important;
+      bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+      gap: 6px !important; padding: 6px 8px !important;
+      background: rgba(9,9,11,.94) !important;
+      backdrop-filter: blur(16px) saturate(1.3);
+      border-top: 1px solid rgba(255,255,255,.1) !important;
+    }
+    [data-classnav] > a {
+      flex: 1 1 0 !important; min-width: 0 !important;
+      padding: 9px 4px !important; text-align: center !important;
+      font-size: 13px !important; font-weight: 700 !important; letter-spacing: -.03em !important;
+      color: #FFFFFF !important; border-radius: 10px !important;
+      background: rgba(255,255,255,.07) !important;
+      border: 1px solid rgba(255,255,255,.14) !important;
+      white-space: nowrap !important;
+    }
     aside[data-rail] > a[data-totop] {
-      position: absolute !important; right: 12px !important; bottom: calc(100% + 12px) !important;
+      position: absolute !important; right: 12px !important; bottom: calc(100% + 56px) !important;
       flex: 0 0 auto !important; width: 44px !important; height: 44px !important;
       padding: 0 !important; border-radius: 999px !important;
       background: rgba(20,20,22,.82) !important; border: 1px solid rgba(255,255,255,.16) !important;
@@ -303,7 +358,7 @@ const mobileCss = `
       overflow: visible !important;
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
-    footer { padding-bottom: 96px !important; }
+    footer { padding-bottom: 152px !important; }
     /* about: one column, photos one per row instead of a cramped pair */
     [data-aboutgrid] { grid-template-columns: 1fr !important; gap: 32px !important; }
     [data-aboutpics] { grid-template-columns: 1fr !important; }
