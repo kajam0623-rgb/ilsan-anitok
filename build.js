@@ -51,10 +51,11 @@ if (!manifest || !template) {
 const SITE = 'https://ilsan-anitok.vercel.app';
 const AUTHORED_AT = 'https://anitok.com';
 
-// Search Console ownership token for this property. Google only reads it from the
-// <head> of the verified URL, so it is injected with the head assembly below rather
-// than left to the bundle.
+// Search ownership tokens for this property. Both engines read them from the <head>
+// of the verified URL before running any script, so they are injected with the head
+// assembly below rather than left to the bundle, which carries neither.
 const GOOGLE_VERIFY = '--lr3p3aIhgHl1b42fWM1JstdLUn1QY-4lrHvXG5Lq4';
+const NAVER_VERIFY = 'bfa240b5e79dfdc15b6fd61fa0cc079a2d392715';
 
 const EXT = {
   'font/woff2': '.woff2',
@@ -485,6 +486,7 @@ template =
   template.slice(0, at) +
   (charset ? charset[0] : '<meta charset="utf-8">') +
   `<meta name="google-site-verification" content="${GOOGLE_VERIFY}">` +
+  `<meta name="naver-site-verification" content="${NAVER_VERIFY}">` +
   resourceScript +
   preload +
   template.slice(at);
