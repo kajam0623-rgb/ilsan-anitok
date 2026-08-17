@@ -550,6 +550,13 @@ template =
   (charset ? charset[0] : '<meta charset="utf-8">') +
   `<meta name="google-site-verification" content="${GOOGLE_VERIFY}">` +
   `<meta name="naver-site-verification" content="${NAVER_VERIFY}">` +
+  // The tile carries the school's name under the face. At 32px that text is four
+  // pixels tall and reads as a red smudge, so the small icons are cropped to the
+  // face alone; the home-screen icon keeps the full tile, where the name is legible.
+  '<link rel="icon" href="/favicon.ico" sizes="any">' +
+  '<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">' +
+  '<link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">' +
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.jpg">' +
   resourceScript +
   preload +
   template.slice(at);
