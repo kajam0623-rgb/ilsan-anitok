@@ -57,6 +57,11 @@ const AUTHORED_AT = 'https://anitok.com';
 const GOOGLE_VERIFY = '--lr3p3aIhgHl1b42fWM1JstdLUn1QY-4lrHvXG5Lq4';
 const NAVER_VERIFY = 'bfa240b5e79dfdc15b6fd61fa0cc079a2d392715';
 
+// Microsoft Clarity project id, from clarity.microsoft.com. Left empty until the
+// project exists: an empty id would ship ~40KB of script that reports to nobody, so
+// the snippet is only emitted once this is filled in.
+const CLARITY_ID = '';
+
 const EXT = {
   'font/woff2': '.woff2',
   'font/woff': '.woff',
@@ -300,6 +305,64 @@ const classNavScript =
   'script>';
 seo(/<\/body>/, () => classNavScript + '</body>');
 
+// Clarity, loaded last and async so it never blocks first paint. Same reason as the
+// class-nav script: it goes after </x-dc> rather than inside the tree React renders.
+if (CLARITY_ID) {
+  const clarity =
+    '<script>(function(c,l,a,r,i,t,y){' +
+    'c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};' +
+    't=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;' +
+    'y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);' +
+    `})(window,document,"clarity","script","${CLARITY_ID}");</` +
+    'script>';
+  seo(/<\/body>/, () => clarity + '</body>');
+}
+
+// ── Analytics labels ──
+// The same two calls to action are repeated down the page: six 네이버 예약 buttons and
+// five phone links. Without a label every one of them looks identical to an analytics
+// tool, so "예약 30 clicks" tells you nothing about whether the bottom bar, the hero or
+// the FAQ is what actually works. Tag each with the block it sits in so the clicks can
+// be split apart. Useful on its own — Clarity's smart events and GA4 both read
+// attributes — so it ships whether or not a tracking script is installed.
+const marks = [];
+for (const [re, name] of [
+  [/<header[\s>]/g, 'header'],
+  [/<nav data-classnav/g, 'classnav'],
+  [/<aside data-rail/g, 'bottombar'],
+  [/<footer[\s>]/g, 'footer'],
+]) {
+  for (const m of template.matchAll(re)) marks.push({ at: m.index, name });
+}
+for (const m of template.matchAll(/<section id="([^"]+)"/g)) {
+  marks.push({ at: m.index, name: m[1] });
+}
+marks.sort((a, b) => a.at - b.at);
+
+// Nearest container that opens before this point. Document order is header, class nav,
+// rail, sections, footer, so the closest preceding mark is always the enclosing block.
+const locationOf = (index) => {
+  let name = 'body';
+  for (const m of marks) {
+    if (m.at >= index) break;
+    name = m.name;
+  }
+  return name;
+};
+
+let labelled = 0;
+const ctaCounts = {};
+template = template.replace(
+  /<a\b[^>]*href="(?:\{\{ bookingUrl \}\}|tel:[^"]*)"[^>]*>/g,
+  (tag, at) => {
+    const kind = tag.includes('tel:') ? 'tel' : 'booking';
+    const loc = locationOf(at);
+    labelled++;
+    ctaCounts[`${kind}:${loc}`] = (ctaCounts[`${kind}:${loc}`] || 0) + 1;
+    return tag.replace('<a ', `<a data-cta="${kind}" data-loc="${loc}" `);
+  }
+);
+
 // Appended to the LAST style block, not the first: the bundle's own
 // `aside[data-rail] { display: none }` lives in a later block, and a rule inserted
 // into the earlier font stylesheet would lose to it on source order.
@@ -525,6 +588,14 @@ console.log(
     `${recoloured} colour refs -> ${hex(RED.to)}, ${repointed} self-refs -> ${SITE}, ` +
     `${seoEdits} seo edits)`
 );
+console.log(
+  `cta labels   ${String(labelled).padStart(6)}     ` +
+    Object.entries(ctaCounts)
+      .sort()
+      .map(([k, n]) => (n > 1 ? `${k}x${n}` : k))
+      .join(' ')
+);
+if (!CLARITY_ID) console.log('clarity      ' + '(skipped)'.padStart(6) + '     no project id set');
 console.log(`fonts/       ${kb(bytes.fonts)}  (${written.fonts} files)`);
 console.log(`gal/         ${kb(bytes.gal)}  (${written.gal} files)`);
 console.log(`js/          ${kb(bytes.js)}  (${written.js} files)`);
