@@ -62,6 +62,11 @@ const NAVER_VERIFY = 'bfa240b5e79dfdc15b6fd61fa0cc079a2d392715';
 // the snippet is only emitted once this is filled in.
 const CLARITY_ID = '';
 
+// GA4 measurement id, from the property's data stream. Emitted in the head assembly
+// below rather than left to the bundle. Same guard as CLARITY_ID: only emitted once
+// it is filled in, so an empty id never ships a loader that reports to nobody.
+const GA_ID = 'G-FT5DQ3M85P';
+
 const EXT = {
   'font/woff2': '.woff2',
   'font/woff': '.woff',
@@ -542,6 +547,14 @@ aliasFor(/"logo"\s*:\s*"https?:\/\/[^/]+(\/[^"]+)"/i, logo && logo[1]);
 // The loader injected __resources directly after <head>, which was harmless when
 // the template was only ever handed to DOMParser. Served as a real file it would
 // push <meta charset> past the 1024-byte prescan window, so hoist charset first.
+const gaSnippet = GA_ID
+  ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></` + 'script>' +
+    '<script>window.dataLayer=window.dataLayer||[];' +
+    'function gtag(){dataLayer.push(arguments);}' +
+    "gtag('js',new Date());" +
+    `gtag('config','${GA_ID}');</` + 'script>'
+  : '';
+
 const charset = template.match(/<meta charset="[^"]*">/i);
 if (charset) template = template.replace(charset[0], '');
 const at = headOpen.index + headOpen[0].length;
@@ -557,6 +570,11 @@ template =
   '<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">' +
   '<link rel="icon" type="image/png" sizes="16x16" href="/icon-16.png">' +
   '<link rel="apple-touch-icon" href="/apple-touch-icon.jpg">' +
+  // GA4. async so it never blocks first paint; the inline config runs immediately and
+  // queues onto dataLayer, so the page_view is recorded even if gtag.js is still in
+  // flight. In <head> rather than before </body> so a bounce before the page finishes
+  // rendering is still counted.
+  gaSnippet +
   resourceScript +
   preload +
   template.slice(at);
