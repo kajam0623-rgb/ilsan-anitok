@@ -134,6 +134,19 @@
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
     footer { padding-bottom: 152px !important; }
+    /* Touch targets. Pointer guidance puts the practical minimum around 44px; measured
+       on the live page these sat between 15px and 43px, which is a miss on a phone —
+       the footer phone number was 15px tall. Only min-height/min-width grow, so the
+       visual weight of each control is unchanged; it is the tappable box that grows. */
+    [data-classnav] > a { min-height: 44px !important; }
+    [data-hlogo], [data-hcta] { min-height: 44px !important; }
+    #visit a { min-height: 44px !important; min-width: 44px !important; }
+    #results a, #faq a, footer a {
+      min-height: 44px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
     /* three story cards side by side leaves each one too narrow to read on a phone */
     [data-storygrid] { grid-template-columns: 1fr !important; gap: 16px !important; }
     /* about: one column, photos one per row instead of a cramped pair */
