@@ -106,22 +106,29 @@ for (const item of items) {
   fs.mkdirSync(imgDir, { recursive: true });
 
   const saved = [];
+  const pending = [];
   post.images.forEach((src, i) => {
     const webp = path.join(imgDir, i + '.webp');
     if (!fs.existsSync(webp)) {
       const jpg = path.join(imgDir, i + '.jpg');
       fs.writeFileSync(jpg, curl(src, ['-e', 'https://blog.naver.com/']));
-      // 1200px covers the widest slot the article layout renders at 2x on a phone.
-      // Anything beyond that is bytes no reader ever sees.
-      execFileSync(
-        'npx',
-        ['--yes', 'sharp-cli', '-i', jpg, '-o', webp, 'resize', '1200', '--withoutEnlargement'],
-        { stdio: 'ignore', shell: true }
-      );
-      fs.unlinkSync(jpg);
+      pending.push(jpg);
     }
     saved.push('/gal/blog/' + logNo + '/' + i + '.webp');
   });
+
+  // One conversion pass per post, not per image: npx costs several seconds of startup
+  // each time, which at a dozen photos an article dominates the whole run.
+  // 1200px covers the widest slot the article layout renders at 2x on a phone;
+  // anything beyond that is bytes no reader ever sees.
+  if (pending.length) {
+    execFileSync(
+      'npx',
+      ['--yes', 'sharp-cli', '-i', ...pending, '-o', imgDir, '-f', 'webp', 'resize', '1200', '--withoutEnlargement'],
+      { stdio: 'ignore', shell: true }
+    );
+    pending.forEach((jpg) => fs.existsSync(jpg) && fs.unlinkSync(jpg));
+  }
 
   fs.writeFileSync(
     out,

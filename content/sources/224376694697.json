@@ -22,5 +22,12 @@
     "/gal/blog/224376694697/8.webp",
     "/gal/blog/224376694697/9.webp",
     "/gal/blog/224376694697/10.webp"
-  ]
+  ],
+  "targetKeyword": "일산만화학원",
+  "supportKeywords": [
+    "웹툰학과",
+    "애니과",
+    "그림 재능"
+  ],
+  "keywordRationale": "학원 이름값 그대로의 핵심 키워드. 자동완성 1위."
 }

@@ -57,10 +57,14 @@ function prompt(src) {
 - 학생 이름은 원문처럼 익명(김ㅇㅇ)으로 둔다.
 
 ## 검색 최적화
-- 타겟 키워드: ${src.tags.slice(0, 3).join(', ') || '일산만화학원'}
-- 제목 30~40자, 주요 키워드를 자연스럽게 포함
-- 첫 문단과 h2 하나에 키워드가 들어가되 억지 반복 금지
-- description 80~120자, 키워드 포함
+- **타겟 키워드: ${src.targetKeyword || src.tags[0] || '일산만화학원'}** — 이 글은 이 검색어 하나를 노린다
+${src.keywordRationale ? '  (배정 근거: ' + src.keywordRationale + ')' : ''}
+- 보조 키워드: ${(src.supportKeywords || src.tags.slice(0, 3)).join(', ')}
+- 제목 30~40자, **타겟 키워드를 그대로** 포함(띄어쓰기까지 유지)
+- 첫 문단과 h2 하나에 타겟 키워드가 들어가되 억지 반복 금지. 보조 키워드는 맥락이 맞는 곳에만.
+- description 80~120자, 타겟 키워드 포함
+- 이 키워드는 네이버 자동완성으로 실제 검색 수요를 확인한 것이다. 다른 키워드로 바꾸지 마라.
+- 다른 글이 각자 다른 키워드를 맡고 있다. 배정된 것 외의 지역·학과 키워드를 끌어와 채우지 마라.
 
 ## AI 검색 대응
 - **첫 문단이 질문에 대한 직접적인 답이어야 한다.** 2~3문장으로 결론부터. AI가 인용하는 건 이 덩어리다.
@@ -155,7 +159,10 @@ for (const src of sources) {
     continue;
   }
 
-  const md = cut[1].trim() + '\n';
+  // Codex sometimes escapes the slashes in image paths (\/gal\/blog\/…), which is
+  // valid JSON-string habit leaking into markdown. Harmless and deterministic, so it
+  // is normalised rather than bounced back for a rerun.
+  const md = cut[1].trim().replace(/\\\//g, '/') + '\n';
   const problems = validate(md, src);
   if (problems.length) {
     console.log('REJECTED ' + secs + 's — ' + problems.join('; '));

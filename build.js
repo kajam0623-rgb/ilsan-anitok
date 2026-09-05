@@ -192,7 +192,10 @@ template = template.replace(
 // breaks the phrase across a space and an interpunct — so the strongest on-page slot
 // carries neither target as a contiguous string. Lead with them, keep the registered
 // name after the divider.
-const TITLE = '일산만화학원 일산웹툰학원 | 일산애니톡만화애니학원';
+// Order set by the school. 일산미술학원 is added because Naver autocompletes it, which
+// 일산웹툰학원 does not — that one is kept at the school's direction despite the check
+// (tools/keyword-research.js records what was found).
+const TITLE = '일산만화학원 일산웹툰학원 일산미술학원 | 일산애니톡만화애니학원';
 let seoEdits = 0;
 const seo = (re, build) =>
   (template = template.replace(re, (...a) => (seoEdits++, build(...a))));
@@ -206,6 +209,33 @@ seo(/(<meta name="twitter:title" content=")[^"]*(")/i, (_, a, b) => a + TITLE + 
 // not names of the business, and stuffing them into alternateName is the kind of thing
 // that gets structured data ignored.
 seo(/("alternateName":\[)/, (_, a) => a + '"일산애니톡만화학원",');
+
+// Added to the keywords the school already had, not replacing them. Every term here
+// autocompletes on Naver, which is evidence people type it; the bundle's own list
+// includes several that return nothing (일산게임학원, 고양시만화학원, 일산미술입시학원,
+// 일산디지털드로잉) and those are left alone rather than quietly removed.
+// 일산미술학원 matters most: it went into the page title but was missing here.
+const ADDED_KEYWORDS = [
+  '일산미술학원',
+  '만화학원',
+  '웹툰학원',
+  '초등 미술학원',
+  '중학생 미술학원',
+  '취미미술학원',
+  '미대입시',
+  '예고입시',
+  '경기예고 입시',
+  '청강대 웹툰과',
+  '청강대 만화과',
+  '운정 만화학원',
+  '파주 만화학원',
+  '화정 미술학원',
+];
+seo(/(<meta name="keywords" content=")([^"]*)(")/i, (_, a, existing, b) => {
+  const have = new Set(existing.split(',').map((s) => s.trim().replace(/\s+/g, '')));
+  const extra = ADDED_KEYWORDS.filter((k) => !have.has(k.replace(/\s+/g, '')));
+  return a + existing + (extra.length ? ', ' + extra.join(', ') : '') + b;
+});
 
 // Headings carried neither target phrase — the h1 read "만화애니 학원의 정답! 일산애니톡!"
 // and all nine h2s were mood copy. After <title>, headings are the next strongest
@@ -223,6 +253,73 @@ seo(
   (_, open) => open + '일산 백마학원가 대표 만화학원'
 );
 seo(/그림 하나로<br>하루를 채우는 공간/, () => '일산만화학원 애니톡<br>그림 하나로 하루를 채우는 공간');
+
+// ── Blog entry points ──
+// /blog/ is otherwise an orphan: nothing on this page links to it, so a reader never
+// finds it and a crawler reaches it only through the sitemap, which carries far less
+// weight than a link from the site's strongest page. Three entry points go in — a
+// section in the scroll path, a nav link, and a footer link. The nav is hidden below
+// 860px, so on a phone the section and the footer are what carry it.
+const POSTS_DIR = path.join(__dirname, 'content', 'posts');
+let posts = [];
+if (fs.existsSync(POSTS_DIR)) {
+  posts = fs
+    .readdirSync(POSTS_DIR)
+    .filter((f) => /^\d+\.md$/.test(f))
+    .map((f) => {
+      const head = (fs.readFileSync(path.join(POSTS_DIR, f), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/) || [])[1] || '';
+      const get = (k) => ((head.match(new RegExp('^' + k + ':\\s*"?([^"\\n]+)"?', 'm')) || [])[1] || '').trim();
+      const body = fs.readFileSync(path.join(POSTS_DIR, f), 'utf8');
+      return {
+        title: get('title'),
+        description: get('description'),
+        slug: get('slug'),
+        date: get('date'),
+        image: (body.match(/!\[[^\]]*\]\(([^)]+)\)/) || [])[1] || '',
+      };
+    })
+    .filter((p) => p.slug && p.title)
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 3);
+}
+
+if (posts.length) {
+  const card = (p) =>
+    // white-space:normal is not decoration: the page sets `a[href] { white-space:
+    // nowrap }` for its nav pills, and a card is an anchor, so without this the
+    // title runs off the side instead of wrapping.
+    `<a href="/blog/${p.slug}/" data-cta="blog" data-loc="home-stories" style="display:block;background:#131317;border:1px solid #232326;border-radius:18px;overflow:hidden;color:#FFFFFF;text-align:left;white-space:normal">` +
+    (p.image
+      ? `<img src="${p.image}" alt="${p.title.replace(/"/g, '&quot;')}" loading="lazy" decoding="async" style="display:block;width:100%;height:170px;object-fit:cover">`
+      : '') +
+    `<div style="padding:22px 20px">` +
+    `<div style="font-size:19px;font-weight:800;line-height:1.4;letter-spacing:-.03em;word-break:keep-all;margin-bottom:10px">${p.title}</div>` +
+    `<div style="font-size:14px;line-height:1.7;color:#A8A8AC;word-break:keep-all">${p.description}</div>` +
+    `</div></a>`;
+
+  const section =
+    `<section id="stories" style="background:#0B0B0D;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">` +
+    `<div style="max-width:1200px;margin:0 auto">` +
+    `<div style="text-align:center;margin-bottom:52px">` +
+    `<div style="font-size:12px;font-weight:800;letter-spacing:.22em;color:${hex(RED.to).toUpperCase()};margin-bottom:14px">STORIES</div>` +
+    `<h2 style="margin:0;font-size:clamp(26px,3.2vw,40px);line-height:1.32;letter-spacing:-.04em;font-weight:800">학원 이야기</h2>` +
+    `<p style="margin:16px 0 0;font-size:15px;line-height:1.85;color:#A8A8AC;word-break:keep-all">입시와 수업에서 자주 나오는 질문을 정리했습니다</p>` +
+    `</div>` +
+    `<div data-storygrid="1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${posts.map(card).join('')}</div>` +
+    `<div style="text-align:center;margin-top:40px">` +
+    `<a href="/blog/" data-cta="blog" data-loc="home-stories-all" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);color:#FFFFFF;font-size:15px;font-weight:700;padding:14px 30px;border-radius:999px">글 전체 보기 →</a>` +
+    `</div></div></section>`;
+
+  seo(/(<section id="visit")/, (_, a) => section + a);
+  seo(
+    /(<a href="#visit" data-nav="1"[^>]*>오시는 길<\/a>)/,
+    (_, a) => a.replace(/href="#visit"/, 'href="/blog/"').replace('>오시는 길<', '>학원 이야기<') + a
+  );
+  seo(
+    /(<a href="https:\/\/anitok\.com\/"[^>]*>애니톡 공식 홈페이지 바로가기 →<\/a>)/,
+    (_, a) => `<a href="/blog/" style="color:#9A9A9A;margin-right:14px">학원 이야기</a>` + a
+  );
+}
 
 // ── Mobile fixes ──
 // The bundle ships the pre-fix markup the previous hand-built site had already
@@ -433,6 +530,8 @@ const mobileCss = `
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
     footer { padding-bottom: 152px !important; }
+    /* three story cards side by side leaves each one too narrow to read on a phone */
+    [data-storygrid] { grid-template-columns: 1fr !important; gap: 16px !important; }
     /* about: one column, photos one per row instead of a cramped pair */
     [data-aboutgrid] { grid-template-columns: 1fr !important; gap: 32px !important; }
     [data-aboutpics] { grid-template-columns: 1fr !important; }

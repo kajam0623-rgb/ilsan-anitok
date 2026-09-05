@@ -50,9 +50,14 @@ for (const file of posts) {
 
   const issues = [];
 
-  // Numbers: 2 digits or more, ignoring image paths and dates already stripped above.
-  for (const n of new Set(body.match(/\d{2,}/g) || [])) {
-    if (!src.includes(n)) issues.push('숫자 ' + n);
+  // Numbers come from the spaced text. Collapsing whitespace first welds neighbours
+  // together — "A4 30매" becomes "A430매" and reports a 430 that nobody wrote.
+  for (const n of new Set(prose.match(/\d{2,}/g) || [])) {
+    if (src.includes(n)) continue;
+    // Korean blog posts write years two digits ("24년 10월"); a draft spelling that
+    // out as 2024 is expanding the source, not inventing a date.
+    if (/^20\d\d$/.test(n) && src.includes(n.slice(2) + '년')) continue;
+    issues.push('숫자 ' + n);
   }
   // Institution names.
   // Matched against the spaced text: with whitespace already collapsed, the leading
