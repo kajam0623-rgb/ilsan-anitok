@@ -596,10 +596,13 @@ const mobileCss = `
   @media (max-width: 900px) {
     [data-heroscrim] { background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.66) 50%, rgba(0,0,0,.82) 100%) !important; }
   }
+  /* 메뉴 서랍의 열림/닫힘은 폭과 무관하다. 이 두 줄이 @media (max-width:860px)
+   * 안에 있던 동안 PC 폭에서는 서랍을 숨기는 규칙 자체가 적용되지 않아,
+   * 서랍이 늘 펼쳐진 채였고 닫기(×)를 눌러도 사라지지 않았다.
+   * 열림 상태는 <html> 에 두어 재렌더링이 지우지 못하게 한다. */
+  [data-menupanel] { display: none !important; }
+  html[data-menu-open] [data-menupanel] { display: block !important; }
   @media (max-width: 860px) {
-    /* The open state lives on <html> so a re-render cannot clear it. */
-    [data-menupanel] { display: none; }
-    html[data-menu-open] [data-menupanel] { display: block !important; }
     [data-mobilenav] { display: inline-flex !important; }
     /* side rail becomes a fixed bottom action bar */
     aside[data-rail] {
