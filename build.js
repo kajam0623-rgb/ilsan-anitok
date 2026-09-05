@@ -321,6 +321,119 @@ if (posts.length) {
   );
 }
 
+// Red text on the dark sections. The base red is a fill colour — it works under white
+// type in the header and buttons — but as type on a near-black panel it lands at 2.5:1
+// where WCAG AA asks for 4.5:1, and darkening the brand red made that worse. Measured
+// on the live page: 22 such elements on dark, all failing; one on white (the header
+// CTA) at 6.5:1, which is correct and must not change. #FF3B45 is the on-dark variant
+// the bundle already uses for the hero headline, and it reaches 4.7:1 here.
+let recontrasted = 0;
+template = template.replace(/style="([^"]*)"/g, (whole, style) => {
+  if (!/color:#BD0D16/i.test(style)) return whole;
+  if (/background:#FFFFFF/i.test(style)) return whole; // red on white: already fine
+  recontrasted++;
+  return 'style="' + style.replace(/color:#BD0D16/gi, 'color:#FF3B45') + '"';
+});
+
+// ── Mobile menu ──
+// The bundle hides `header nav` below 860px and styles a `[data-mobilenav]` button to
+// take its place, but never ships that button — so on a phone there is no menu at
+// all. Measured on the live page: of ten sections, eight (about, college, both
+// galleries, process, faq, stories, visit) had no visible link pointing at them. The
+// only way to reach them was to scroll the full 19,000px.
+//
+// The panel reuses the header's own nav links rather than a second hand-kept list, so
+// the two cannot drift apart.
+const navLinks = [...template.matchAll(/<a href="([^"]+)" data-nav="1"[^>]*>([^<]+)<\/a>/g)].map((m) => ({
+  href: m[1],
+  label: m[2],
+}));
+
+if (navLinks.length) {
+  const items = navLinks
+    .map(
+      (l) =>
+        `<a href="${l.href}" data-menuitem="1" style="display:flex;align-items:center;justify-content:space-between;` +
+        `padding:17px 4px;font-size:17px;font-weight:700;color:#FFFFFF;border-bottom:1px solid #232326">` +
+        `${l.label}<span aria-hidden="true" style="color:#8C8C8C">→</span></a>`
+    )
+    .join('');
+
+  const button =
+    `<button type="button" data-mobilenav="1" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu" ` +
+    `style="display:none;align-items:center;justify-content:center;width:44px;height:44px;flex:0 0 auto;` +
+    `background:transparent;border:0;padding:0;cursor:pointer">` +
+    `<span aria-hidden="true" style="display:block;width:22px;height:2px;background:#FFFFFF;box-shadow:0 -7px 0 #FFFFFF,0 7px 0 #FFFFFF"></span>` +
+    `</button>`;
+
+  // Placed after the CTA so the tap order reads logo → book → menu.
+  seo(/(<\/div>\s*<\/header>)/, (_, close) => button + close);
+
+  const panel =
+    // Visibility is driven by CSS keyed off an attribute on <html>, not by an inline
+    // style or the hidden attribute. The dc renderer strips boolean attributes when it
+    // processes the template, and re-applies the template's inline style on every
+    // re-render — a panel opened by mutating style.display closed itself moments later.
+    // <html> sits outside the tree it manages, so an attribute there survives.
+    `<div id="mobile-menu" data-menupanel="1" style="position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.72)">` +
+    `<div data-menusheet="1" style="position:absolute;top:0;right:0;bottom:0;width:min(320px,86vw);background:#0B0B0D;` +
+    `border-left:1px solid #232326;padding:18px 22px 34px;overflow-y:auto">` +
+    `<div style="display:flex;align-items:center;justify-content:space-between;height:46px;margin-bottom:12px">` +
+    `<span style="font-size:12px;font-weight:800;letter-spacing:.18em;color:#8C8C8C">MENU</span>` +
+    `<button type="button" data-menuclose="1" aria-label="메뉴 닫기" style="width:44px;height:44px;background:transparent;border:0;color:#FFFFFF;font-size:26px;line-height:1;cursor:pointer">&times;</button>` +
+    `</div>` +
+    items +
+    `<a href="{{ bookingUrl }}" target="_blank" rel="noopener" data-cta="booking" data-loc="mobile-menu" ` +
+    `style="display:block;margin-top:24px;padding:16px;text-align:center;background:${hex(RED.to).toUpperCase()};color:#FFFFFF;` +
+    `font-size:16px;font-weight:800;border-radius:999px">네이버 예약 상담 신청 →</a>` +
+    `<a href="tel:031-994-3134" data-cta="tel" data-loc="mobile-menu" ` +
+    `style="display:block;margin-top:10px;padding:16px;text-align:center;border:1px solid rgba(255,255,255,.3);` +
+    `color:#FFFFFF;font-size:16px;font-weight:700;border-radius:999px">031-994-3134</a>` +
+    `</div></div>`;
+
+  seo(/(<aside data-rail="1")/, (_, a) => panel + '\n  ' + a);
+
+  // Anchors inside the panel must close it before the page scrolls, or the sheet
+  // covers the section the reader just asked for. Same reason as the class bar's
+  // handler, this sits outside the tree React renders.
+  // Delegated from document, and the panel is resolved per event rather than once at
+  // load: the dc renderer builds this markup after inline scripts run, so anything
+  // that looks the elements up front finds nothing and silently never binds.
+  // Delegated from document and keyed off <html>: the dc renderer builds this markup
+  // after inline scripts run, so anything resolving the elements up front binds to
+  // nothing, and it rewrites inline styles on re-render, so the open state cannot live
+  // on the panel itself.
+  const menuScript =
+    '<script>(function(){' +
+    'var R=document.documentElement;' +
+    'function isOpen(){return R.hasAttribute("data-menu-open")}' +
+    'function open(v){' +
+    'if(v){R.setAttribute("data-menu-open","1")}else{R.removeAttribute("data-menu-open")}' +
+    'var b=document.querySelector("[data-mobilenav]");' +
+    'if(b){b.setAttribute("aria-expanded",v?"true":"false");' +
+    'b.setAttribute("aria-label",v?"메뉴 닫기":"메뉴 열기");}' +
+    'document.body.style.overflow=v?"hidden":"";}' +
+    'document.addEventListener("click",function(e){' +
+    'var t=e.target&&e.target.closest?e.target:null;if(!t)return;' +
+    'if(t.closest("[data-mobilenav]")){e.preventDefault();open(!isOpen());return}' +
+    'if(t.closest("[data-menuclose]")){e.preventDefault();open(false);return}' +
+    'if(!isOpen())return;' +
+    'var p=document.querySelector("[data-menupanel]");if(!p)return;' +
+    'if(t===p){open(false);return}' +
+    'var a=t.closest("a");if(!a||!p.contains(a))return;' +
+    'var h=a.getAttribute("href")||"";' +
+    'if(h.charAt(0)!=="#"){open(false);return}' +
+    'e.preventDefault();open(false);' +
+    'var el=document.querySelector(h);if(!el)return;' +
+    'var y=0,n=el;while(n){y+=n.offsetTop;n=n.offsetParent;}' +
+    'window.scrollTo({top:y-70,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});' +
+    '},true);' +
+    'document.addEventListener("keydown",function(e){if(e.key==="Escape"&&isOpen())open(false)});' +
+    '})();</' +
+    'script>';
+  seo(/<\/body>/, () => menuScript + '</body>');
+}
+
 // ── Mobile fixes ──
 // The bundle ships the pre-fix markup the previous hand-built site had already
 // moved past: the side rail is just hidden below 860px instead of becoming a bottom
@@ -457,6 +570,9 @@ const ctaCounts = {};
 template = template.replace(
   /<a\b[^>]*href="(?:\{\{ bookingUrl \}\}|tel:[^"]*)"[^>]*>/g,
   (tag, at) => {
+    // The mobile menu labels its own links. Relabelling by nearest container would
+    // call them "header", since the panel is injected just before the rail.
+    if (/data-cta=/.test(tag)) return tag;
     const kind = tag.includes('tel:') ? 'tel' : 'booking';
     const loc = locationOf(at);
     labelled++;
@@ -473,6 +589,10 @@ const mobileCss = `
     [data-heroscrim] { background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.66) 50%, rgba(0,0,0,.82) 100%) !important; }
   }
   @media (max-width: 860px) {
+    /* The open state lives on <html> so a re-render cannot clear it. */
+    [data-menupanel] { display: none; }
+    html[data-menu-open] [data-menupanel] { display: block !important; }
+    [data-mobilenav] { display: inline-flex !important; }
     /* side rail becomes a fixed bottom action bar */
     aside[data-rail] {
       display: flex !important;
@@ -612,6 +732,11 @@ const resourceScript =
   ';</' +
   'script>';
 
+// The bundle emits a bare <html>. Without a language a screen reader guesses the
+// pronunciation rules, and search engines lose an explicit signal about who the page
+// is for.
+seo(/<html(?![^>]*\slang=)([^>]*)>/i, (_, attrs) => '<html lang="ko"' + attrs + '>');
+
 const headOpen = template.match(/<head[^>]*>/i);
 if (!headOpen) {
   console.error('template has no <head>');
@@ -710,7 +835,7 @@ const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';
 console.log(
   `index.html   ${kb(Buffer.byteLength(template))}  (${lazied} img -> lazy, ` +
     `${recoloured} colour refs -> ${hex(RED.to)}, ${repointed} self-refs -> ${SITE}, ` +
-    `${seoEdits} seo edits)`
+    `${seoEdits} seo edits, ${recontrasted} contrast fixes)`
 );
 console.log(
   `cta labels   ${String(labelled).padStart(6)}     ` +
