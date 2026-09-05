@@ -334,6 +334,14 @@ template = template.replace(/style="([^"]*)"/g, (whole, style) => {
   recontrasted++;
   return 'style="' + style.replace(/color:#BD0D16/gi, 'color:#FF3B45') + '"';
 });
+// The cards under 수업과목 are built by React.createElement, so their colours live in
+// JS object literals rather than a style attribute and the pass above never sees them
+// — which is most of the failures, since one literal renders many labels. Only the
+// text colour is switched; `background: '#BD0D16'` stays a fill.
+template = template.replace(/color: '#BD0D16'/g, () => {
+  recontrasted++;
+  return "color: '#FF3B45'";
+});
 
 // ── Mobile menu ──
 // The bundle hides `header nav` below 860px and styles a `[data-mobilenav]` button to
