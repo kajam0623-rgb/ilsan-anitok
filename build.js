@@ -839,6 +839,31 @@ if (helmet) {
   console.log(`hoist        <helmet> -> <head> (${contents.length} chars)`);
 }
 
+// 히어로의 예약 · 전화 버튼을 걷어낸다. 같은 동선이 상단바와 하단 액션바,
+// 모바일 메뉴, FAQ 아래 CTA, '오시는 길'에 이미 있어서 첫 화면은 문구만 남긴다.
+// data-herocta 는 위에서 붙여 둔 표식이라 여기서 그 블록만 정확히 집어낼 수 있다.
+{
+  const open = template.indexOf('<div data-herocta="1"');
+  if (open === -1) {
+    console.log('herocta     already gone');
+  } else {
+    let depth = 0;
+    let i = open;
+    for (;;) {
+      const o = template.indexOf('<div', i);
+      const c = template.indexOf('</div>', i);
+      if (c === -1) throw new Error('hero CTA: 닫는 태그를 찾지 못했다');
+      if (o !== -1 && o < c) { depth++; i = o + 4; }
+      else { depth--; i = c + 6; if (depth === 0) break; }
+    }
+    let pre = open;
+    while (pre > 0 && (template[pre - 1] === ' ' || template[pre - 1] === '\t')) pre--;
+    if (pre > 0 && template[pre - 1] === '\n') pre--;
+    console.log(`drop         hero CTA (${i - open} chars)`);
+    template = template.slice(0, pre) + template.slice(i);
+  }
+}
+
 fs.writeFileSync(path.join(outDir, 'index.html'), template);
 
 // robots.txt and sitemap.xml ship beside the bundle and name the same authored
