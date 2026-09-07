@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ilsan-anitok.vercel.app/sitemap.xml
+Sitemap: https://ilsan.anitok.com/sitemap.xml

@@ -48,7 +48,7 @@ if (!manifest || !template) {
 // page is a duplicate of the head office's and to credit that one instead, so the
 // Ilsan branch page would never rank on its own. Change this one constant if the
 // page moves to its own domain.
-const SITE = 'https://ilsan-anitok.vercel.app';
+const SITE = 'https://ilsan.anitok.com';
 const AUTHORED_AT = 'https://anitok.com';
 
 // Search ownership tokens for this property. Both engines read them from the <head>
@@ -318,6 +318,31 @@ if (posts.length) {
   seo(
     /(<a href="https:\/\/anitok\.com\/"[^>]*>애니톡 공식 홈페이지 바로가기 →<\/a>)/,
     (_, a) => `<a href="/blog/" style="color:#9A9A9A;margin-right:14px">학원 이야기</a>` + a
+  );
+
+  // 나머지 일곱 캠퍼스는 전부 일산으로 링크를 걸어 두는데 일산만 아무 데도 걸지
+  // 않아, 링크가 한 방향으로만 흘렀다. 푸터에 형제 캠퍼스 줄을 넣어 여덟 사이트가
+  // 서로를 가리키게 한다. 같은 브랜드라는 신호를 검색엔진과 AI 답변 양쪽에 준다.
+  const SIBLINGS = [
+    ['강동', 'https://gangdong.anitok.com/'],
+    ['광교', 'https://gwanggyo.anitok.com/'],
+    ['김포', 'https://gimpo.anitok.com/'],
+    ['목동 본원', 'https://mokdong.anitok.com/'],
+    ['부천', 'https://bucheon.anitok.com/'],
+    ['웹툰게임 아카데미', 'https://academy-anitok.vercel.app/'],
+    ['홍대', 'https://hongdae.anitok.com/'],
+  ];
+  const campusRow =
+    `<div style="margin-top:20px;font-size:12.5px;line-height:2.1;color:#5A5A5A">` +
+    `<span style="color:#5A5A5A;font-weight:700;margin-right:10px">애니톡 캠퍼스</span>` +
+    SIBLINGS.map(
+      ([label, href]) =>
+        `<a href="${href}" target="_blank" rel="noopener" style="color:#9A9A9A;margin-right:14px">${label}</a>`
+    ).join('') +
+    `</div>`;
+  seo(
+    /(<div style="font-size:12px;color:#5A5A5A;margin-top:18px">© 2026\. ANITALK ILSAN)/,
+    (_, a) => campusRow + a
   );
 }
 
