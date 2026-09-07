@@ -279,8 +279,7 @@ if (fs.existsSync(POSTS_DIR)) {
       };
     })
     .filter((p) => p.slug && p.title)
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 3);
+    .sort((a, b) => b.date.localeCompare(a.date));
 }
 
 if (posts.length) {
@@ -305,7 +304,7 @@ if (posts.length) {
     `<h2 style="margin:0;font-size:clamp(26px,3.2vw,40px);line-height:1.32;letter-spacing:-.04em;font-weight:800">학원 이야기</h2>` +
     `<p style="margin:16px 0 0;font-size:15px;line-height:1.85;color:#A8A8AC;word-break:keep-all">입시와 수업에서 자주 나오는 질문을 정리했습니다</p>` +
     `</div>` +
-    `<div data-storygrid="1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${posts.map(card).join('')}</div>` +
+    `<div data-storygrid="1" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">${posts.slice(0, 3).map(card).join('')}</div>` +
     `<div style="text-align:center;margin-top:40px">` +
     `<a href="/blog/" data-cta="blog" data-loc="home-stories-all" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.28);color:#FFFFFF;font-size:15px;font-weight:700;padding:14px 30px;border-radius:999px">글 전체 보기 →</a>` +
     `</div></div></section>`;
@@ -897,12 +896,32 @@ fs.writeFileSync(path.join(outDir, 'index.html'), template);
 // robots.txt and sitemap.xml ship beside the bundle and name the same authored
 // origin, so they get the same treatment — a sitemap that declares the head
 // office's URL as this page's location would undo the canonical fix.
+// 원본 사이트맵에는 홈 한 줄뿐이라, 블로그 글 스물두 편이 검색엔진에 목록으로는
+// 전달되지 않았다. 글마다 손으로 적어 넣으면 새 글이 올라올 때 또 빠지므로,
+// content/posts 를 그대로 펼친다. 실제로 페이지가 만들어진 글만 넣는다 —
+// 없는 주소를 사이트맵에 적으면 크롤러가 404 를 받는다.
+function withBlogUrls(xml) {
+  const live = posts.filter((p) => fs.existsSync(path.join(outDir, 'blog', p.slug, 'index.html')));
+  if (!live.length || !xml.includes('</urlset>')) return xml;
+  const url = (loc, lastmod, priority) =>
+    `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n` +
+    `    <changefreq>monthly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
+  const newest = live.reduce((a, p) => (p.date > a ? p.date : a), live[0].date);
+  const rows =
+    url(`${SITE}/blog/`, newest, '0.8') +
+    live.map((p) => url(`${SITE}/blog/${p.slug}/`, p.date, '0.7')).join('');
+  console.log(`sitemap      ${String(live.length + 1).padStart(6)}     blog urls added`);
+  return xml.replace('</urlset>', rows + '</urlset>');
+}
+
 for (const name of ['robots.txt', 'sitemap.xml']) {
   const from = path.join(path.dirname(srcPath), name);
   if (!fs.existsSync(from)) continue;
   const body = fs.readFileSync(from, 'utf8');
   repointed += body.split(AUTHORED_AT).length - 1;
-  fs.writeFileSync(path.join(outDir, name), body.split(AUTHORED_AT).join(SITE));
+  let out = body.split(AUTHORED_AT).join(SITE);
+  if (name === 'sitemap.xml') out = withBlogUrls(out);
+  fs.writeFileSync(path.join(outDir, name), out);
 }
 
 const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';
