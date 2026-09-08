@@ -70,7 +70,20 @@
   [data-faq]:hover summary { background: #131315; }
 
   @media (max-width: 900px) {
-    [data-heroscrim] { background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.66) 50%, rgba(0,0,0,.82) 100%) !important; }
+    /* 사진의 위쪽 절반에 ANITALK 간판이 있다. 예전 값(.58/.66/.82)은 간판까지
+     * 함께 덮어 첫 화면이 통째로 어두웠다. 위는 걷어 간판을 보이게 하고,
+     * 글자가 앉는 아래쪽만 진하게 남긴다. */
+    [data-heroscrim] {
+      background: linear-gradient(180deg,
+        rgba(0,0,0,.30) 0%, rgba(0,0,0,.28) 40%,
+        rgba(0,0,0,.62) 68%, rgba(0,0,0,.86) 100%) !important;
+    }
+    /* 제목이 세로 가운데라 간판 글씨를 정확히 덮고 있었다. 간판 아래 비어 있는
+     * 데스크 쪽으로 내린다. 하단 고정 바 두 줄(약 112px)을 피해 여백을 준다. */
+    [data-heroin] {
+      justify-content: flex-end !important;
+      padding-bottom: 150px !important;
+    }
   }
   /* 메뉴 서랍의 열림/닫힘은 폭과 무관하다. 이 두 줄이 @media (max-width:860px)
    * 안에 있던 동안 PC 폭에서는 서랍을 숨기는 규칙 자체가 적용되지 않아,
@@ -116,6 +129,9 @@
     }
     [data-classnav] > a {
       flex: 1 1 0 !important; min-width: 0 !important;
+      /* min-height 44px 는 아래에서 따로 준다. 블록 앵커라 글자가 상자 위쪽에
+       * 붙고 늘어난 높이만큼 아래가 비어, 글자가 살짝 올라가 보였다. */
+      display: flex !important; align-items: center !important; justify-content: center !important;
       padding: 9px 4px !important; text-align: center !important;
       font-size: 13px !important; font-weight: 700 !important; letter-spacing: -.03em !important;
       color: #FFFFFF !important; border-radius: 10px !important;
@@ -136,6 +152,11 @@
       overflow: visible !important;
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
+    /* 학원 이야기가 들어가 다섯 칸이 됐다. 390px 에서는 칸당 약 71px 로 라벨이
+     * 들어가지만 그보다 좁은 화면에서는 '애니톡 홈페이지'가 넘친다. */
+    @media (max-width: 380px) {
+      aside[data-rail] [data-sidelabel] { font-size: 9.5px !important; letter-spacing: -.06em !important; }
+    }
     footer { padding-bottom: 152px !important; }
     /* Touch targets. Pointer guidance puts the practical minimum around 44px; measured
        on the live page these sat between 15px and 43px, which is a miss on a phone —
@@ -239,6 +260,7 @@
       <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"></path></svg>
       <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">전화문의</span>
     </a>
+    <a href="/blog/" data-cta="blog" data-loc="bottombar" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden">학원 이야기</span></a>
     <a href="https://anitok.com/" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden;transition:background 320ms ease, border-color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1), transform 520ms cubic-bezier(.22,1.4,.36,1)" style-hover="background:#BD0D16;border-color:#BD0D16;color:#FFFFFF;text-decoration:none;transform:translateX(-4px);box-shadow:0 12px 34px rgba(189,13,22,.5)">
       <svg width="19" height="19" sc-camel-view-box="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto"><circle cx="12" cy="12" r="9"></circle><path d="M3.6 9h16.8M3.6 15h16.8"></path><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"></path></svg>
       <span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;letter-spacing:-.02em;overflow:hidden;transition:max-width 460ms cubic-bezier(.16,1,.3,1), opacity 320ms ease, margin-left 460ms cubic-bezier(.16,1,.3,1)">애니톡 홈페이지</span>
@@ -253,8 +275,7 @@
     <div style="position:absolute;top:0;left:0;width:70vw;height:70vw;max-width:900px;max-height:900px;background:radial-gradient(circle, rgba(189,13,22,.55) 0%, rgba(0,0,0,0) 66%);animation:atk-heroglow 14s ease-in-out infinite;pointer-events:none;mix-blend-mode:screen"></div>
     <div data-heroscrim="1" style="position:absolute;inset:0;background:linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.34) 46%, rgba(0,0,0,0) 100%)"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 34%, rgba(0,0,0,.7) 100%)"></div>
-    <div style="position:relative;max-width:1400px;margin:0 auto;height:100%;padding:0 clamp(20px,4vw,56px);display:flex;flex-direction:column;justify-content:center">
-      <div data-pill="1" data-reveal="0" style="display:inline-flex;align-self:flex-start;align-items:center;gap:8px;background:rgba(189,13,22,.92);border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;margin-bottom:24px">고양교육지원청 등록 제6164호 · 교과과목 만화</div>
+    <div data-heroin="1" style="position:relative;max-width:1400px;margin:0 auto;height:100%;padding:0 clamp(20px,4vw,56px);display:flex;flex-direction:column;justify-content:center">
       <h1 data-reveal="80" style="margin:0;font-size:clamp(38px,5.4vw,72px);line-height:1.12;letter-spacing:-.05em;font-weight:800;text-shadow:0 6px 34px rgba(0,0,0,.8)"><span style="display:block;font-size:.56em;font-weight:700;letter-spacing:-.03em;margin-bottom:10px;color:#FFFFFF">취미부터 입시까지</span>웹툰,애니 교육의 정답!<br><span style="color:#FF3B45">일산애니톡 만화학원!</span></h1>
       <p data-reveal="160" style="margin:24px 0 0;font-size:clamp(16px,1.6vw,21px);font-weight:700;text-shadow:0 2px 16px rgba(0,0,0,.85)">일산 백마학원가 대표 만화학원</p>
     </div>

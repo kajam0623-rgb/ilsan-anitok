@@ -515,6 +515,21 @@ seo(/(<div data-reveal="240" style="display:flex;flex-wrap:wrap;gap:12px;margin-
   a.replace('<div ', '<div data-herocta="1" ')
 );
 
+// 히어로 첫 줄의 등록번호 배지를 걷어낸다. 첫 화면에서 제일 먼저 읽히는 자리인데
+// 학원을 고르는 사람이 가장 늦게 확인하는 정보였다. 같은 문구가 학원 소개의
+// 배지와 푸터 사업자정보 줄에 이미 두 번 더 있어, 여기서 빼도 사라지지 않는다.
+seo(
+  /<div data-pill="1" data-reveal="0" style="[^"]*">고양교육지원청 등록 제6164호 · 교과과목 만화<\/div>\s*/,
+  () => ''
+);
+
+// 폰에서 문구를 아래로 내리기 위한 표식. 사진 가운데에 ANITALK 간판이 있는데
+// 제목이 세로 가운데 정렬이라 간판 글씨를 정확히 덮고 있었다.
+seo(
+  /(<div style="position:relative;max-width:1400px;margin:0 auto;height:100%;padding:0 clamp\(20px,4vw,56px\);display:flex;flex-direction:column;justify-content:center")/,
+  (_, a) => a.replace('<div ', '<div data-heroin="1" ')
+);
+
 // Class shortcuts for phones. The 수업과목 section is ~4,000px down the page, so on a
 // phone the three classes are only reachable by a long scroll. A second bar above
 // the action bar jumps straight to each one.
@@ -530,6 +545,26 @@ const classNav =
   '<a href="#class-2">취미반</a>' +
   '</nav>';
 seo(/(<aside data-rail="1")/, (_, a) => classNav + '\n  ' + a);
+
+// 블로그가 서랍 메뉴 안에만 있어 서랍을 열지 않으면 스물두 편이 어디에도 보이지
+// 않았다. 늘 떠 있는 하단 바에 한 자리를 준다. 예약 버튼은 CSS 에서
+// nth-of-type(2) 로 색을 입히므로 그 앞에 끼워 넣으면 색이 옮겨 간다. 애니톡
+// 홈페이지 앞, 네 번째 자리에 넣어 순서를 건드리지 않는다.
+const RAIL_HEAD =
+  '<a href="https://anitok.com/" target="_blank" rel="noopener" ' +
+  'style="display:flex;align-items:center;gap:0;height:48px;';
+const storyRail =
+  '<a href="/blog/" data-cta="blog" data-loc="bottombar" ' +
+  'style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;' +
+  'background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);' +
+  'border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden">' +
+  '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>' +
+  '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>' +
+  '<span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;' +
+  'letter-spacing:-.02em;overflow:hidden">학원 이야기</span></a>';
+seo(new RegExp(RAIL_HEAD.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), (a) => storyRail + '\n    ' + a);
 // A plain #anchor lands the class card flush with the top of the viewport, where the
 // 64px sticky header covers its "CLASS 01 고등반" title row — you arrive mid-sentence
 // with no way to tell which class you are looking at. scroll-margin-top does not fix
@@ -618,7 +653,20 @@ template = template.replace(
 // into the earlier font stylesheet would lose to it on source order.
 const mobileCss = `
   @media (max-width: 900px) {
-    [data-heroscrim] { background: linear-gradient(180deg, rgba(0,0,0,.58) 0%, rgba(0,0,0,.66) 50%, rgba(0,0,0,.82) 100%) !important; }
+    /* 사진의 위쪽 절반에 ANITALK 간판이 있다. 예전 값(.58/.66/.82)은 간판까지
+     * 함께 덮어 첫 화면이 통째로 어두웠다. 위는 걷어 간판을 보이게 하고,
+     * 글자가 앉는 아래쪽만 진하게 남긴다. */
+    [data-heroscrim] {
+      background: linear-gradient(180deg,
+        rgba(0,0,0,.30) 0%, rgba(0,0,0,.28) 40%,
+        rgba(0,0,0,.62) 68%, rgba(0,0,0,.86) 100%) !important;
+    }
+    /* 제목이 세로 가운데라 간판 글씨를 정확히 덮고 있었다. 간판 아래 비어 있는
+     * 데스크 쪽으로 내린다. 하단 고정 바 두 줄(약 112px)을 피해 여백을 준다. */
+    [data-heroin] {
+      justify-content: flex-end !important;
+      padding-bottom: 150px !important;
+    }
   }
   /* 메뉴 서랍의 열림/닫힘은 폭과 무관하다. 이 두 줄이 @media (max-width:860px)
    * 안에 있던 동안 PC 폭에서는 서랍을 숨기는 규칙 자체가 적용되지 않아,
@@ -664,6 +712,9 @@ const mobileCss = `
     }
     [data-classnav] > a {
       flex: 1 1 0 !important; min-width: 0 !important;
+      /* min-height 44px 는 아래에서 따로 준다. 블록 앵커라 글자가 상자 위쪽에
+       * 붙고 늘어난 높이만큼 아래가 비어, 글자가 살짝 올라가 보였다. */
+      display: flex !important; align-items: center !important; justify-content: center !important;
       padding: 9px 4px !important; text-align: center !important;
       font-size: 13px !important; font-weight: 700 !important; letter-spacing: -.03em !important;
       color: #FFFFFF !important; border-radius: 10px !important;
@@ -684,6 +735,11 @@ const mobileCss = `
       overflow: visible !important;
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
+    /* 학원 이야기가 들어가 다섯 칸이 됐다. 390px 에서는 칸당 약 71px 로 라벨이
+     * 들어가지만 그보다 좁은 화면에서는 '애니톡 홈페이지'가 넘친다. */
+    @media (max-width: 380px) {
+      aside[data-rail] [data-sidelabel] { font-size: 9.5px !important; letter-spacing: -.06em !important; }
+    }
     footer { padding-bottom: 152px !important; }
     /* Touch targets. Pointer guidance puts the practical minimum around 44px; measured
        on the live page these sat between 15px and 43px, which is a miss on a phone —
