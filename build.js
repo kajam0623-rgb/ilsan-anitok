@@ -664,8 +664,12 @@ const mobileCss = `
     /* 제목이 세로 가운데라 간판 글씨를 정확히 덮고 있었다. 간판 아래 비어 있는
      * 데스크 쪽으로 내린다. 하단 고정 바 두 줄(약 112px)을 피해 여백을 준다. */
     [data-heroin] {
-      justify-content: flex-end !important;
-      padding-bottom: 150px !important;
+      justify-content: flex-start !important;
+      /* 실측: 폰에서 히어로는 화면 높이와 무관하게 620px 로 고정되고, 사진 속
+       * 간판은 그 안의 234~389px 자리에 온다. vh 로 잡으면 작은 폰에서 간판을
+       * 다시 덮으므로 px 로 고정한다. */
+      padding-top: 250px !important;
+      padding-bottom: 0 !important;
     }
   }
   /* 메뉴 서랍의 열림/닫힘은 폭과 무관하다. 이 두 줄이 @media (max-width:860px)
