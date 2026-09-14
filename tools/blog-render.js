@@ -328,6 +328,18 @@ const posts = fs
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
+// 지운 글의 페이지가 남지 않게 먼저 치운다. blog/ 가 저장소에 들어 있어서
+// 정리하지 않으면 글을 지워도 주소는 그대로 살아 있다. 내린 글이 계속
+// 서비스되는 상태가 가장 나쁘다.
+{
+  const keep = new Set(posts.map((p) => p.meta.slug));
+  for (const name of fs.readdirSync(OUT_DIR)) {
+    if (name === 'index.html' || keep.has(name)) continue;
+    fs.rmSync(path.join(OUT_DIR, name), { recursive: true, force: true });
+    console.log('  지운 글의 페이지를 치웠다: /blog/' + name + '/');
+  }
+}
+
 // 목록과 글 하단이 같은 카드를 쓴다. 한쪽만 고쳐 두 곳이 어긋나는 일을 막는다.
 function card(p) {
   const img = (p.body.match(/!\[[^\]]*\]\(([^)]+)\)/) || [])[1];
