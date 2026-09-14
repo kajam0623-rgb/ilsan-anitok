@@ -26,6 +26,21 @@ const ORG = '일산애니톡만화애니학원';
 const BOOKING = 'https://booking.naver.com/booking/6/bizes/626887';
 const TEL = '031-994-3134';
 
+// 네이버 블로그에서 넘어온 분류는 반 이름·브랜드명·하트가 섞여 있어 그대로
+// 내보낼 수 없다. 원본(프론트매터)은 건드리지 않고 화면에 나갈 이름만 묶는다.
+const CATEGORY = {
+  '초/중등반': '초·중등',
+  '입시반(고1~3)': '입시',
+  '미대입시반': '입시',
+  '애니고예고반': '애니고·예고',
+  '성인취미반': '성인 취미',
+  '성인취미/CG반': '성인 취미',
+  '동원장의 상담센터♥': '상담 이야기',
+  '위치/수강안내': '수강 안내',
+  '일산만화학원 애니톡': '공모전·수상',
+};
+const category = (c) => CATEGORY[c] || c || '';
+
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // --- frontmatter -----------------------------------------------------------
@@ -88,6 +103,8 @@ function webpSize(file) {
 function markdown(md) {
   const blocks = md.split(/\r?\n\r?\n+/);
   const out = [];
+  const toc = [];
+  let hn = 0;
   for (const raw of blocks) {
     const block = raw.trim();
     if (!block) continue;
@@ -108,7 +125,45 @@ function markdown(md) {
     const h = block.match(/^(#{2,3})\s+(.+)$/);
     if (h) {
       const level = h[1].length;
-      out.push(`<h${level}>${inline(h[2])}</h${level}>`);
+      // 한글 제목을 그대로 id 로 쓰면 같은 낱말이 두 번 나올 때 앵커가 겹친다.
+      // 순번으로 두면 겹칠 일이 없고 주소도 짧다.
+      const id = 's' + ++hn;
+      toc.push({ level, id, text: h[2].replace(/\*\*/g, '') });
+      out.push(`<h${level} id="${id}">${inline(h[2])}</h${level}>`);
+      continue;
+    }
+
+    const lines = block.split(/\r?\n/).map((l) => l.trim());
+
+    // 표. 머리줄 다음에 |---|---| 구분줄이 와야 표로 본다.
+    if (lines.length >= 2 && /^\|.*\|$/.test(lines[0]) && /^\|[\s:|-]+\|$/.test(lines[1])) {
+      const cells = (l) => l.slice(1, -1).split('|').map((c) => c.trim());
+      const head = cells(lines[0]).map((c) => `<th>${inline(c)}</th>`).join('');
+      const rows = lines
+        .slice(2)
+        .filter((l) => /^\|.*\|$/.test(l))
+        .map((l) => `<tr>${cells(l).map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`)
+        .join('');
+      // 좁은 화면에서 표가 본문을 밀지 않도록 가로 스크롤 상자에 넣는다.
+      out.push(`<div class="tw"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`);
+      continue;
+    }
+
+    // 번호 목록. 순서가 뜻을 가지는 단계 설명에만 쓴다.
+    if (lines.every((l) => /^\d+\.\s+/.test(l))) {
+      out.push(`<ol>${lines.map((l) => `<li>${inline(l.replace(/^\d+\.\s+/, ''))}</li>`).join('')}</ol>`);
+      continue;
+    }
+
+    // 참고 박스. 첫 줄이 **굵게**면 그 부분이 상자 제목이 된다.
+    if (lines.every((l) => /^>\s?/.test(l))) {
+      const t = lines.map((l) => l.replace(/^>\s?/, '')).join(' ');
+      const lead = t.match(/^\*\*(.+?)\*\*\s*(.*)$/);
+      out.push(
+        `<aside class="note">` +
+          (lead ? `<b>${inline(lead[1])}</b>${lead[2] ? `<p>${inline(lead[2])}</p>` : ''}` : `<p>${inline(t)}</p>`) +
+          `</aside>`
+      );
       continue;
     }
 
@@ -120,7 +175,17 @@ function markdown(md) {
 
     out.push(`<p>${inline(block.replace(/\r?\n/g, ' '))}</p>`);
   }
-  return out.join('\n');
+  return { html: out.join('\n'), toc };
+}
+
+// 읽는 시간. 한글 산문은 분당 700자 안팎으로 읽힌다. 마크다운 기호와 이미지
+// 주소는 읽는 분량이 아니므로 빼고 센다. 부풀리면 첫 문장부터 신뢰를 잃는다.
+function readingMinutes(md) {
+  const text = md
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[#>*|_-]/g, '');
+  return Math.max(2, Math.round(text.replace(/\s/g, '').length / 700));
 }
 
 function inline(s) {
@@ -142,11 +207,30 @@ header img{width:33px;height:33px;flex:0 0 auto;background:#fff;border-radius:50
 header .nm{font-size:15px;font-weight:800;white-space:nowrap;letter-spacing:-.02em}
 header .cta{flex:0 0 auto;white-space:nowrap;background:#fff;color:#BD0D16;font-size:13px;font-weight:800;padding:10px 16px;border-radius:999px}
 main{max-width:760px;margin:0 auto;padding:56px 20px 96px}
+main.wide{max-width:1100px}
 h1{font-size:clamp(28px,5.4vw,40px);line-height:1.28;font-weight:800;letter-spacing:-.045em;margin-bottom:18px}
 h2{font-size:clamp(21px,3.4vw,26px);font-weight:800;letter-spacing:-.04em;margin:52px 0 16px;padding-top:8px;border-top:1px solid #232326}
 h3{font-size:18px;font-weight:800;margin:32px 0 12px}
 p{font-size:16px;color:#D6D6DA;margin-bottom:18px;word-break:keep-all}
-ul{margin:0 0 18px 20px}li{font-size:16px;color:#D6D6DA;margin-bottom:8px;word-break:keep-all}
+ul,ol{margin:0 0 18px 20px}li{font-size:16px;color:#D6D6DA;margin-bottom:8px;word-break:keep-all}
+ol{list-style:decimal}ol li::marker{color:#FF3B45;font-weight:800}
+.tw{margin:0 0 24px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+th,td{border:1px solid #232326;padding:11px 13px;text-align:left;vertical-align:top;word-break:keep-all}
+th{background:#141416;font-weight:800;color:#fff;font-size:14px}
+td{color:#D6D6DA}
+.note{margin:0 0 24px;padding:18px 20px;background:#141416;border:1px solid #232326;border-radius:12px}
+.note b{display:block;font-size:15px;color:#fff;margin-bottom:6px}
+.note p{margin:0;font-size:15px}
+.toc{margin:0 0 40px;padding:20px 22px;background:#0F0F11;border:1px solid #232326;border-radius:14px}
+.toc b{display:block;font-size:13px;font-weight:800;letter-spacing:.12em;color:#8C8C8C;margin-bottom:12px}
+.toc ol{margin:0;padding:0;list-style:none;counter-reset:toc}
+.toc li{margin:0;font-size:15px;line-height:1.5;padding:5px 0}
+.toc li.l2{counter-increment:toc}
+.toc li.l2 a::before{content:counter(toc) ". ";color:#8C8C8C;font-weight:700}
+.toc li.l3{padding-left:20px;font-size:14px}
+.toc a{color:#D6D6DA}.toc a:hover{color:#FF3B45;text-decoration:none}
+h2[id],h3[id]{scroll-margin-top:80px}
 figure{margin:32px 0}
 figure img{display:block;width:100%;height:auto;border-radius:14px}
 figcaption{margin-top:10px;font-size:13px;color:#8C8C8C;text-align:center;word-break:keep-all}
@@ -165,12 +249,18 @@ details{border-bottom:1px solid #232326}
 summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;font-size:16px;word-break:keep-all}
 summary::-webkit-details-marker{display:none}
 details p{padding-bottom:18px;margin:0}
-.cards{display:grid;gap:16px}
-.card{display:block;background:#0F0F11;border:1px solid #232326;border-radius:18px;overflow:hidden;color:inherit}
-.card img{display:block;width:100%;height:180px;object-fit:cover}
-.card .body{padding:20px}
-.card h2{font-size:19px;margin:0 0 8px;border:0;padding:0}
-.card p{font-size:14px;margin:0}
+.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.card{display:block;background:#0F0F11;border:1px solid #232326;border-radius:18px;overflow:hidden;color:inherit;transition:border-color .2s ease}
+.card:hover{border-color:#3A3A40;text-decoration:none}
+.card img,.card-ph{display:block;width:100%;height:170px;object-fit:cover}
+.card-ph{background:linear-gradient(180deg,#17171A,#0F0F11)}
+.card .body{padding:18px 20px 22px}
+.card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:#8C8C8C}
+.cat{background:#2A0F11;border:1px solid #4A1418;color:#FF7A80;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700}
+.card h2{font-size:17px;line-height:1.4;margin:0 0 8px;border:0;padding:0}
+.card p{font-size:14px;margin:0;color:#9A9A9A}
+.more{margin-top:56px}
+.more h2{margin-top:0}
 footer{border-top:1px solid #232326;padding:40px 20px 60px;text-align:center;color:#8C8C8C;font-size:13px}
 footer a{color:#9A9A9A}
 @media(min-width:720px){.cta-box .row{flex-direction:row;justify-content:center}.cta-box a{min-width:200px}}
@@ -238,10 +328,28 @@ const posts = fs
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
+// 목록과 글 하단이 같은 카드를 쓴다. 한쪽만 고쳐 두 곳이 어긋나는 일을 막는다.
+function card(p) {
+  const img = (p.body.match(/!\[[^\]]*\]\(([^)]+)\)/) || [])[1];
+  const size = img ? webpSize(path.join(ROOT, img.replace(/^\//, ''))) : null;
+  return (
+    `<a class="card" href="/blog/${p.meta.slug}/">` +
+    (img
+      ? `<img src="${esc(img)}" alt="${esc(p.meta.title)}"${size ? ` width="${size.w}" height="${size.h}"` : ''} loading="lazy" decoding="async">`
+      : `<span class="card-ph" aria-hidden="true"></span>`) +
+    `<div class="body">` +
+    `<div class="card-meta">` +
+    (category(p.meta.category) ? `<span class="cat">${esc(category(p.meta.category))}</span>` : '') +
+    `<time datetime="${p.meta.date}">${p.meta.date}</time>` +
+    `</div>` +
+    `<h2>${esc(p.meta.title)}</h2><p>${esc(p.meta.description)}</p></div></a>`
+  );
+}
+
 for (const post of posts) {
   const { meta, body } = post;
   const url = `${SITE}/blog/${meta.slug}/`;
-  const html = markdown(body);
+  const { html, toc } = markdown(body);
 
   // The first paragraph is written to answer the question outright — it is what an
   // AI answer engine quotes, so it is lifted out and given its own treatment.
@@ -307,17 +415,41 @@ for (const post of posts) {
       `</section>`
     : '';
 
+  // 목차는 제목이 세 개 이상일 때만 세운다. 두 개짜리 목차는 자리만 차지한다.
+  const tocHtml =
+    toc.length >= 3
+      ? `<nav class="toc" aria-label="목차"><b>목차</b><ol>` +
+        toc.map((t) => `<li class="l${t.level}"><a href="#${t.id}">${esc(t.text)}</a></li>`).join('') +
+        `</ol></nav>`
+      : '';
+
+  // 같은 반을 찾아온 독자에게는 같은 반 이야기가 먼저 걸린다. 모자라면 최신 글로 채운다.
+  const related = [
+    ...posts.filter((p) => p.meta.slug !== meta.slug && p.meta.category === meta.category),
+    ...posts.filter((p) => p.meta.slug !== meta.slug && p.meta.category !== meta.category),
+  ].slice(0, 3);
+  const relatedHtml = related.length
+    ? `<section class="more"><h2>이어서 읽어보세요</h2><div class="cards">` +
+      related.map((p) => card(p)).join('') +
+      `</div></section>`
+    : '';
+
   const bodyHtml =
     header() +
     `<main><article>` +
     `<h1>${esc(meta.title)}</h1>` +
-    `<div class="meta"><time datetime="${meta.date}">${meta.date}</time>` +
+    `<div class="meta">` +
+    (category(meta.category) ? `<span class="cat">${esc(category(meta.category))}</span>` : '') +
+    `<time datetime="${meta.date}">${meta.date}</time>` +
+    `<span>읽는 시간 ${readingMinutes(body)}분</span>` +
     (meta.keywords || []).map((k) => `<span class="tag">${esc(k)}</span>`).join('') +
     `</div>` +
     lead +
+    tocHtml +
     rest +
     faqHtml +
     ctaBox('blog-article') +
+    relatedHtml +
     `</article></main>` +
     footer();
 
@@ -330,20 +462,7 @@ for (const post of posts) {
   console.log('  /blog/' + meta.slug + '/  ' + meta.title.slice(0, 40));
 }
 
-// index
-const cards = posts
-  .map((p) => {
-    const img = (p.body.match(/!\[[^\]]*\]\(([^)]+)\)/) || [])[1];
-    const size = img ? webpSize(path.join(ROOT, img.replace(/^\//, ''))) : null;
-    return (
-      `<a class="card" href="/blog/${p.meta.slug}/">` +
-      (img
-        ? `<img src="${esc(img)}" alt="${esc(p.meta.title)}"${size ? ` width="${size.w}" height="${size.h}"` : ''} loading="lazy" decoding="async">`
-        : '') +
-      `<div class="body"><h2>${esc(p.meta.title)}</h2><p>${esc(p.meta.description)}</p></div></a>`
-    );
-  })
-  .join('');
+const cards = posts.map((p) => card(p)).join('');
 
 fs.writeFileSync(
   path.join(OUT_DIR, 'index.html'),
@@ -362,7 +481,7 @@ fs.writeFileSync(
       })}</script>`,
     body:
       header() +
-      `<main><h1>학원 이야기</h1>` +
+      `<main class="wide"><h1>학원 이야기</h1>` +
       `<p style="margin-bottom:36px">일산 백마학원가에서 만화 · 웹툰 · 애니메이션을 가르치며 정리한 이야기입니다.</p>` +
       `<div class="cards">${cards}</div>` +
       ctaBox('blog-index') +

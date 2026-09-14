@@ -8,11 +8,30 @@ header img{width:33px;height:33px;flex:0 0 auto;background:#fff;border-radius:50
 header .nm{font-size:15px;font-weight:800;white-space:nowrap;letter-spacing:-.02em}
 header .cta{flex:0 0 auto;white-space:nowrap;background:#fff;color:#BD0D16;font-size:13px;font-weight:800;padding:10px 16px;border-radius:999px}
 main{max-width:760px;margin:0 auto;padding:56px 20px 96px}
+main.wide{max-width:1100px}
 h1{font-size:clamp(28px,5.4vw,40px);line-height:1.28;font-weight:800;letter-spacing:-.045em;margin-bottom:18px}
 h2{font-size:clamp(21px,3.4vw,26px);font-weight:800;letter-spacing:-.04em;margin:52px 0 16px;padding-top:8px;border-top:1px solid #232326}
 h3{font-size:18px;font-weight:800;margin:32px 0 12px}
 p{font-size:16px;color:#D6D6DA;margin-bottom:18px;word-break:keep-all}
-ul{margin:0 0 18px 20px}li{font-size:16px;color:#D6D6DA;margin-bottom:8px;word-break:keep-all}
+ul,ol{margin:0 0 18px 20px}li{font-size:16px;color:#D6D6DA;margin-bottom:8px;word-break:keep-all}
+ol{list-style:decimal}ol li::marker{color:#FF3B45;font-weight:800}
+.tw{margin:0 0 24px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+th,td{border:1px solid #232326;padding:11px 13px;text-align:left;vertical-align:top;word-break:keep-all}
+th{background:#141416;font-weight:800;color:#fff;font-size:14px}
+td{color:#D6D6DA}
+.note{margin:0 0 24px;padding:18px 20px;background:#141416;border:1px solid #232326;border-radius:12px}
+.note b{display:block;font-size:15px;color:#fff;margin-bottom:6px}
+.note p{margin:0;font-size:15px}
+.toc{margin:0 0 40px;padding:20px 22px;background:#0F0F11;border:1px solid #232326;border-radius:14px}
+.toc b{display:block;font-size:13px;font-weight:800;letter-spacing:.12em;color:#8C8C8C;margin-bottom:12px}
+.toc ol{margin:0;padding:0;list-style:none;counter-reset:toc}
+.toc li{margin:0;font-size:15px;line-height:1.5;padding:5px 0}
+.toc li.l2{counter-increment:toc}
+.toc li.l2 a::before{content:counter(toc) ". ";color:#8C8C8C;font-weight:700}
+.toc li.l3{padding-left:20px;font-size:14px}
+.toc a{color:#D6D6DA}.toc a:hover{color:#FF3B45;text-decoration:none}
+h2[id],h3[id]{scroll-margin-top:80px}
 figure{margin:32px 0}
 figure img{display:block;width:100%;height:auto;border-radius:14px}
 figcaption{margin-top:10px;font-size:13px;color:#8C8C8C;text-align:center;word-break:keep-all}
@@ -31,27 +50,33 @@ details{border-bottom:1px solid #232326}
 summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:700;font-size:16px;word-break:keep-all}
 summary::-webkit-details-marker{display:none}
 details p{padding-bottom:18px;margin:0}
-.cards{display:grid;gap:16px}
-.card{display:block;background:#0F0F11;border:1px solid #232326;border-radius:18px;overflow:hidden;color:inherit}
-.card img{display:block;width:100%;height:180px;object-fit:cover}
-.card .body{padding:20px}
-.card h2{font-size:19px;margin:0 0 8px;border:0;padding:0}
-.card p{font-size:14px;margin:0}
+.cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.card{display:block;background:#0F0F11;border:1px solid #232326;border-radius:18px;overflow:hidden;color:inherit;transition:border-color .2s ease}
+.card:hover{border-color:#3A3A40;text-decoration:none}
+.card img,.card-ph{display:block;width:100%;height:170px;object-fit:cover}
+.card-ph{background:linear-gradient(180deg,#17171A,#0F0F11)}
+.card .body{padding:18px 20px 22px}
+.card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:#8C8C8C}
+.cat{background:#2A0F11;border:1px solid #4A1418;color:#FF7A80;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700}
+.card h2{font-size:17px;line-height:1.4;margin:0 0 8px;border:0;padding:0}
+.card p{font-size:14px;margin:0;color:#9A9A9A}
+.more{margin-top:56px}
+.more h2{margin-top:0}
 footer{border-top:1px solid #232326;padding:40px 20px 60px;text-align:center;color:#8C8C8C;font-size:13px}
 footer a{color:#9A9A9A}
-@media(min-width:720px){.cta-box .row{flex-direction:row;justify-content:center}.cta-box a{min-width:200px}}</style><meta property="og:type" content="article"><meta property="og:title" content="경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다"><meta property="og:description" content="2026학년도 경기예술고등학교 만화애니메이션과 실기에서 합격을 결정지은 것은 그림 실력이 아니라 주제를 비트는 발상이었습니다. 실제 출제 주제와 풀이, 초등에서 중3까지의 준비 과정을 정리했습니다."><meta property="og:url" content="https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"><meta property="og:image" content="https://ilsan.anitok.com/gal/hero2.webp"><meta property="og:site_name" content="일산애니톡만화애니학원"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다"><meta name="twitter:image" content="https://ilsan.anitok.com/gal/hero2.webp"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/#article","headline":"경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다","description":"2026학년도 경기예술고등학교 만화애니메이션과 실기에서 합격을 결정지은 것은 그림 실력이 아니라 주제를 비트는 발상이었습니다. 실제 출제 주제와 풀이, 초등에서 중3까지의 준비 과정을 정리했습니다.","image":"https://ilsan.anitok.com/gal/hero2.webp","datePublished":"2026-01-09","dateModified":"2026-01-09","inLanguage":"ko-KR","keywords":"경기예고 입시, 경기예고 만화애니과, 예고입시, 경기예고 영재반, 일산 입시미술학원","mainEntityOfPage":{"@type":"WebPage","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"},"author":{"@type":"Organization","name":"일산애니톡만화애니학원","@id":"https://ilsan.anitok.com/#organization"},"publisher":{"@id":"https://ilsan.anitok.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://ilsan.anitok.com/"},{"@type":"ListItem","position":2,"name":"학원 이야기","item":"https://ilsan.anitok.com/blog/"},{"@type":"ListItem","position":3,"name":"경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다","item":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"}]},{"@type":"FAQPage","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/#faq","mainEntity":[{"@type":"Question","name":"경기예고 만화애니과는 그림을 잘 그려야 붙나요?","acceptedAnswer":{"@type":"Answer","text":"잘 그리는 것은 기본 조건이지 합격 조건이 아닙니다. 2026학년도 실기에서 갈린 지점은 같은 주제를 어떻게 읽었는가였습니다. 대부분이 같은 방향으로 풀 때 다르게 읽은 학생이 남았습니다."}},{"@type":"Question","name":"언제부터 준비해야 하나요?","acceptedAnswer":{"@type":"Answer","text":"정해진 시점은 없습니다. 다만 중2 겨울에 입시 모드로 전환하면 인체·배경·상황 연출·스토리를 한 번에 훈련해야 해서 빠듯합니다. 그 전에 기초가 쌓여 있으면 그만큼 여유가 생깁니다."}},{"@type":"Question","name":"수채화를 못 하는데 미술 쪽은 무리일까요?","acceptedAnswer":{"@type":"Answer","text":"아닙니다. 색이 두려우면 색연필처럼 다루기 쉬운 재료부터 시작해 부담을 낮추는 편이 낫습니다. 처음부터 어려운 재료로 자신감을 깎는 것이 더 손해입니다."}},{"@type":"Question","name":"영재반에 붙으면 예고 합격에 유리한가요?","acceptedAnswer":{"@type":"Answer","text":"자동으로 이어지지는 않습니다. 다만 초등 시기에 방향을 잡고 시작하면 중학교 3년을 훨씬 밀도 있게 쓸 수 있습니다. 영재반은 그 출발점이 될 수 있습니다."}}]}]}</script></head><body><header><div><a class="brand" href="/"><img src="/gal/logo.webp" alt="일산애니톡만화애니학원"><span class="nm">일산애니톡만화애니학원</span></a><a class="cta" href="https://booking.naver.com/booking/6/bizes/626887" target="_blank" rel="noopener" data-cta="booking" data-loc="blog-header">네이버 예약 상담</a></div></header><main><article><h1>경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다</h1><div class="meta"><time datetime="2026-01-09">2026-01-09</time><span class="tag">경기예고 입시</span><span class="tag">경기예고 만화애니과</span><span class="tag">예고입시</span><span class="tag">경기예고 영재반</span><span class="tag">일산 입시미술학원</span></div><div class="lead">2026학년도 경기예술고등학교 만화애니메이션과 경쟁률은 만만치 않았습니다. 그 안에서 합격을 만든 것은 그림 실력이 아니었습니다.</div>
-<h2>실기 주제와 대부분의 답</h2>
+@media(min-width:720px){.cta-box .row{flex-direction:row;justify-content:center}.cta-box a{min-width:200px}}</style><meta property="og:type" content="article"><meta property="og:title" content="경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다"><meta property="og:description" content="2026학년도 경기예술고등학교 만화애니메이션과 실기에서 합격을 결정지은 것은 그림 실력이 아니라 주제를 비트는 발상이었습니다. 실제 출제 주제와 풀이, 초등에서 중3까지의 준비 과정을 정리했습니다."><meta property="og:url" content="https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"><meta property="og:image" content="https://ilsan.anitok.com/gal/hero2.webp"><meta property="og:site_name" content="일산애니톡만화애니학원"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다"><meta name="twitter:image" content="https://ilsan.anitok.com/gal/hero2.webp"><script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/#article","headline":"경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다","description":"2026학년도 경기예술고등학교 만화애니메이션과 실기에서 합격을 결정지은 것은 그림 실력이 아니라 주제를 비트는 발상이었습니다. 실제 출제 주제와 풀이, 초등에서 중3까지의 준비 과정을 정리했습니다.","image":"https://ilsan.anitok.com/gal/hero2.webp","datePublished":"2026-01-09","dateModified":"2026-01-09","inLanguage":"ko-KR","keywords":"경기예고 입시, 경기예고 만화애니과, 예고입시, 경기예고 영재반, 일산 입시미술학원","mainEntityOfPage":{"@type":"WebPage","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"},"author":{"@type":"Organization","name":"일산애니톡만화애니학원","@id":"https://ilsan.anitok.com/#organization"},"publisher":{"@id":"https://ilsan.anitok.com/#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"홈","item":"https://ilsan.anitok.com/"},{"@type":"ListItem","position":2,"name":"학원 이야기","item":"https://ilsan.anitok.com/blog/"},{"@type":"ListItem","position":3,"name":"경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다","item":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/"}]},{"@type":"FAQPage","@id":"https://ilsan.anitok.com/blog/gyeonggi-arts-highschool-admission/#faq","mainEntity":[{"@type":"Question","name":"경기예고 만화애니과는 그림을 잘 그려야 붙나요?","acceptedAnswer":{"@type":"Answer","text":"잘 그리는 것은 기본 조건이지 합격 조건이 아닙니다. 2026학년도 실기에서 갈린 지점은 같은 주제를 어떻게 읽었는가였습니다. 대부분이 같은 방향으로 풀 때 다르게 읽은 학생이 남았습니다."}},{"@type":"Question","name":"언제부터 준비해야 하나요?","acceptedAnswer":{"@type":"Answer","text":"정해진 시점은 없습니다. 다만 중2 겨울에 입시 모드로 전환하면 인체·배경·상황 연출·스토리를 한 번에 훈련해야 해서 빠듯합니다. 그 전에 기초가 쌓여 있으면 그만큼 여유가 생깁니다."}},{"@type":"Question","name":"수채화를 못 하는데 미술 쪽은 무리일까요?","acceptedAnswer":{"@type":"Answer","text":"아닙니다. 색이 두려우면 색연필처럼 다루기 쉬운 재료부터 시작해 부담을 낮추는 편이 낫습니다. 처음부터 어려운 재료로 자신감을 깎는 것이 더 손해입니다."}},{"@type":"Question","name":"영재반에 붙으면 예고 합격에 유리한가요?","acceptedAnswer":{"@type":"Answer","text":"자동으로 이어지지는 않습니다. 다만 초등 시기에 방향을 잡고 시작하면 중학교 3년을 훨씬 밀도 있게 쓸 수 있습니다. 영재반은 그 출발점이 될 수 있습니다."}}]}]}</script></head><body><header><div><a class="brand" href="/"><img src="/gal/logo.webp" alt="일산애니톡만화애니학원"><span class="nm">일산애니톡만화애니학원</span></a><a class="cta" href="https://booking.naver.com/booking/6/bizes/626887" target="_blank" rel="noopener" data-cta="booking" data-loc="blog-header">네이버 예약 상담</a></div></header><main><article><h1>경기예고 만화애니과, 합격을 가른 것은 기술이 아니었습니다</h1><div class="meta"><span class="cat">애니고·예고</span><time datetime="2026-01-09">2026-01-09</time><span>읽는 시간 2분</span><span class="tag">경기예고 입시</span><span class="tag">경기예고 만화애니과</span><span class="tag">예고입시</span><span class="tag">경기예고 영재반</span><span class="tag">일산 입시미술학원</span></div><div class="lead">2026학년도 경기예술고등학교 만화애니메이션과 경쟁률은 만만치 않았습니다. 그 안에서 합격을 만든 것은 그림 실력이 아니었습니다.</div><nav class="toc" aria-label="목차"><b>목차</b><ol><li class="l2"><a href="#s1">실기 주제와 대부분의 답</a></li><li class="l2"><a href="#s2">발상은 시험장에서 나오지 않습니다</a></li><li class="l2"><a href="#s3">초6에서 중3까지 — 실제 경로</a></li><li class="l2"><a href="#s4">기초가 없어서 걱정이라면</a></li></ol></nav>
+<h2 id="s1">실기 주제와 대부분의 답</h2>
 <p>출제된 상황은 이랬습니다.</p>
-<p>&gt; 미래, 대기오염이 심해져 산소캡슐을 빌려 써야 하는 사회</p>
+<aside class="note"><p>미래, 대기오염이 심해져 산소캡슐을 빌려 써야 하는 사회</p></aside>
 <p>대부분의 학생이 어둡고 무거운 디스토피아를 그렸습니다. 주제를 그대로 받은 자연스러운 반응입니다. 그리고 그렇게 그린 그림들은 서로 비슷해집니다.</p>
 <p>합격한 학생은 이렇게 풀었습니다.</p>
-<p>&gt; 부자들에게 분노한 주인공이 지독한 <strong>발 냄새</strong>로 그들을 물리친다</p>
+<aside class="note"><p>부자들에게 분노한 주인공이 지독한 <strong>발 냄새</strong>로 그들을 물리친다</p></aside>
 <p>심각한 상황을 개그로 비튼 것입니다. 채점자 입장에서 수십 장의 회색 디스토피아 사이에 이런 화면이 끼어 있으면 시선이 멈출 수밖에 없습니다.</p>
 <p><strong>기술이 아니라 발상이 갈랐습니다.</strong></p>
-<h2>발상은 시험장에서 나오지 않습니다</h2>
+<h2 id="s2">발상은 시험장에서 나오지 않습니다</h2>
 <p>&quot;창의적으로 그리세요&quot;라는 말은 아무 도움이 안 됩니다. 이런 사고력은 단기간에 만들어지지 않습니다.</p>
 <p>모의시험을 여러 번 치르고 그때마다 &quot;왜 이렇게 읽었는지&quot;에 대한 피드백을 받는 과정이 쌓여야 합니다. 한 주제를 놓고 세 가지로 풀어 보고, 어느 쪽이 왜 더 읽히는지를 확인하는 연습입니다. 그 반복이 시험장에서 30분 안에 방향을 정하는 힘이 됩니다.</p>
-<h2>초6에서 중3까지 — 실제 경로</h2>
+<h2 id="s3">초6에서 중3까지 — 실제 경로</h2>
 <p>이 학생의 시작은 평범했습니다.</p>
 <p><strong>초6, 첫 상담.</strong> 형태 감각과 선을 다루는 힘은 눈에 띄었습니다. 그런데 수채화만 잡으면 손이 굳었습니다. &quot;그림은 괜찮은데 색만 칠하면 망쳐요&quot;라고 했습니다. 흔한 경우입니다.</p>
 <p>그래서 무리하지 않고 <strong>채색을 색연필로 시작</strong>했습니다. 1:1로 색에 대한 두려움을 줄이는 데 집중했고, 그 과정에서 &quot;할 수 있다&quot;는 감각이 먼저 붙었습니다. 순서를 바꾼 것뿐입니다.</p>
@@ -59,8 +84,8 @@ footer a{color:#9A9A9A}
 <p><strong>중1~2.</strong> 방향이 잡혀 있으니 실력이 눈에 띄게 올라갔습니다. 손그림과 디지털 드로잉을 같이 하면서 인체 드로잉과 캐릭터 창작을 병행했습니다.</p>
 <p><strong>중2 겨울, 입시 모드 전환.</strong> 여기서부터는 &quot;잘 그리는 그림&quot;이 아니라 인체·배경·상황 연출·스토리를 함께 훈련했습니다.</p>
 <p><strong>중3.</strong> 이미 고등학생 수준의 완성도가 나왔습니다. 영재반 시절에 다져 둔 기초가 여기서 값을 했습니다.</p>
-<h2>기초가 없어서 걱정이라면</h2>
+<h2 id="s4">기초가 없어서 걱정이라면</h2>
 <p>상담에서 가장 많이 듣는 말이 &quot;아직 기초도 없는데요&quot;입니다.</p>
 <p>이 학생의 출발점도 수채화를 무서워하던 평범한 초등학생이었습니다. 초등·중등 시기 그림의 시작에 꼭 필요한 것은 실력이 아니라 <strong>즐거움</strong>입니다. 재미가 없으면 3년을 못 버팁니다.</p>
 <p>아이가 그림을 그릴 때 즐겁다고 말한다면, 그 신호를 그냥 넘기지 마세요. 초등 시기부터 성향을 읽고 입시와 진로까지 장기적인 로드맵을 함께 그려 주는 곳을 찾으시면 됩니다. 꼭 애니톡이 아니어도 괜찮습니다.</p>
-<p>상담에서는 아이의 성향과 그림을 같이 놓고 봅니다. 시간이 길어지는 편이라 예약을 해 주시면 기다리지 않으셔도 됩니다.</p><section class="faq"><h2>자주 묻는 질문</h2><details><summary>경기예고 만화애니과는 그림을 잘 그려야 붙나요?</summary><p>잘 그리는 것은 기본 조건이지 합격 조건이 아닙니다. 2026학년도 실기에서 갈린 지점은 같은 주제를 어떻게 읽었는가였습니다. 대부분이 같은 방향으로 풀 때 다르게 읽은 학생이 남았습니다.</p></details><details><summary>언제부터 준비해야 하나요?</summary><p>정해진 시점은 없습니다. 다만 중2 겨울에 입시 모드로 전환하면 인체·배경·상황 연출·스토리를 한 번에 훈련해야 해서 빠듯합니다. 그 전에 기초가 쌓여 있으면 그만큼 여유가 생깁니다.</p></details><details><summary>수채화를 못 하는데 미술 쪽은 무리일까요?</summary><p>아닙니다. 색이 두려우면 색연필처럼 다루기 쉬운 재료부터 시작해 부담을 낮추는 편이 낫습니다. 처음부터 어려운 재료로 자신감을 깎는 것이 더 손해입니다.</p></details><details><summary>영재반에 붙으면 예고 합격에 유리한가요?</summary><p>자동으로 이어지지는 않습니다. 다만 초등 시기에 방향을 잡고 시작하면 중학교 3년을 훨씬 밀도 있게 쓸 수 있습니다. 영재반은 그 출발점이 될 수 있습니다.</p></details></section><div class="cta-box"><p>궁금한 점은 상담으로 바로 확인하실 수 있습니다.<br>일산애니톡만화애니학원 · 일산 백마학원가</p><div class="row"><a class="primary" href="https://booking.naver.com/booking/6/bizes/626887" target="_blank" rel="noopener" data-cta="booking" data-loc="blog-article">네이버 예약 상담 신청 →</a><a class="ghost" href="tel:031-994-3134" data-cta="tel" data-loc="blog-article">031-994-3134</a></div></div></article></main><footer><p>일산애니톡만화애니학원 · 경기도 고양시 일산동구 일산로 200 3층 · 031-994-3134</p><p style="margin-top:10px"><a href="/">홈으로</a> · <a href="/blog/">글 목록</a></p></footer></body></html>
+<p>상담에서는 아이의 성향과 그림을 같이 놓고 봅니다. 시간이 길어지는 편이라 예약을 해 주시면 기다리지 않으셔도 됩니다.</p><section class="faq"><h2>자주 묻는 질문</h2><details><summary>경기예고 만화애니과는 그림을 잘 그려야 붙나요?</summary><p>잘 그리는 것은 기본 조건이지 합격 조건이 아닙니다. 2026학년도 실기에서 갈린 지점은 같은 주제를 어떻게 읽었는가였습니다. 대부분이 같은 방향으로 풀 때 다르게 읽은 학생이 남았습니다.</p></details><details><summary>언제부터 준비해야 하나요?</summary><p>정해진 시점은 없습니다. 다만 중2 겨울에 입시 모드로 전환하면 인체·배경·상황 연출·스토리를 한 번에 훈련해야 해서 빠듯합니다. 그 전에 기초가 쌓여 있으면 그만큼 여유가 생깁니다.</p></details><details><summary>수채화를 못 하는데 미술 쪽은 무리일까요?</summary><p>아닙니다. 색이 두려우면 색연필처럼 다루기 쉬운 재료부터 시작해 부담을 낮추는 편이 낫습니다. 처음부터 어려운 재료로 자신감을 깎는 것이 더 손해입니다.</p></details><details><summary>영재반에 붙으면 예고 합격에 유리한가요?</summary><p>자동으로 이어지지는 않습니다. 다만 초등 시기에 방향을 잡고 시작하면 중학교 3년을 훨씬 밀도 있게 쓸 수 있습니다. 영재반은 그 출발점이 될 수 있습니다.</p></details></section><div class="cta-box"><p>궁금한 점은 상담으로 바로 확인하실 수 있습니다.<br>일산애니톡만화애니학원 · 일산 백마학원가</p><div class="row"><a class="primary" href="https://booking.naver.com/booking/6/bizes/626887" target="_blank" rel="noopener" data-cta="booking" data-loc="blog-article">네이버 예약 상담 신청 →</a><a class="ghost" href="tel:031-994-3134" data-cta="tel" data-loc="blog-article">031-994-3134</a></div></div><section class="more"><h2>이어서 읽어보세요</h2><div class="cards"><a class="card" href="/blog/ilsan-webtoon-animation-talent/"><img src="/gal/blog/224376694697/1.webp" alt="일산만화학원, 그림 재능보다 웹툰·애니 입시에서 중요한 것" width="966" height="725" loading="lazy" decoding="async"><div class="body"><div class="card-meta"><span class="cat">입시</span><time datetime="2026-08-12">2026-08-12</time></div><h2>일산만화학원, 그림 재능보다 웹툰·애니 입시에서 중요한 것</h2><p>일산만화학원이 그림 재능을 걱정하는 학생에게 답합니다. 웹툰학과와 애니과 입시에서 슬럼프를 넘고 실력을 키우는 방법을 실제 합격 사례로 설명합니다.</p></div></a><a class="card" href="/blog/hwajeong-art-academy-shinhan-awards/"><img src="/gal/blog/224372191796/9.webp" alt="화정 미술학원에서 확인하는 신한엽서공모전 3년 연속 수상" width="557" height="407" loading="lazy" decoding="async"><div class="body"><div class="card-meta"><span class="cat">공모전·수상</span><time datetime="2026-08-08">2026-08-08</time></div><h2>화정 미술학원에서 확인하는 신한엽서공모전 3년 연속 수상</h2><p>화정 미술학원을 찾는 학부모와 학생을 위해 백마학원가 애니톡의 2024년 특선, 2025년 가작, 2026년 본상 수상 사례와 작품 성장 과정을 정리했습니다.</p></div></a><a class="card" href="/blog/ilsan-illustration-class-guide/"><img src="/gal/blog/224364975940/2.webp" alt="일산 일러스트학원, 캐릭터만 그리는 아이의 올바른 수업 선택법" width="749" height="275" loading="lazy" decoding="async"><div class="body"><div class="card-meta"><span class="cat">초·중등</span><time datetime="2026-08-01">2026-08-01</time></div><h2>일산 일러스트학원, 캐릭터만 그리는 아이의 올바른 수업 선택법</h2><p>캐릭터와 웹툰을 좋아하는 아이에게 맞는 일산 일러스트학원 선택 기준과 초·중등 만화 수업 내용, 시간과 수강료를 안내합니다.</p></div></a></div></section></article></main><footer><p>일산애니톡만화애니학원 · 경기도 고양시 일산동구 일산로 200 3층 · 031-994-3134</p><p style="margin-top:10px"><a href="/">홈으로</a> · <a href="/blog/">글 목록</a></p></footer></body></html>
