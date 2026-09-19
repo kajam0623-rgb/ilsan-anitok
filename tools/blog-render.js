@@ -157,11 +157,16 @@ function markdown(md) {
 
     // 참고 박스. 첫 줄이 **굵게**면 그 부분이 상자 제목이 된다.
     if (lines.every((l) => /^>\s?/.test(l))) {
-      const t = lines.map((l) => l.replace(/^>\s?/, '')).join(' ');
-      const lead = t.match(/^\*\*(.+?)\*\*\s*(.*)$/);
+      // 줄마다 따로 문단을 만든다. 합치면 따로 쓴 인용 두 개가 한 문장처럼 붙는다.
+      // 첫 줄을 **굵게** 로 열면 그 부분만 상자 제목이 된다.
+      const qs = lines.map((l) => l.replace(/^>\s?/, ''));
+      const lead = qs[0].match(/^\*\*(.+?)\*\*\s*(.*)$/);
+      const head = lead ? `<b>${inline(lead[1])}</b>` : '';
+      const rest = lead ? [lead[2], ...qs.slice(1)] : qs;
       out.push(
         `<aside class="note">` +
-          (lead ? `<b>${inline(lead[1])}</b>${lead[2] ? `<p>${inline(lead[2])}</p>` : ''}` : `<p>${inline(t)}</p>`) +
+          head +
+          rest.filter(Boolean).map((l) => `<p>${inline(l)}</p>`).join('') +
           `</aside>`
       );
       continue;
