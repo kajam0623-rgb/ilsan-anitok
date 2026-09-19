@@ -157,6 +157,9 @@ function markdown(md) {
 
     // 참고 박스. 첫 줄이 **굵게**면 그 부분이 상자 제목이 된다.
     if (lines.every((l) => /^>\s?/.test(l))) {
+      // <aside> 로 감싸면 본문 추출기(AI 답변 엔진이 쓰는 그 방식)가 통째로
+      // 버린다. 실제로 읽어 보니 상자 안의 문장이 사라져 있었다. 인용되려고
+      // 하는 일인데 정반대가 된다. blockquote 는 본문으로 남는다.
       // 줄마다 따로 문단을 만든다. 합치면 따로 쓴 인용 두 개가 한 문장처럼 붙는다.
       // 첫 줄을 **굵게** 로 열면 그 부분만 상자 제목이 된다.
       const qs = lines.map((l) => l.replace(/^>\s?/, ''));
@@ -164,10 +167,10 @@ function markdown(md) {
       const head = lead ? `<b>${inline(lead[1])}</b>` : '';
       const rest = lead ? [lead[2], ...qs.slice(1)] : qs;
       out.push(
-        `<aside class="note">` +
+        `<blockquote class="note">` +
           head +
           rest.filter(Boolean).map((l) => `<p>${inline(l)}</p>`).join('') +
-          `</aside>`
+          `</blockquote>`
       );
       continue;
     }
