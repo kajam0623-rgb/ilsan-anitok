@@ -260,6 +260,11 @@ seo(/그림 하나로<br>하루를 채우는 공간/, () => '일산만화학원 
 // weight than a link from the site's strongest page. Three entry points go in — a
 // section in the scroll path, a nav link, and a footer link. The nav is hidden below
 // 860px, so on a phone the section and the footer are what carry it.
+// 글 제목과 설명이 그대로 HTML 안에 들어간다. 지금은 &, < 를 쓴 글이 없지만
+// 하나만 나와도 카드가 깨지고, 그때는 원인을 찾기 어렵다. 넣을 때 막는다.
+const esc = (v) =>
+  String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 const POSTS_DIR = path.join(__dirname, 'content', 'posts');
 let posts = [];
 if (fs.existsSync(POSTS_DIR)) {
@@ -294,11 +299,11 @@ if (posts.length) {
     // 사진이 없는 글은 카드 윗부분이 통째로 비어 3열 중 하나만 키가 어긋난다.
     // 같은 높이의 빈 판을 대신 깔아 줄을 맞춘다. blog/ 목록도 같은 방식이다.
     (p.image
-      ? `<img src="${p.image}" alt="${p.title.replace(/"/g, '&quot;')}" loading="lazy" decoding="async" style="display:block;width:100%;height:170px;object-fit:cover">`
+      ? `<img src="${p.image}" alt="${esc(p.title)}" loading="lazy" decoding="async" style="display:block;width:100%;height:170px;object-fit:cover">`
       : `<span aria-hidden="true" style="display:block;width:100%;height:170px;background:linear-gradient(180deg,#17171A,#0F0F11);border-bottom:1px solid #232326"></span>`) +
     `<div style="padding:22px 20px">` +
-    `<div style="font-size:19px;font-weight:800;line-height:1.4;letter-spacing:-.03em;word-break:keep-all;margin-bottom:10px">${p.title}</div>` +
-    `<div style="font-size:14px;line-height:1.7;color:#A8A8AC;word-break:keep-all">${p.description}</div>` +
+    `<div style="font-size:19px;font-weight:800;line-height:1.4;letter-spacing:-.03em;word-break:keep-all;margin-bottom:10px">${esc(p.title)}</div>` +
+    `<div style="font-size:14px;line-height:1.7;color:#A8A8AC;word-break:keep-all">${esc(p.description)}</div>` +
     `</div></a>`;
 
   const section =
@@ -955,73 +960,16 @@ template =
 // canonical, the og/twitter set and the ld+json graph — inside a <helmet> element in
 // the BODY, and the app hoists it into <head> at runtime. A crawler that executes JS
 // sees the right head; one that does not sees a <head> with no title at all. Naver's
-// crawler is the weak one at JS rendering, and Naver is where the target queries are
-// searched, so hoist at build time instead. The runtime then finds an empty <helmet>
-// and has nothing left to move.
-const helmet = template.match(/(<helmet>)([\s\S]*?)(<\/helmet>)/i);
-if (helmet) {
-  const contents = helmet[2].trim();
-  template = template.replace(helmet[0], helmet[1] + helmet[3]);
-  template = template.replace(/<\/head>/i, contents + '\n</head>');
-  console.log(`hoist        <helmet> -> <head> (${contents.length} chars)`);
-}
-
-// 히어로의 예약 · 전화 버튼을 걷어낸다. 같은 동선이 상단바와 하단 액션바,
-// 모바일 메뉴, FAQ 아래 CTA, '오시는 길'에 이미 있어서 첫 화면은 문구만 남긴다.
-// data-herocta 는 위에서 붙여 둔 표식이라 여기서 그 블록만 정확히 집어낼 수 있다.
-{
-  const open = template.indexOf('<div data-herocta="1"');
-  if (open === -1) {
-    console.log('herocta     already gone');
-  } else {
-    let depth = 0;
-    let i = open;
-    for (;;) {
-      const o = template.indexOf('<div', i);
-      const c = template.indexOf('</div>', i);
-      if (c === -1) throw new Error('hero CTA: 닫는 태그를 찾지 못했다');
-      if (o !== -1 && o < c) { depth++; i = o + 4; }
-      else { depth--; i = c + 6; if (depth === 0) break; }
-    }
-    let pre = open;
-    while (pre > 0 && (template[pre - 1] === ' ' || template[pre - 1] === '\t')) pre--;
-    if (pre > 0 && template[pre - 1] === '\n') pre--;
-    console.log(`drop         hero CTA (${i - open} chars)`);
-    template = template.slice(0, pre) + template.slice(i);
-  }
-}
-
-fs.writeFileSync(path.join(outDir, 'index.html'), template);
-
-// robots.txt and sitemap.xml ship beside the bundle and name the same authored
-// origin, so they get the same treatment — a sitemap that declares the head
-// office's URL as this page's location would undo the canonical fix.
-// 원본 사이트맵에는 홈 한 줄뿐이라, 블로그 글 스물두 편이 검색엔진에 목록으로는
-// 전달되지 않았다. 글마다 손으로 적어 넣으면 새 글이 올라올 때 또 빠지므로,
-// content/posts 를 그대로 펼친다. 실제로 페이지가 만들어진 글만 넣는다 —
-// 없는 주소를 사이트맵에 적으면 크롤러가 404 를 받는다.
-function withBlogUrls(xml) {
-  const live = posts.filter((p) => fs.existsSync(path.join(outDir, 'blog', p.slug, 'index.html')));
-  if (!live.length || !xml.includes('</urlset>')) return xml;
-  const url = (loc, lastmod, priority) =>
-    `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n` +
-    `    <changefreq>monthly</changefreq>\n    <priority>${priority}</priority>\n  </url>\n`;
-  const newest = live.reduce((a, p) => (p.date > a ? p.date : a), live[0].date);
-  const rows =
-    url(`${SITE}/blog/`, newest, '0.8') +
-    live.map((p) => url(`${SITE}/blog/${p.slug}/`, p.date, '0.7')).join('');
-  console.log(`sitemap      ${String(live.length + 1).padStart(6)}     blog urls added`);
-  return xml.replace('</urlset>', rows + '</urlset>');
-}
-
-for (const name of ['robots.txt', 'sitemap.xml']) {
+// 사이트맵은 tools/blog-render.js 가 만든다. 예전에는 여기서도 만들었는데, 두
+// 도구가 같은 파일을 각자 덮어써서 나중에 돌린 쪽이 이겼다. 글 페이지를 만드는
+// 것은 blog-render 라 그쪽이 나중에 돌아야 하고, 그러면 여기서 넣던 lastmod 가
+// 조용히 사라졌다. 주인을 하나로 뒀다.
+for (const name of ['robots.txt']) {
   const from = path.join(path.dirname(srcPath), name);
   if (!fs.existsSync(from)) continue;
   const body = fs.readFileSync(from, 'utf8');
   repointed += body.split(AUTHORED_AT).length - 1;
-  let out = body.split(AUTHORED_AT).join(SITE);
-  if (name === 'sitemap.xml') out = withBlogUrls(out);
-  fs.writeFileSync(path.join(outDir, name), out);
+  fs.writeFileSync(path.join(outDir, name), body.split(AUTHORED_AT).join(SITE));
 }
 
 const kb = (n) => (n / 1024).toFixed(0).padStart(6) + ' KB';

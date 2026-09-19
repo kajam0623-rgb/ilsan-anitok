@@ -195,6 +195,45 @@ function inline(s) {
     .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 }
 
+// --- lint ------------------------------------------------------------------
+// markdown() 이 못 알아보는 문법은 조용히 원문 그대로 새어 나간다. 표 구분줄을
+// 빠뜨린 표가 파이프째 지면에 찍히는 사고를 한 번 겪었다. 사람이 눈으로 잡는
+// 대신 빌드에서 막는다. 못 그리는 것은 안 그리는 편이 낫고, 잘못 그리는 것은
+// 그보다 나쁘다.
+function lintBody(file, body, firstLine) {
+  // 줄 번호는 파일 기준으로 낸다. 본문 기준으로 세면 프론트매터 길이만큼 어긋나
+  // 사람이 파일을 열었을 때 엉뚱한 줄을 보게 된다.
+  const lineOf = (idx) => firstLine + (body.slice(0, idx).match(/\n/g) || []).length;
+  const fail = (n, why) => {
+    throw new Error(`${file}:${n}: ${why}`);
+  };
+  let cursor = 0;
+  for (const raw of body.split(/\r?\n\r?\n+/)) {
+    const start = body.indexOf(raw, cursor);
+    cursor = start + raw.length;
+    if (!raw.trim()) continue;
+    const at = lineOf(start);
+    const lines = raw.split(/\r?\n/);
+    const t = lines.map((l) => l.trim());
+
+    // 표: 머리줄 다음에 | --- | --- | 가 없으면 표로 그려지지 않고 파이프가 글자로 남는다.
+    if (/^\|.*\|$/.test(t[0]) && !(t.length >= 2 && /^\|[\s:|-]+\|$/.test(t[1]))) {
+      fail(at, '표에 구분줄이 없다. 이 줄 바로 아래에 | --- | --- | 를 넣을 것 — ' + t[0].slice(0, 40));
+    }
+    // 제목: ## 과 ### 만 그린다. # 과 #### 이상은 글자로 새어 나간다.
+    for (const [i, l] of t.entries()) {
+      const h = l.match(/^(#+)\s/);
+      if (h && (h[1].length < 2 || h[1].length > 3)) {
+        fail(at + i, `## 와 ### 만 쓸 수 있다(받은 것: ${h[1]}) — ` + l.slice(0, 40));
+      }
+    }
+    // 굵게: ** 가 홀수면 한쪽이 안 닫힌 것이고, 별표가 그대로 남는다.
+    if (((raw.match(/\*\*/g) || []).length) % 2) {
+      fail(at, '굵게 표시(**)의 짝이 맞지 않는다. 별표가 글자로 남는다');
+    }
+  }
+}
+
 // --- shared chrome ---------------------------------------------------------
 const CSS = `
 *{margin:0;padding:0;box-sizing:border-box}
@@ -320,8 +359,12 @@ const posts = fs
   .readdirSync(POST_DIR)
   .filter((f) => f.endsWith('.md'))
   .map((f) => {
-    const { meta, body } = parseFrontmatter(fs.readFileSync(path.join(POST_DIR, f), 'utf8'));
+    const raw = fs.readFileSync(path.join(POST_DIR, f), 'utf8');
+    const { meta, body } = parseFrontmatter(raw);
     if (!meta.slug) throw new Error(f + ': frontmatter has no slug');
+    // 프론트매터가 차지한 줄 수 + 1 이 본문 첫 줄의 파일 내 위치다.
+    const firstLine = (raw.slice(0, raw.length - body.length).match(/\n/g) || []).length + 1;
+    lintBody(f, body, firstLine);
     return { meta, body, file: f };
   })
   .sort((a, b) => String(b.meta.date).localeCompare(String(a.meta.date)));
@@ -503,9 +546,21 @@ fs.writeFileSync(
 );
 
 // sitemap
+// 랜딩의 lastmod 는 손으로 관리하는 bundle/sitemap.xml 에 적혀 있다. 여기서
+// 지어내면 글 하나 올릴 때마다 랜딩까지 바뀐 것처럼 보고하게 된다.
+const authoredLastmod = (() => {
+  try {
+    const src = fs.readFileSync(path.join(ROOT, 'bundle', 'sitemap.xml'), 'utf8');
+    return (src.match(/<lastmod>([^<]+)<\/lastmod>/) || [])[1] || null;
+  } catch {
+    return null;
+  }
+})();
+// 목록의 lastmod 는 가장 최근 글의 날짜다. 글이 없으면 붙이지 않는다.
+const newest = posts.reduce((a, p) => (p.meta.date > a ? p.meta.date : a), '');
 const urls = [
-  { loc: SITE + '/', pri: '1.0' },
-  { loc: SITE + '/blog/', pri: '0.8' },
+  { loc: SITE + '/', pri: '1.0', lastmod: authoredLastmod },
+  { loc: SITE + '/blog/', pri: '0.8', lastmod: newest || null },
   ...posts.map((p) => ({ loc: SITE + '/blog/' + p.meta.slug + '/', pri: '0.7', lastmod: p.meta.date })),
 ];
 fs.writeFileSync(
