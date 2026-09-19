@@ -265,7 +265,10 @@ let posts = [];
 if (fs.existsSync(POSTS_DIR)) {
   posts = fs
     .readdirSync(POSTS_DIR)
-    .filter((f) => /^\d+\.md$/.test(f))
+    // 파일명이 숫자인 글만 읽던 자리다. 네이버에서 가져온 글은 글번호가 파일명이라
+    // 걸렸지만, 손으로 쓴 글은 이름이 슬러그라 통째로 빠졌다. 그 글은 사이트맵에도
+    // 홈 화면 카드에도 나오지 않았다. blog-render.js 는 처음부터 .md 를 다 읽는다.
+    .filter((f) => f.endsWith('.md'))
     .map((f) => {
       const head = (fs.readFileSync(path.join(POSTS_DIR, f), 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/) || [])[1] || '';
       const get = (k) => ((head.match(new RegExp('^' + k + ':\\s*"?([^"\\n]+)"?', 'm')) || [])[1] || '').trim();
@@ -288,9 +291,11 @@ if (posts.length) {
     // nowrap }` for its nav pills, and a card is an anchor, so without this the
     // title runs off the side instead of wrapping.
     `<a href="/blog/${p.slug}/" data-cta="blog" data-loc="home-stories" style="display:block;background:#131317;border:1px solid #232326;border-radius:18px;overflow:hidden;color:#FFFFFF;text-align:left;white-space:normal">` +
+    // 사진이 없는 글은 카드 윗부분이 통째로 비어 3열 중 하나만 키가 어긋난다.
+    // 같은 높이의 빈 판을 대신 깔아 줄을 맞춘다. blog/ 목록도 같은 방식이다.
     (p.image
       ? `<img src="${p.image}" alt="${p.title.replace(/"/g, '&quot;')}" loading="lazy" decoding="async" style="display:block;width:100%;height:170px;object-fit:cover">`
-      : '') +
+      : `<span aria-hidden="true" style="display:block;width:100%;height:170px;background:linear-gradient(180deg,#17171A,#0F0F11);border-bottom:1px solid #232326"></span>`) +
     `<div style="padding:22px 20px">` +
     `<div style="font-size:19px;font-weight:800;line-height:1.4;letter-spacing:-.03em;word-break:keep-all;margin-bottom:10px">${p.title}</div>` +
     `<div style="font-size:14px;line-height:1.7;color:#A8A8AC;word-break:keep-all">${p.description}</div>` +
@@ -565,6 +570,41 @@ const storyRail =
   '<span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;' +
   'letter-spacing:-.02em;overflow:hidden">학원 이야기</span></a>';
 seo(new RegExp(RAIL_HEAD.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), (a) => storyRail + '\n    ' + a);
+
+// 사이드메뉴는 글자만 일곱 줄이라 훑을 때 '학원 이야기'가 나머지와 구분되지 않는다.
+// 아이콘을 하나 붙여 눈에 걸리게 하고, 바로 아래에 네이버 블로그를 한 줄 더 준다.
+// 네이버 블로그는 지금까지 '오시는 길' 아래 동그란 아이콘으로만 있어서, 메뉴를 연
+// 사람에게는 보이지 않았다. 이 둘은 같은 '읽을 것'이므로 나란히 둔다.
+const menuIcon = (paths) =>
+  '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ' +
+  'style="flex:0 0 auto;color:#FF3B45">' + paths + '</svg>';
+// 펼친 책. 하단 바의 '학원 이야기'와 같은 아이콘을 써서 두 자리가 같은 곳임을 알린다.
+const ICON_BOOK =
+  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>' +
+  '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>';
+// 모서리 접힌 문서. 오시는 길의 네이버 블로그 아이콘과 같은 모양이다.
+const ICON_DOC =
+  '<path d="M4 4h11l5 5v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"></path>' +
+  '<path d="M8 12h8"></path><path d="M8 16h5"></path>';
+const MENU_ATTRS =
+  'data-menuitem="1" style="display:flex;align-items:center;justify-content:space-between;' +
+  'padding:17px 4px;font-size:17px;font-weight:700;color:#FFFFFF;border-bottom:1px solid #232326"';
+const menuLabel = (icon, text) =>
+  '<span style="display:inline-flex;align-items:center;gap:11px">' + menuIcon(icon) + text + '</span>';
+const storyMenu =
+  '<a href="/blog/" ' + MENU_ATTRS + '>' +
+  menuLabel(ICON_BOOK, '학원 이야기') +
+  '<span aria-hidden="true" style="color:#8C8C8C">→</span></a>' +
+  // 바깥으로 나가는 링크라 화살표를 바꿔 둔다. 새 탭으로 열리는 것을 누르기 전에 알린다.
+  '<a href="https://blog.naver.com/anitalk-ilsan" target="_blank" rel="noopener" ' +
+  'data-cta="naverblog" data-loc="mobile-menu" ' + MENU_ATTRS + '>' +
+  menuLabel(ICON_DOC, '네이버 블로그') +
+  '<span aria-hidden="true" style="color:#8C8C8C">↗</span></a>';
+seo(
+  /<a href="\/blog\/" data-menuitem="1"[^>]*>학원 이야기<span aria-hidden="true" style="color:#8C8C8C">→<\/span><\/a>/,
+  () => storyMenu
+);
 // A plain #anchor lands the class card flush with the top of the viewport, where the
 // 64px sticky header covers its "CLASS 01 고등반" title row — you arrive mid-sentence
 // with no way to tell which class you are looking at. scroll-margin-top does not fix
