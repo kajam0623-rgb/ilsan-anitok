@@ -960,6 +960,54 @@ template =
 // canonical, the og/twitter set and the ld+json graph — inside a <helmet> element in
 // the BODY, and the app hoists it into <head> at runtime. A crawler that executes JS
 // sees the right head; one that does not sees a <head> with no title at all. Naver's
+// crawler is the weak one at JS rendering, and Naver is where the target queries are
+// searched, so hoist at build time instead. The runtime then finds an empty <helmet>
+// and has nothing left to move.
+const helmet = template.match(/(<helmet>)([\s\S]*?)(<\/helmet>)/i);
+if (helmet) {
+  const contents = helmet[2].trim();
+  template = template.replace(helmet[0], helmet[1] + helmet[3]);
+  template = template.replace(/<\/head>/i, contents + '\n</head>');
+  console.log(`hoist        <helmet> -> <head> (${contents.length} chars)`);
+}
+
+// 히어로의 예약 · 전화 버튼을 걷어낸다. 같은 동선이 상단바와 하단 액션바,
+// 모바일 메뉴, FAQ 아래 CTA, '오시는 길'에 이미 있어서 첫 화면은 문구만 남긴다.
+// data-herocta 는 위에서 붙여 둔 표식이라 여기서 그 블록만 정확히 집어낼 수 있다.
+{
+  const open = template.indexOf('<div data-herocta="1"');
+  if (open === -1) {
+    console.log('herocta     already gone');
+  } else {
+    let depth = 0;
+    let i = open;
+    for (;;) {
+      const o = template.indexOf('<div', i);
+      const c = template.indexOf('</div>', i);
+      if (c === -1) throw new Error('hero CTA: 닫는 태그를 찾지 못했다');
+      if (o !== -1 && o < c) { depth++; i = o + 4; }
+      else { depth--; i = c + 6; if (depth === 0) break; }
+    }
+    let pre = open;
+    while (pre > 0 && (template[pre - 1] === ' ' || template[pre - 1] === '\t')) pre--;
+    if (pre > 0 && template[pre - 1] === '\n') pre--;
+    console.log(`drop         hero CTA (${i - open} chars)`);
+    template = template.slice(0, pre) + template.slice(i);
+  }
+}
+
+// 결과를 파일로 내보낸다. 한 번 이 줄이 사라진 적이 있다. 사이트맵 담당을 옮기는
+// 커밋이 아래 robots.txt 묶음을 고쳐 쓰면서 이 줄까지 함께 지웠고, 빌드는 멀쩡히
+// 끝나고 크기까지 찍어 주는데 index.html 만 이틀 동안 그대로였다. 그래서 쓴 다음
+// 꼭 읽어 보고 확인한다 — 다음에 또 지워지면 빌드가 그 자리에서 멈춘다.
+fs.writeFileSync(path.join(outDir, 'index.html'), template);
+{
+  const back = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8');
+  if (back !== template) throw new Error('index.html 을 쓰지 못했다');
+  const head = back.slice(0, back.search(/<\/head>/i));
+  if (!/<title>/i.test(head)) throw new Error('index.html <head> 에 title 이 없다');
+}
+
 // 사이트맵은 tools/blog-render.js 가 만든다. 예전에는 여기서도 만들었는데, 두
 // 도구가 같은 파일을 각자 덮어써서 나중에 돌린 쪽이 이겼다. 글 페이지를 만드는
 // 것은 blog-render 라 그쪽이 나중에 돌아야 하고, 그러면 여기서 넣던 lastmod 가
