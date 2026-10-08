@@ -239,6 +239,14 @@ function lintBody(file, body, firstLine) {
     if (((raw.match(/\*\*/g) || []).length) % 2) {
       fail(at, '굵게 표시(**)의 짝이 맞지 않는다. 별표가 글자로 남는다');
     }
+    // 코드: ``` 과 ` 는 그리지 않는다. 실제로 성적과 실기 글에 ``` 블록이 들어가
+    // 있었는데, 백틱 세 개가 본문에 글자 그대로 떠 있었다. 숫자를 나란히 보이려면
+    // 표를 쓴다.
+    for (const [i, l] of t.entries()) {
+      if (l.includes('`')) {
+        fail(at + i, '백틱(`)은 그리지 않는다. 글자로 남는다. 표를 쓸 것 — ' + l.slice(0, 40));
+      }
+    }
   }
 }
 
