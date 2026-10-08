@@ -302,6 +302,7 @@ details p{padding-bottom:18px;margin:0}
 .card img,.card-ph{display:block;width:100%;height:170px;object-fit:cover}
 .card-ph{background:linear-gradient(180deg,#17171A,#0F0F11)}
 .card .body{padding:18px 20px 22px}
+.tally{margin-bottom:36px;font-size:13px;color:#8C8C8C;word-break:keep-all}
 .card-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:#8C8C8C}
 .cat{background:#2A0F11;border:1px solid #4A1418;color:#FF7A80;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700}
 .card h2{font-size:17px;line-height:1.4;margin:0 0 8px;border:0;padding:0}
@@ -404,10 +405,17 @@ function card(p) {
     `<div class="card-meta">` +
     (category(p.meta.category) ? `<span class="cat">${esc(category(p.meta.category))}</span>` : '') +
     `<time datetime="${p.meta.date}">${p.meta.date}</time>` +
+    `<span>${readingMinutes(p.body)}분 분량</span>` +
     `</div>` +
     `<h2>${esc(p.meta.title)}</h2><p>${esc(p.meta.description)}</p></div></a>`
   );
 }
+
+// '이어서 읽어보세요' 가 돌아가며 모든 글을 집도록 집힌 횟수를 센다. 날짜순으로
+// 같은 반 글부터 채우기만 하면 목록 뒤쪽 글은 한 번도 걸리지 않는다. 실제로 글
+// 다섯 편은 다른 글에서 들어오는 링크가 0이었다 — 목록에서만 닿는 글은 검색에서
+// 밀린다.
+const linkedFrom = new Map(posts.map((p) => [p.meta.slug, 0]));
 
 for (const post of posts) {
   const { meta, body } = post;
@@ -486,11 +494,17 @@ for (const post of posts) {
         `</ol></nav>`
       : '';
 
-  // 같은 반을 찾아온 독자에게는 같은 반 이야기가 먼저 걸린다. 모자라면 최신 글로 채운다.
+  // 같은 반을 찾아온 독자에게는 같은 반 이야기가 먼저 걸린다. 모자라면 다른 반에서
+  // 채우고, 두 묶음 모두 아직 덜 걸린 글을 앞에 둔다 (동률이면 최신 글).
+  const byNeed = (a, b) =>
+    linkedFrom.get(a.meta.slug) - linkedFrom.get(b.meta.slug) ||
+    String(b.meta.date).localeCompare(String(a.meta.date));
+  const others = posts.filter((p) => p.meta.slug !== meta.slug);
   const related = [
-    ...posts.filter((p) => p.meta.slug !== meta.slug && p.meta.category === meta.category),
-    ...posts.filter((p) => p.meta.slug !== meta.slug && p.meta.category !== meta.category),
+    ...others.filter((p) => p.meta.category === meta.category).sort(byNeed),
+    ...others.filter((p) => p.meta.category !== meta.category).sort(byNeed),
   ].slice(0, 3);
+  for (const p of related) linkedFrom.set(p.meta.slug, linkedFrom.get(p.meta.slug) + 1);
   const relatedHtml = related.length
     ? `<section class="more"><h2>이어서 읽어보세요</h2><div class="cards">` +
       related.map((p) => card(p)).join('') +
@@ -545,7 +559,16 @@ fs.writeFileSync(
     body:
       header() +
       `<main class="wide"><h1>학원 이야기</h1>` +
-      `<p style="margin-bottom:36px">일산 백마학원가에서 만화 · 웹툰 · 애니메이션을 가르치며 정리한 이야기입니다.</p>` +
+      `<p style="margin-bottom:14px">일산 백마학원가에서 만화 · 웹툰 · 애니메이션을 가르치며 정리한 이야기입니다.</p>` +
+      `<p class="tally">${(() => {
+        const n = new Map();
+        for (const p of posts) {
+          const c = category(p.meta.category) || '기타';
+          n.set(c, (n.get(c) || 0) + 1);
+        }
+        const parts = [...n.entries()].sort((a, b) => b[1] - a[1]).map(([c, k]) => `${esc(c)} ${k}편`);
+        return `글 ${posts.length}편 · ` + parts.join(' · ');
+      })()}</p>` +
       `<div class="cards">${cards}</div>` +
       ctaBox('blog-index') +
       `</main>` +
