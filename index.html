@@ -321,7 +321,7 @@
     <div style="max-width:1200px;margin:0 auto;text-align:center">
       <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8A8A8A">Admission Results</div>
       <h2 data-reveal="60" style="margin:16px 0 0;font-size:clamp(26px,3.2vw,40px);line-height:1.35;letter-spacing:-.04em;font-weight:800">결과로 증명하는<br>만화 · 애니 입시 전문 교육</h2>
-      <a data-cta="booking" data-loc="results" data-reveal="120" href="{{ bookingUrl }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:#BD0D16;color:#FFFFFF;font-size:14px;font-weight:700;padding:13px 30px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#BD0D16;text-decoration:none;transform:translateY(-3px) scale(1.03)">2026 합격생 명단 보러가기 →</a>
+      <a data-loc="results" data-reveal="120" href="#pass-list" style="display:inline-flex;align-items:center;gap:10px;margin-top:28px;background:#BD0D16;color:#FFFFFF;font-size:14px;font-weight:700;padding:13px 30px;border-radius:999px;transition:transform 520ms cubic-bezier(.22,1.4,.36,1), background 320ms ease, color 320ms ease, box-shadow 420ms cubic-bezier(.16,1,.3,1)" style-hover="background:#FFFFFF;color:#BD0D16;text-decoration:none;transform:translateY(-3px) scale(1.03)">2026 합격생 명단 보러가기 →</a>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:20px;margin-top:78px;align-items:stretch">
         <div data-reveal="0" data-lift="1" style="background:#FFFFFF;color:#111111;border-radius:16px;padding:28px 22px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;transition:transform 480ms cubic-bezier(.16,1,.3,1), box-shadow 480ms cubic-bezier(.16,1,.3,1)">
@@ -351,7 +351,7 @@
     </div>
   </section>
 
-  <section style="background:#0F0F11;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">
+  <section id="pass-list" style="scroll-margin-top:80px;background:#0F0F11;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">
     <div style="max-width:1200px;margin:0 auto">
       <div style="text-align:center">
         <div data-reveal="0" style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Pass List</div>
@@ -1170,7 +1170,7 @@ class Component extends DCLogic {
 
   renderVals() {
     return {
-      bookingUrl: this.props.bookingUrl ?? 'https://booking.naver.com/booking/6/bizes/626887',
+      bookingUrl: this.props.bookingUrl ?? 'https://booking.naver.com/booking/6/bizes/626887/items/4216506',
       steps: this.stepEls(),
       classGroups: this.classGroupEls(),
       passList: this.passEls(),
