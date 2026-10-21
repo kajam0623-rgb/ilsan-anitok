@@ -556,25 +556,78 @@ const classNav =
   '</nav>';
 seo(/(<aside data-rail="1")/, (_, a) => classNav + '\n  ' + a);
 
-// 블로그가 서랍 메뉴 안에만 있어 서랍을 열지 않으면 스물두 편이 어디에도 보이지
-// 않았다. 늘 떠 있는 하단 바에 한 자리를 준다. 예약 버튼은 CSS 에서
-// nth-of-type(2) 로 색을 입히므로 그 앞에 끼워 넣으면 색이 옮겨 간다. 애니톡
-// 홈페이지 앞, 네 번째 자리에 넣어 순서를 건드리지 않는다.
-const RAIL_HEAD =
-  '<a href="https://anitok.com/" target="_blank" rel="noopener" ' +
-  'style="display:flex;align-items:center;gap:0;height:48px;';
-const storyRail =
-  '<a href="/blog/" data-cta="blog" data-loc="bottombar" ' +
-  'style="display:flex;align-items:center;gap:0;height:48px;padding:0 14px;border-radius:999px;' +
-  'background:rgba(20,20,22,.72);backdrop-filter:blur(14px) saturate(1.3);' +
-  'border:1px solid rgba(255,255,255,.12);color:#FFFFFF;box-shadow:0 8px 28px rgba(0,0,0,.45);overflow:hidden">' +
-  '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
-  'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-  '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>' +
-  '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>' +
-  '<span data-sidelabel="1" style="max-width:0;opacity:0;white-space:nowrap;font-size:13px;font-weight:700;' +
-  'letter-spacing:-.02em;overflow:hidden">학원 이야기</span></a>';
-seo(new RegExp(RAIL_HEAD.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), (a) => storyRail + '\n    ' + a);
+// 빠른 메뉴(사이드 레일)를 통째로 다시 만든다.
+//
+// 고치기 전 상태를 브라우저로 재 보고 고친 것들:
+//  - PC 에서 라벨 폭이 평소 0px 이었다. 마우스를 올려야 43px 로 펴진다. 즉 PC
+//    에서는 뜻 모를 동그라미 여섯 개가 전부였다. 사용자 표현 그대로 "무슨 말을
+//    하는지 아이콘도 이해가 안 된다". 넓은 화면에서는 글자를 늘 보이게 한다.
+//  - 라벨을 펴는 코드가 mouseenter/mouseleave 에만 걸려 있어 키보드로는 끝내
+//    글자가 나오지 않았다(포커스 전후 모두 0px). :focus-visible 을 CSS 로 준다.
+//  - '맨 위로' 에는 라벨도 aria-label 도 없어 이름 없는 링크로 읽혔다.
+//  - 아이콘이 뜻과 어긋났다. 체크(=완료)로 합격실적을, 말풍선(=채팅)으로 예약을,
+//    지구본(=언어·세계)으로 본사 홈페이지를 가리키고 있었다.
+//  - 알약 배경이 rgba(20,20,22,.72) 라 순흑 배경에서 거의 묻혔다.
+//
+// 항목도 바꾼다. '애니톡 홈페이지' 는 상담으로 이어져야 할 자리를 본사 사이트로
+// 내보내는 데 쓰고 있었다 — 빼고 꼬리글에 남긴다. 대신 상담 전에 가장 많이 찾는
+// '오시는 길'(#visit) 을 넣는다. '합격결과' 는 헤더 메뉴와 같은 '합격실적' 으로 맞춘다.
+//
+// 인라인 스타일 더미 대신 클래스로 간다. 특히 빨강 강조를 nth-of-type(2) 가
+// 아니라 .pri 로 거는 것이 중요하다 — 위치로 걸어 두면 항목 순서를 바꿀 때마다
+// 강조가 엉뚱한 버튼으로 옮겨 간다(이번에 순서가 바뀐다).
+//
+// 기존 스크립트를 건드리지 않고 비켜 가는 방법: 라벨을 펴던 핸들러는
+// `querySelector('[data-sidelabel]')` 가 없으면 스스로 빠져나간다. 새 마크업은
+// 그 속성을 쓰지 않으므로 핸들러가 저절로 꺼진다. 반대로 data-totop(스크롤 70%
+// 등장)과 data-cta/data-loc(클릭 분석)은 그대로 둬야 해서 유지한다.
+const railIcon = (paths) =>
+  '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+  'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  paths + '</svg>';
+const RAIL_ICONS = {
+  // 학사모. 체크(=완료)보다 입시 실적이라는 뜻이 바로 선다.
+  cap:
+    '<path d="M22 10 12 5 2 10l10 5 10-5z"></path>' +
+    '<path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"></path>',
+  // 달력에 체크. 말풍선(=채팅)이 아니라 '예약'으로 읽힌다.
+  book:
+    '<rect x="3" y="5" width="18" height="16" rx="2"></rect>' +
+    '<path d="M8 3v4M16 3v4M3 10h18"></path>' +
+    '<path d="m9 15 2 2 4-4"></path>',
+  tel:
+    '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 ' +
+    '2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.6 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.1a2 2 0 0 1 ' +
+    '2.1-.5c.9.3 1.8.5 2.8.6a2 2 0 0 1 1.7 2z"></path>',
+  // 지도핀.
+  map:
+    '<path d="M12 21s-7-5.4-7-11a7 7 0 1 1 14 0c0 5.6-7 11-7 11z"></path>' +
+    '<circle cx="12" cy="10" r="2.6"></circle>',
+  // 신문. 닫힌 책보다 '소식'에 가깝다.
+  news:
+    '<path d="M4 5h11a1 1 0 0 1 1 1v13H5a1 1 0 0 1-1-1V5z"></path>' +
+    '<path d="M16 9h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-3"></path>' +
+    '<path d="M7 9h5M7 12h5M7 15h3"></path>',
+  up: '<path d="M12 19V5"></path><path d="m5 12 7-7 7 7"></path>',
+};
+const railItem = (href, icon, label, opts = {}) =>
+  '<a class="rail-i' + (opts.pri ? ' pri' : '') + '" href="' + href + '"' +
+  (opts.cta ? ' data-cta="' + opts.cta + '" data-loc="bottombar"' : '') +
+  (opts.blank ? ' target="_blank" rel="noopener"' : '') + '>' +
+  railIcon(RAIL_ICONS[icon]) + '<span class="rail-t">' + label + '</span></a>';
+const railHtml =
+  '<aside data-rail="1" class="rail" aria-label="빠른 메뉴">\n    ' +
+  [
+    railItem('#results', 'cap', '합격실적', { cta: 'results' }),
+    railItem('{{ bookingUrl }}', 'book', '예약상담', { cta: 'booking', pri: true, blank: true }),
+    railItem('tel:031-994-3134', 'tel', '전화문의', { cta: 'tel' }),
+    railItem('#visit', 'map', '오시는 길', { cta: 'visit' }),
+    railItem('/blog/', 'news', '학원 이야기', { cta: 'blog' }),
+    '<a class="rail-i rail-top" href="#top" data-totop="1" aria-label="맨 위로">' +
+      railIcon(RAIL_ICONS.up) + '</a>',
+  ].join('\n    ') +
+  '\n  </aside>';
+seo(/<aside data-rail="1"[\s\S]*?<\/aside>/, () => railHtml);
 
 // 사이드메뉴는 글자만 일곱 줄이라 훑을 때 '학원 이야기'가 나머지와 구분되지 않는다.
 // 아이콘을 하나 붙여 눈에 걸리게 하고, 바로 아래에 네이버 블로그를 한 줄 더 준다.
@@ -721,6 +774,65 @@ const mobileCss = `
    * 안에 있던 동안 PC 폭에서는 서랍을 숨기는 규칙 자체가 적용되지 않아,
    * 서랍이 늘 펼쳐진 채였고 닫기(×)를 눌러도 사라지지 않았다.
    * 열림 상태는 <html> 에 두어 재렌더링이 지우지 못하게 한다. */
+
+  /* ── 빠른 메뉴(사이드 레일) ─────────────────────────────────────────
+   * 넓은 화면에서는 글자를 늘 보여 준다. 아이콘만 있으면 무슨 버튼인지
+   * 읽히지 않는다는 것이 이번 수정의 출발점이다. 데스크톱 쪽은 지금까지
+   * 규칙이 한 줄도 없이 인라인 스타일로만 그려졌다 — 인라인을 걷어 냈으니
+   * 여기서 전부 준다. */
+  .rail {
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 70;
+    display: flex; flex-direction: column; align-items: stretch; gap: 9px;
+  }
+  .rail .rail-i {
+    display: flex; align-items: center; gap: 0; height: 46px; padding: 0 16px;
+    border-radius: 999px; white-space: nowrap; color: #FFFFFF;
+    /* 예전 값 .72 는 순흑 배경에서 테두리만 겨우 보였다. 올려서 카드로 읽히게 한다. */
+    background: rgba(26,26,30,.92);
+    -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    backdrop-filter: blur(14px) saturate(1.3);
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 8px 28px rgba(0,0,0,.45);
+    transition: background .32s ease, border-color .32s ease, color .32s ease,
+      box-shadow .42s cubic-bezier(.16,1,.3,1), transform .52s cubic-bezier(.22,1.4,.36,1);
+  }
+  .rail .rail-i svg { flex: 0 0 auto; }
+  .rail .rail-t { margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: -.02em; }
+  .rail .pri {
+    background: ${hex(RED.to).toUpperCase()}; border-color: ${hex(RED.to).toUpperCase()};
+    box-shadow: 0 8px 28px rgba(${RED.to.join(',')},.42);
+  }
+  .rail .rail-i:hover, .rail .rail-i:focus-visible {
+    background: ${hex(RED.to).toUpperCase()}; border-color: ${hex(RED.to).toUpperCase()}; color: #FFFFFF; transform: translateX(-4px);
+  }
+  .rail .pri:hover, .rail .pri:focus-visible {
+    background: #FFFFFF; border-color: #FFFFFF; color: ${hex(RED.to).toUpperCase()};
+  }
+  /* '맨 위로'는 가는 곳이 아니라 도구다. 원형으로 두고 위와 간격을 벌려 나눈다. */
+  .rail .rail-top {
+    align-self: flex-end; width: 46px; height: 46px; padding: 0;
+    justify-content: center; margin-top: 7px;
+  }
+  /* 라벨을 펼칠 자리가 있는지 실측해서 정한 기준이다. 본문 글자의 오른쪽 끝을
+   * 재 보면 레일이 쓸 수 있는 폭이 1920px 에서 296px, 1600px 에서 136px,
+   * 1440px 에서는 56px 뿐이다. 라벨형 레일은 119px 이라 1600px 아래에서는
+   * 본문 글자를 덮는다. 그 아래로는 아이콘만 두고 마우스 또는 키보드 포커스에서
+   * 편다. 예전에는 펴는 동작이 mouseenter 에만 걸려 있어 키보드로는 끝내 글자를
+   * 볼 수 없었다. */
+  @media (max-width: 1599px) {
+    .rail .rail-i { padding: 0 13px; }
+    .rail .rail-t {
+      max-width: 0; opacity: 0; margin-left: 0; overflow: hidden;
+      transition: max-width .46s cubic-bezier(.16,1,.3,1), opacity .32s ease,
+        margin-left .46s cubic-bezier(.16,1,.3,1);
+    }
+    .rail .rail-i:hover .rail-t, .rail .rail-i:focus-visible .rail-t {
+      max-width: 140px; opacity: 1; margin-left: 10px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail .rail-i, .rail .rail-t { transition: none; }
+  }
   [data-menupanel] { display: none !important; }
   html[data-menu-open] [data-menupanel] { display: block !important; }
   @media (max-width: 860px) {
@@ -746,7 +858,7 @@ const mobileCss = `
       box-shadow: none !important; backdrop-filter: none !important;
       transform: none !important;
     }
-    aside[data-rail] > a:nth-of-type(2) {
+    aside[data-rail] > a.pri {
       background: ${hex(RED.to).toUpperCase()} !important; border-color: ${hex(RED.to).toUpperCase()} !important;
       box-shadow: 0 4px 16px rgba(${RED.to.join(',')},.45) !important;
     }
@@ -778,16 +890,16 @@ const mobileCss = `
       background: rgba(20,20,22,.82) !important; border: 1px solid rgba(255,255,255,.16) !important;
       box-shadow: 0 8px 26px rgba(0,0,0,.5) !important;
     }
-    aside[data-rail] [data-sidelabel] {
+    aside[data-rail] .rail-t {
       max-width: none !important; opacity: 1 !important; margin-left: 0 !important;
       font-size: 10.5px !important; font-weight: 700 !important; letter-spacing: -.045em !important;
       overflow: visible !important;
     }
     aside[data-rail] svg { width: 20px !important; height: 20px !important; }
-    /* 학원 이야기가 들어가 다섯 칸이 됐다. 390px 에서는 칸당 약 71px 로 라벨이
-     * 들어가지만 그보다 좁은 화면에서는 '애니톡 홈페이지'가 넘친다. */
+    /* 다섯 칸이다. 390px 에서 칸당 약 71px. 가장 긴 '학원 이야기'가 그보다
+     * 좁은 화면에서는 넘치므로 자간을 더 조인다. */
     @media (max-width: 380px) {
-      aside[data-rail] [data-sidelabel] { font-size: 9.5px !important; letter-spacing: -.06em !important; }
+      aside[data-rail] .rail-t { font-size: 9.5px !important; letter-spacing: -.06em !important; }
     }
     footer { padding-bottom: 152px !important; }
     /* Touch targets. Pointer guidance puts the practical minimum around 44px; measured
