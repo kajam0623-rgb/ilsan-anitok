@@ -698,6 +698,40 @@ if (CLARITY_ID) {
   seo(/<\/body>/, () => clarity + '</body>');
 }
 
+// ── 합격실적 CTA 와 예약 주소 (코덱스가 2026-10-10 에 고친 것) ──
+//
+// 세 군데 모두 생성물인 index.html 에 직접 손을 댄 것이라, 다음 빌드에서
+// 그대로 지워졌다. 빌드가 만들어 내는 곳으로 옮겨 심어 이제는 살아남는다.
+//
+//  (1) 예약 주소에 items/4216506 이 빠져 있었다. 예약 페이지 첫 화면이 아니라
+//      해당 상품으로 바로 들어가야 한다.
+//  (2) '2026 합격생 명단 보러가기' 가 예약 링크를 가리키고 있었다. 명단을
+//      보려던 사람이 예약창으로 튕겼다. 같은 페이지의 명단 섹션으로 보낸다.
+//      이 패치는 분석 라벨 단계보다 앞에 있어야 한다. 그 단계는 예약·전화
+//      링크에만 data-cta 를 붙이는데, 여기서 href 를 먼저 바꿔 두면 이 버튼은
+//      더 이상 예약 링크가 아니므로 booking 으로 집계되지 않는다.
+//  (3) 그 명단 섹션에 id 와 scroll-margin-top 을 준다. 고정 머리글이 80px 라
+//      이것이 없으면 제목이 머리글 밑으로 들어간다.
+seo(
+  /bookingUrl: this\.props\.bookingUrl \?\? 'https:\/\/booking\.naver\.com\/booking\/6\/bizes\/626887'/,
+  () =>
+    "bookingUrl: this.props.bookingUrl ?? " +
+    "'https://booking.naver.com/booking/6/bizes/626887/items/4216506'"
+);
+seo(
+  /<a data-reveal="120" href="\{\{ bookingUrl \}\}" target="_blank" rel="noopener"/,
+  // 예약 링크가 아니게 되면서 분석 라벨 단계가 이 버튼을 건너뛴다. 명단으로
+  // 가는 클릭도 세어 둘 값어치가 있으니 라벨을 직접 붙인다(이미 data-cta 가
+  // 있으면 그 단계는 손대지 않는다).
+  () => '<a data-cta="passlist" data-loc="results" data-reveal="120" href="#pass-list"'
+);
+seo(
+  /<section style="background:#0F0F11;padding:clamp\(115px,14\.4vw,198px\) clamp\(20px,4vw,48px\)">/,
+  () =>
+    '<section id="pass-list" style="scroll-margin-top:80px;' +
+    'background:#0F0F11;padding:clamp(115px,14.4vw,198px) clamp(20px,4vw,48px)">'
+);
+
 // ── Analytics labels ──
 // The same two calls to action are repeated down the page: six 네이버 예약 buttons and
 // five phone links. Without a label every one of them looks identical to an analytics
