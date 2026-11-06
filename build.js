@@ -573,36 +573,125 @@ swapAll(
 );
 swapAll('2026 합격생 명단 보러가기 →', '2027 합격생 명단 보러가기 →');
 
-// ── 히어로 1번 슬라이드: 2027 수시 청강대 합격 배너 ──
-// 첫 화면에 합격 소식을 먼저 보여 주고, 7초 뒤 원래 히어로(학원 사진 + 제목)로
-// 넘어간다. 배너는 원래 히어로 위에 겹친 층이라 h1 과 사진은 그대로 문서에 남는다.
+// ── 히어로 1번 슬라이드: 2027 수시 청강대 합격 ──
+// 첫 화면에 합격 소식을 먼저 보여 주고, 8초 뒤 원래 히어로(학원 사진 + 제목)로
+// 넘어간다. 원래 히어로 위에 겹친 층이라 h1 과 사진은 그대로 문서에 남는다.
 // 어느 슬라이드인지는 <html data-hs> 에 둔다 — 인라인 스타일로 바꾸면 재렌더링이
-// 템플릿 값으로 되돌린다. 스크립트가 없으면 배너가 그대로 보인다.
-const HERO_SLIDE_ALT =
-  '2027 수시 일산애니톡 청강대 3명 합격 — 애니메이션스쿨 이·정(저현고), ' +
-  '웹툰만화콘텐츠전공 이·진(덕이고), 웹툰만화콘텐츠전공 김·빈(한빛고)';
+// 템플릿 값으로 되돌린다. 스크립트가 없으면 이 슬라이드가 그대로 보인다.
+//
+// 처음엔 통이미지 한 장으로 구웠는데, 화면 비율이 이미지와 다르면 object-fit 이
+// 아래위를 잘라 문구가 사라졌다. 글자는 HTML 로 두고 사진만 이미지로 쓴다.
+// 오른쪽 세 기둥은 합격생 재현작이다(원본에서 블러가 없는 왼쪽 절반).
+const HX_ROWS = [
+  ['애니메이션스쿨', '이 · 정', '저현고'],
+  ['웹툰만화콘텐츠전공', '이 · 진', '덕이고'],
+  ['웹툰만화콘텐츠전공', '김 · 빈', '한빛고'],
+];
+const HX_WORKS = [
+  ['k', '웹툰과 칸만화', '김 · 빈', '2027 청강대 웹툰과 합격 재현작'],
+  ['j', '웹툰과 칸만화', '이 · 진', '2027 청강대 웹툰과 합격 재현작'],
+  ['a', '애니과 상황표현', '이 · 정', '2027 청강대 애니메이션스쿨 합격 재현작'],
+];
 const heroSlide =
-  '<a data-heroslide="1" href="#pass-list" aria-label="2027 수시 청강대 3명 합격 — 합격생 명단 보기">' +
-  '<picture><source media="(max-width: 760px)" srcset="/gal/hero-2027-m.webp" width="780" height="1240">' +
-  `<img src="/gal/hero-2027-d.webp" width="1920" height="1040" alt="${HERO_SLIDE_ALT}" fetchpriority="high" decoding="async">` +
-  '</picture></a>' +
-  '<div data-herodots="1" role="group" aria-label="첫 화면 슬라이드">' +
+  '<a data-heroslide="1" data-noreveal="1" href="#pass-list" aria-label="2027 수시 청강대 3명 합격 — 합격생 명단 보기">' +
+  '<span data-hx="works">' +
+  HX_WORKS.map(
+    ([f, cap, nm, alt], i) =>
+      `<span data-hx="w" style="--i:${i}"><img src="/gal/hero27/${f}.webp" alt="${alt}" decoding="async"${i ? '' : ' fetchpriority="high"'}>` +
+      `<span data-hx="cap"><small>${cap}</small>${nm}</span></span>`
+  ).join('') +
+  '</span>' +
+  '<span data-hx="copy">' +
+  '<span data-hx="kick"><i></i>2027학년도 수시 · 청강문화산업대학교</span>' +
+  '<span data-hx="l"><span style="--i:0">일산애니톡 단독 합격</span></span>' +
+  '<span data-hx="big"><span style="--i:1">청강대 <b>3</b>명</span></span>' +
+  '<span data-hx="rows">' +
+  HX_ROWS.map(
+    ([d, n, s], i) => `<span data-hx="r" style="--i:${i}"><em>${d}</em><strong>${n}</strong><span>${s}</span></span>`
+  ).join('') +
+  '</span>' +
+  '<span data-hx="more">전체 합격 명단 보기 <i aria-hidden="true">→</i></span>' +
+  '</span>' +
+  '</a>' +
+  '<div data-herodots="1" data-noreveal="1" role="group" aria-label="첫 화면 슬라이드">' +
   '<button type="button" data-herodot="0" aria-label="2027 청강대 합격 소식"></button>' +
   '<button type="button" data-herodot="1" aria-label="학원 소개"></button>' +
   '</div>';
 seo(/(<section id="top" style="[^"]*">)/, (_, a) => a + '\n    ' + heroSlide);
+// 모션: 슬라이드가 다시 앞으로 올 때마다 처음부터 다시 돈다. 애니메이션 규칙을
+// html:not([data-hs="1"]) 아래에만 두었기 때문에, 속성이 지워지는 순간 새로 걸린다.
+// 기본 상태가 '다 나타난 상태' 라서 모션을 끈 사람에게도 내용은 전부 보인다.
+const HX_ON = 'html:not([data-hs="1"]) [data-heroslide] ';
+const EASE = 'cubic-bezier(.16,1,.3,1)';
 const heroSlideCss =
   '<style>' +
-  '[data-heroslide]{position:absolute;inset:0;z-index:3;display:block;background:#06050c;' +
-  'transition:opacity .9s ease,visibility 0s linear 0s}' +
-  '[data-heroslide] img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}' +
-  'html[data-hs="1"] [data-heroslide]{opacity:0;visibility:hidden;' +
-  'transition:opacity .9s ease,visibility 0s linear .9s}' +
-  '[data-herodots]{position:absolute;z-index:4;left:50%;bottom:76px;transform:translateX(-50%);display:flex;gap:10px}' +
-  '[data-herodot]{width:34px;height:3px;padding:10px 0;box-sizing:content-box;border:0;cursor:pointer;' +
-  'background:rgba(255,255,255,.35);background-clip:content-box}' +
+  '[data-heroslide]{position:absolute;inset:0;z-index:3;display:block;overflow:hidden;background:#0B0B0C;color:#FFFFFF;' +
+  'text-decoration:none;word-break:keep-all;transition:opacity .9s ease,visibility 0s linear 0s}' +
+  'html[data-hs="1"] [data-heroslide]{opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}' +
+  // 페이지의 자동 등장 효과(autoTag)는 data-noreveal 로 이 층을 건너뛴다. 그걸
+  // 빼면 그 효과가 인라인 opacity:0 을 걸어 첫 순간 원래 히어로가 비쳐 보인다.
+  ':where([data-heroslide] span){display:block}' +
+  // 오른쪽 작품 기둥
+  '[data-hx=works]{position:absolute;top:0;right:0;bottom:0;width:54%;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;background:#0B0B0C}' +
+  '[data-hx=w]{position:relative;overflow:hidden;background:#161618}' +
+  '[data-hx=w] img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:scale(1.08)}' +
+  '[data-hx=w]::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;background:linear-gradient(180deg,rgba(11,11,12,0),rgba(11,11,12,.86))}' +
+  '[data-hx=cap]{position:absolute;z-index:1;left:22px;right:18px;bottom:30px;font-size:17px;font-weight:800;letter-spacing:-.02em}' +
+  '[data-hx=cap] small{display:block;margin-bottom:6px;font-size:11px;font-weight:700;letter-spacing:.16em;color:#FF3B45}' +
+  // 왼쪽 문구 — 원래 히어로 문구와 같은 줄에 맞춘다
+  '[data-hx=copy]{position:absolute;top:0;bottom:0;left:calc(max(0px,(100% - 1400px)/2) + clamp(20px,4vw,56px));width:40%;' +
+  'display:flex!important;flex-direction:column;justify-content:center}' +
+  '[data-hx=kick]{display:flex!important;align-items:center;gap:14px;font-size:13px;font-weight:700;letter-spacing:.16em;color:#B4B4BA}' +
+  '[data-hx=kick] i{display:block;width:44px;height:2px;background:#FF3B45;transform-origin:left}' +
+  '[data-hx=l],[data-hx=big]{overflow:hidden;padding-bottom:.06em}' +
+  '[data-hx=l]{margin-top:30px;font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.3}' +
+  '[data-hx=big]{margin-top:6px;font-size:clamp(76px,9.2vw,148px);font-weight:800;letter-spacing:-.055em;line-height:1.02;white-space:nowrap}' +
+  '[data-hx=big] b{color:#FF3B45;font-weight:800}' +
+  '[data-hx=rows]{margin-top:38px;max-width:520px;border-top:1px solid rgba(255,255,255,.16)}' +
+  '[data-hx=r]{display:grid!important;grid-template-columns:1fr 92px 64px;align-items:baseline;gap:12px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
+  '[data-hx=r] em{font-style:normal;font-size:14px;font-weight:600;color:#B4B4BA}' +
+  '[data-hx=r] strong{font-size:19px;font-weight:800;letter-spacing:.02em}' +
+  '[data-hx=r] > span{font-size:14px;color:#8A8A90;text-align:right}' +
+  '[data-hx=more]{margin-top:30px;font-size:14px;font-weight:700;color:#FFFFFF}' +
+  '[data-hx=more] i{display:inline-block;font-style:normal;margin-left:6px;transition:transform .5s ' + EASE + '}' +
+  '[data-heroslide]:hover [data-hx=more] i{transform:translateX(6px)}' +
+  // 모션
+  '@keyframes hx-up{from{transform:translateY(108%)}to{transform:none}}' +
+  '@keyframes hx-fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}' +
+  '@keyframes hx-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}' +
+  '@keyframes hx-col{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}' +
+  '@keyframes hx-pan{from{transform:scale(1.18) translateY(3%)}to{transform:scale(1.08) translateY(-3%)}}' +
+  `${HX_ON}[data-hx=kick]{animation:hx-fade .9s ${EASE} .1s both}` +
+  `${HX_ON}[data-hx=kick] i{animation:hx-line 1s ${EASE} .25s both}` +
+  `${HX_ON}[data-hx=l] > span,${HX_ON}[data-hx=big] > span{animation:hx-up 1.1s ${EASE} calc(.3s + var(--i)*.12s) both}` +
+  `${HX_ON}[data-hx=r]{animation:hx-fade .9s ${EASE} calc(.75s + var(--i)*.1s) both}` +
+  `${HX_ON}[data-hx=more]{animation:hx-fade .9s ${EASE} 1.1s both}` +
+  `${HX_ON}[data-hx=w]{animation:hx-col 1.3s cubic-bezier(.7,0,.2,1) calc(.15s + var(--i)*.14s) both}` +
+  `${HX_ON}[data-hx=w] img{animation:hx-pan 9s ease-out calc(.15s + var(--i)*.14s) both}` +
+  `${HX_ON}[data-hx=cap]{animation:hx-fade .9s ${EASE} calc(1.1s + var(--i)*.12s) both}` +
+  '@media (prefers-reduced-motion: reduce){[data-heroslide] *{animation:none!important}}' +
+  // 폰: 작품을 배경으로 깔고 글자를 위에 올린다. 하단 고정 바(약 112px)가
+  // 히어로 아래쪽을 덮으므로 문구는 위쪽에 모은다.
+  '@media (max-width: 760px){' +
+  '[data-hx=works]{width:100%;gap:2px}' +
+  '[data-hx=w] img{opacity:.3}' +
+  '[data-hx=w]::after,[data-hx=cap]{display:none!important}' +
+  '[data-heroslide]::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,11,12,.72),rgba(11,11,12,.5) 50%,rgba(11,11,12,.8))}' +
+  '[data-hx=copy]{z-index:1;left:22px;right:22px;width:auto;justify-content:flex-start;padding-top:44px}' +
+  '[data-hx=kick]{font-size:11px;letter-spacing:.12em;gap:10px}[data-hx=kick] i{width:28px}' +
+  '[data-hx=l]{margin-top:22px;font-size:20px}' +
+  '[data-hx=big]{font-size:68px}' +
+  '[data-hx=rows]{margin-top:22px;max-width:none}' +
+  '[data-hx=r]{grid-template-columns:1fr 70px 52px;padding:11px 0}' +
+  '[data-hx=r] em,[data-hx=r] > span{font-size:13px}[data-hx=r] strong{font-size:16px}' +
+  '[data-hx=more]{margin-top:18px;font-size:13px}' +
+  '}' +
+  // 슬라이드 점
+  '[data-herodots]{position:absolute;z-index:4;bottom:40px;left:calc(max(0px,(100% - 1400px)/2) + clamp(20px,4vw,56px));display:flex;gap:10px}' +
+  '[data-herodot]{width:34px;height:2px;padding:10px 0;box-sizing:content-box;border:0;cursor:pointer;' +
+  'background:rgba(255,255,255,.32);background-clip:content-box}' +
   'html:not([data-hs="1"]) [data-herodot="0"],html[data-hs="1"] [data-herodot="1"]{background-color:#FFFFFF}' +
-  '@media (max-width: 900px){[data-herodots]{bottom:18px}}' +
+  '@media (max-width: 900px){[data-herodots]{bottom:18px;left:22px}}' +
   '</style>';
 seo(/<\/head>/i, () => heroSlideCss + '</head>');
 const heroSlideScript =
@@ -611,7 +700,7 @@ const heroSlideScript =
   'function cur(){return h.getAttribute("data-hs")==="1"?1:0;}' +
   'function auto(){clearTimeout(t);' +
   'if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;' +
-  't=setTimeout(function(){go(1-cur());auto();},cur()?8000:7000);}' +
+  't=setTimeout(function(){go(1-cur());auto();},cur()?8000:8500);}' +
   'document.addEventListener("click",function(e){' +
   'var b=e.target.closest?e.target.closest("[data-herodot]"):null;if(!b)return;' +
   'go(+b.getAttribute("data-herodot"));auto();});' +
@@ -1123,11 +1212,10 @@ if (!headOpen) {
 
 // Preload the hero so externalising it doesn't cost a round trip on LCP.
 const hero = template.match(/<img[^>]*data-parallax[^>]*src="([^"]+)"/i);
-// 첫 화면은 이제 합격 배너가 먼저다. 폭에 맞는 배너 한 장만 미리 받고, 원래
+// 첫 화면은 이제 합격 슬라이드가 먼저다. 그 첫 작품 사진을 먼저 받고, 원래
 // 히어로 사진은 그 뒤에 받는다.
 const preload =
-  '<link rel="preload" as="image" href="/gal/hero-2027-m.webp" media="(max-width: 760px)" fetchpriority="high">' +
-  '<link rel="preload" as="image" href="/gal/hero-2027-d.webp" media="(min-width: 761px)" fetchpriority="high">' +
+  '<link rel="preload" as="image" href="/gal/hero27/k.webp" fetchpriority="high">' +
   (hero ? `<link rel="preload" as="image" href="${hero[1]}">` : '');
 
 // og:image, twitter:image and the ld+json logo/image are absolute URLs written
