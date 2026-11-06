@@ -540,6 +540,85 @@ seo(
   (_, a) => a.replace('<div ', '<div data-heroin="1" ')
 );
 
+// ── 2027 수시 합격 (2026-11-06 발표) ──
+// 청강대 실기 지원 15명 중 3명 합격. 이름은 기존 명단과 같이 가운데 글자를 가린다.
+// 문구는 생성물마다 같은 자리에 두 번 이상 나오므로(메타·구조화 데이터·본문)
+// 전부 바꾸고, 하나도 못 찾으면 빌드를 멈춘다 — 번들 문구가 바뀌면 조용히
+// 2026 으로 남는 것을 막는다.
+const swapAll = (from, to) => {
+  const n = template.split(from).length - 1;
+  if (!n) {
+    console.error(`2027 합격 패치: "${from}" 을 찾지 못했다`);
+    process.exit(1);
+  }
+  template = template.split(from).join(to);
+  seoEdits += n;
+};
+swapAll(
+  'const PASS = [\n',
+  'const PASS = [\n' +
+    "  ['2027', '청강문화산업대학교 애니메이션스쿨', '이 · 정', '저현고'],\n" +
+    "  ['2027', '청강문화산업대학교 웹툰만화콘텐츠전공', '이 · 진', '덕이고'],\n" +
+    "  ['2027', '청강문화산업대학교 웹툰만화콘텐츠전공', '김 · 빈', '한빛고'],\n"
+);
+swapAll('2024 · 2025 · 2026학년도 일산 캠퍼스 실적입니다', '2024 ~ 2027학년도 일산 캠퍼스 실적입니다');
+swapAll(
+  '2026학년도에 청강문화산업대학교 게임스쿨, ',
+  '2027학년도 수시에서 청강문화산업대학교 애니메이션스쿨과 웹툰만화콘텐츠전공에 3명이 합격했습니다. ' +
+    '2026학년도에는 청강문화산업대학교 게임스쿨, '
+);
+swapAll(
+  '2026학년도 청강대 게임스쿨·상명대·명지대·계원예대 합격.',
+  '2027 수시 청강대 3명 합격, 2026학년도 상명대·명지대·계원예대 합격.'
+);
+swapAll('2026 합격생 명단 보러가기 →', '2027 합격생 명단 보러가기 →');
+
+// ── 히어로 1번 슬라이드: 2027 수시 청강대 합격 배너 ──
+// 첫 화면에 합격 소식을 먼저 보여 주고, 7초 뒤 원래 히어로(학원 사진 + 제목)로
+// 넘어간다. 배너는 원래 히어로 위에 겹친 층이라 h1 과 사진은 그대로 문서에 남는다.
+// 어느 슬라이드인지는 <html data-hs> 에 둔다 — 인라인 스타일로 바꾸면 재렌더링이
+// 템플릿 값으로 되돌린다. 스크립트가 없으면 배너가 그대로 보인다.
+const HERO_SLIDE_ALT =
+  '2027 수시 일산애니톡 청강대 3명 합격 — 애니메이션스쿨 이·정(저현고), ' +
+  '웹툰만화콘텐츠전공 이·진(덕이고), 웹툰만화콘텐츠전공 김·빈(한빛고)';
+const heroSlide =
+  '<a data-heroslide="1" href="#pass-list" aria-label="2027 수시 청강대 3명 합격 — 합격생 명단 보기">' +
+  '<picture><source media="(max-width: 760px)" srcset="/gal/hero-2027-m.webp" width="780" height="1240">' +
+  `<img src="/gal/hero-2027-d.webp" width="1920" height="1040" alt="${HERO_SLIDE_ALT}" fetchpriority="high" decoding="async">` +
+  '</picture></a>' +
+  '<div data-herodots="1" role="group" aria-label="첫 화면 슬라이드">' +
+  '<button type="button" data-herodot="0" aria-label="2027 청강대 합격 소식"></button>' +
+  '<button type="button" data-herodot="1" aria-label="학원 소개"></button>' +
+  '</div>';
+seo(/(<section id="top" style="[^"]*">)/, (_, a) => a + '\n    ' + heroSlide);
+const heroSlideCss =
+  '<style>' +
+  '[data-heroslide]{position:absolute;inset:0;z-index:3;display:block;background:#06050c;' +
+  'transition:opacity .9s ease,visibility 0s linear 0s}' +
+  '[data-heroslide] img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}' +
+  'html[data-hs="1"] [data-heroslide]{opacity:0;visibility:hidden;' +
+  'transition:opacity .9s ease,visibility 0s linear .9s}' +
+  '[data-herodots]{position:absolute;z-index:4;left:50%;bottom:76px;transform:translateX(-50%);display:flex;gap:10px}' +
+  '[data-herodot]{width:34px;height:3px;padding:10px 0;box-sizing:content-box;border:0;cursor:pointer;' +
+  'background:rgba(255,255,255,.35);background-clip:content-box}' +
+  'html:not([data-hs="1"]) [data-herodot="0"],html[data-hs="1"] [data-herodot="1"]{background-color:#FFFFFF}' +
+  '@media (max-width: 900px){[data-herodots]{bottom:18px}}' +
+  '</style>';
+seo(/<\/head>/i, () => heroSlideCss + '</head>');
+const heroSlideScript =
+  '<script>(function(){var h=document.documentElement,t;' +
+  'function go(n){if(n)h.setAttribute("data-hs","1");else h.removeAttribute("data-hs");}' +
+  'function cur(){return h.getAttribute("data-hs")==="1"?1:0;}' +
+  'function auto(){clearTimeout(t);' +
+  'if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;' +
+  't=setTimeout(function(){go(1-cur());auto();},cur()?8000:7000);}' +
+  'document.addEventListener("click",function(e){' +
+  'var b=e.target.closest?e.target.closest("[data-herodot]"):null;if(!b)return;' +
+  'go(+b.getAttribute("data-herodot"));auto();});' +
+  'auto();})();</' +
+  'script>';
+seo(/<\/body>/, () => heroSlideScript + '</body>');
+
 // Class shortcuts for phones. The 수업과목 section is ~4,000px down the page, so on a
 // phone the three classes are only reachable by a long scroll. A second bar above
 // the action bar jumps straight to each one.
@@ -1044,9 +1123,12 @@ if (!headOpen) {
 
 // Preload the hero so externalising it doesn't cost a round trip on LCP.
 const hero = template.match(/<img[^>]*data-parallax[^>]*src="([^"]+)"/i);
-const preload = hero
-  ? `<link rel="preload" as="image" href="${hero[1]}" fetchpriority="high">`
-  : '';
+// 첫 화면은 이제 합격 배너가 먼저다. 폭에 맞는 배너 한 장만 미리 받고, 원래
+// 히어로 사진은 그 뒤에 받는다.
+const preload =
+  '<link rel="preload" as="image" href="/gal/hero-2027-m.webp" media="(max-width: 760px)" fetchpriority="high">' +
+  '<link rel="preload" as="image" href="/gal/hero-2027-d.webp" media="(min-width: 761px)" fetchpriority="high">' +
+  (hero ? `<link rel="preload" as="image" href="${hero[1]}">` : '');
 
 // og:image, twitter:image and the ld+json logo/image are absolute URLs written
 // against fixed filenames — they are not uuids, so the substitution above leaves
