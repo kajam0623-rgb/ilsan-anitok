@@ -627,6 +627,9 @@ const heroSlideCss =
   '<style>' +
   '[data-heroslide]{position:absolute;inset:0;z-index:3;display:block;overflow:hidden;background:#0B0B0C;color:#FFFFFF;' +
   'text-decoration:none;word-break:keep-all;transition:opacity .9s ease,visibility 0s linear 0s}' +
+  // 사이트 전역의 a:hover(진한 빨강 + 밑줄)가 슬라이드 전체 글자를 물들였다.
+  // 슬라이드 전체가 링크라 어디에 마우스를 올려도 걸린다. 흰색으로 고정한다.
+  '[data-heroslide]:hover,[data-heroslide]:focus{color:#FFFFFF;text-decoration:none}' +
   'html[data-hs="1"] [data-heroslide]{opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}' +
   // 페이지의 자동 등장 효과(autoTag)는 data-noreveal 로 이 층을 건너뛴다. 그걸
   // 빼면 그 효과가 인라인 opacity:0 을 걸어 첫 순간 원래 히어로가 비쳐 보인다.
