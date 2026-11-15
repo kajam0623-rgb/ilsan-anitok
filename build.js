@@ -1315,6 +1315,69 @@ if (helmet) {
   }
 }
 
+// ── 숫자 카드 ──
+// "4년 연속", "50명 이상" 의 숫자는 화면에 들어올 때 0 에서 세어 올리는데, 원본에는
+// 0 이 적혀 있었다. 스크립트를 돌리지 않는 검색 로봇과 AI 는 "0년 연속 전원 합격"
+// 으로 읽는다. 원본에 목표값을 적어 둔다 — 세어 올리는 쪽은 data-count 만 보고
+// 0 부터 다시 쓰므로 움직임은 그대로다.
+{
+  let filled = 0;
+  template = template.replace(/(<span data-count="(\d+)">)0(<\/span>)/g, (_, open, n, close) => (filled++, open + n + close));
+  if (filled !== 3) throw new Error(`숫자 카드: 3곳이어야 하는데 ${filled}곳을 고쳤다`);
+  console.log(`counts       ${String(filled).padStart(6)}     0 -> 목표값`);
+}
+
+// ── 무료 체험 안내 ──
+// 고1~고3 · N수생 수업 2회 무료 체험은 네이버 플레이스 알림(2026-11-06)에만 있고
+// 이 페이지에는 한 줄도 없었다. 상담 버튼 두 곳 옆과 자주 묻는 질문에 넣는다.
+// 보이는 질문과 FAQPage 구조화 데이터는 같은 문장을 쓴다 — 한쪽만 있으면 구조화
+// 데이터가 화면에 없는 내용을 말하게 된다. 체험을 그만두면 이 묶음을 통째로 지운다.
+{
+  const TRIAL_Q = '체험 수업을 받아 볼 수 있나요?';
+  const TRIAL_A =
+    '고1~고3과 N수생은 수업 2회를 무료로 체험해 보실 수 있습니다. 네이버 예약이나 031-994-3134로 상담을 먼저 신청해 주세요.';
+  const once = (re, build, what) => {
+    let n = 0;
+    template = template.replace(re, (...a) => (n++, build(...a)));
+    if (n !== 1) throw new Error(`무료 체험: ${what} 자리를 ${n}곳 찾았다 (1곳이어야 한다)`);
+  };
+
+  // 마지막 질문을 본떠 하나 더 붙인다. 모양을 따로 적지 않아 앞 질문들과 어긋날 일이 없다.
+  once(
+    /(<details data-faq="1"(?:(?!<details)[\s\S])*?상담과 등록은 어떻게 진행되나요\?[\s\S]*?<\/details>)/,
+    (_, last) =>
+      last +
+      '\n        ' +
+      last
+        .replace('상담과 등록은 어떻게 진행되나요?', TRIAL_Q)
+        .replace(/(<div style="padding:0 24px 24px 48px[^"]*">)[^<]*(<\/div>)/, (m, a, b) => a + TRIAL_A + b),
+    '자주 묻는 질문'
+  );
+  if (!template.includes(TRIAL_A + '</div>')) throw new Error('무료 체험: 질문 답을 바꿔 넣지 못했다');
+
+  once(
+    /(\{"@type":"Question","name":"상담과 등록은 어떻게 진행되나요\?","acceptedAnswer":\{"@type":"Answer","text":"[^"]*"\}\})(\]\})/,
+    (_, lastQ, close) =>
+      lastQ + ',' + JSON.stringify({ '@type': 'Question', name: TRIAL_Q, acceptedAnswer: { '@type': 'Answer', text: TRIAL_A } }) + close,
+    'FAQPage 구조화 데이터'
+  );
+
+  const NOTE = '고1~고3 · N수생은 수업 2회 무료 체험';
+  once(
+    /(<div data-reveal="0" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:)44px(">\s*<a data-cta="booking" data-loc="faq")/,
+    (_, a, b) =>
+      `<p data-reveal="0" style="margin:44px 0 0;text-align:center;font-size:15px;font-weight:700;color:#FFFFFF;word-break:keep-all">${NOTE}</p>\n      ` +
+      a + '16px' + b,
+    '질문 아래 상담 버튼'
+  );
+  once(
+    /(네이버 예약으로<br>편하게 상담 신청하세요\.)(<\/div>)/,
+    (_, text, close) => `${text}<br><b style="color:#111111">${NOTE}</b>${close}`,
+    '오시는 길 상담 칸'
+  );
+  console.log('trial             4     질문 1 · 구조화 데이터 1 · 안내 2');
+}
+
 // 결과를 파일로 내보낸다. 한 번 이 줄이 사라진 적이 있다. 사이트맵 담당을 옮기는
 // 커밋이 아래 robots.txt 묶음을 고쳐 쓰면서 이 줄까지 함께 지웠고, 빌드는 멀쩡히
 // 끝나고 크기까지 찍어 주는데 index.html 만 이틀 동안 그대로였다. 그래서 쓴 다음
