@@ -1338,6 +1338,33 @@ if (helmet) {
   console.log(`gangwon      ${String(fixed).padStart(6)}     2026 -> 2025`);
 }
 
+// ── 운영 시간 ──
+// 번들에는 화~토 13:00~22:00 한 줄뿐인데 토요일은 11:00~18:00 이다(학원 확인
+// 2026-11-15, 일 · 월 휴무는 그대로). 네 곳에 같은 시간이 적혀 있어 한꺼번에 고친다:
+// 구조화 데이터, 질문 답(화면 · FAQPage), 오시는 길 전화 칸.
+{
+  const swap = (from, to, want, what) => {
+    const n = template.split(from).length - 1;
+    if (n !== want) throw new Error(`운영 시간: ${what} 을 ${n}곳 찾았다 (${want}곳이어야 한다)`);
+    template = template.split(from).join(to);
+  };
+  const spec = (days, opens, closes) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: days, opens, closes });
+  swap(
+    JSON.stringify([spec(['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], '13:00', '22:00')]),
+    JSON.stringify([spec(['Tuesday', 'Wednesday', 'Thursday', 'Friday'], '13:00', '22:00'), spec(['Saturday'], '11:00', '18:00')]),
+    1,
+    '구조화 데이터'
+  );
+  swap(
+    '13:00부터 22:00까지 운영하며, 일요일과 월요일은 휴무입니다.',
+    '화요일부터 금요일은 13:00부터 22:00까지, 토요일은 11:00부터 18:00까지 운영합니다. 일요일과 월요일은 휴무입니다.',
+    2,
+    '질문 답'
+  );
+  swap('13:00 - 22:00<br>일요일 · 월요일 휴무', '화~금 13:00 - 22:00<br>토 11:00 - 18:00<br>일요일 · 월요일 휴무', 1, '전화 칸');
+  console.log('hours             4     토요일 11:00 - 18:00');
+}
+
 // ── 무료 체험 안내 ──
 // 고1~고3 · N수생 수업 2회 무료 체험은 네이버 플레이스 알림(2026-11-06)에만 있고
 // 이 페이지에는 한 줄도 없었다. 상담 버튼 두 곳 옆과 자주 묻는 질문에 넣는다.
