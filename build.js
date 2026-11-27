@@ -705,15 +705,17 @@ const HX_ROWS = [
   ['한국애니고', '만화과', 1],
   ['서울웹툰애니고', '', 1],
 ];
-const HX_TOTAL = HX_ROWS.reduce((n, r) => n + r[2], 0);
+// 합계 인원은 내세우지 않는다(원장 지시 2026-11-27: '7명' 을 크게 강조하면 적어
+// 보인다). 큰 글씨는 '2027 합격', 줄마다 학교 이름이 앞에 서고 인원 칸은 두지 않는다.
+// 청강대처럼 여러 명이면 학과 칸에 학과별 인원을 적는다. 셋째 값(인원)은 기록용이다.
 const HX_WORKS = [
   ['k', '웹툰과 칸만화', '김 · 빈', '2027 청강대 웹툰과 합격 재현작'],
   ['j', '웹툰과 칸만화', '이 · 진', '2027 청강대 웹툰과 합격 재현작'],
   ['a', '애니과 상황표현', '이 · 정', '2027 청강대 애니메이션스쿨 합격 재현작'],
 ];
 const heroSlide =
-  `<a data-heroslide="1" data-noreveal="1" href="#pass-list" aria-label="2027 합격 ${HX_TOTAL}명 — ` +
-  HX_ROWS.map(([s, , n]) => s + ' ' + n + '명').join(', ') +
+  `<a data-heroslide="1" data-noreveal="1" href="#pass-list" aria-label="일산애니톡 2027 합격 — ` +
+  HX_ROWS.map(([s, d]) => (d ? s + ' ' + d : s)).join(', ') +
   ' · 합격생 명단 보기">' +
   '<span data-hx="works">' +
   HX_WORKS.map(
@@ -724,11 +726,11 @@ const heroSlide =
   '</span>' +
   '<span data-hx="copy">' +
   '<span data-hx="kick"><i></i>2027학년도 대학 수시 · 고교 입시</span>' +
-  '<span data-hx="l"><span style="--i:0">일산애니톡 2027 합격</span></span>' +
-  `<span data-hx="big"><span style="--i:1">합격 <b>${HX_TOTAL}</b>명</span></span>` +
+  '<span data-hx="l"><span style="--i:0">일산애니톡</span></span>' +
+  '<span data-hx="big"><span style="--i:1"><b>2027</b> 합격</span></span>' +
   '<span data-hx="rows">' +
   HX_ROWS.map(
-    ([s, d, n], i) => `<span data-hx="r" style="--i:${i}"><strong>${s}</strong><em>${d}</em><span>${n}명</span></span>`
+    ([s, d], i) => `<span data-hx="r" style="--i:${i}"><strong>${s}</strong><em>${d}</em></span>`
   ).join('') +
   '</span>' +
   '<span data-hx="more">전체 합격 명단 보기 <i aria-hidden="true">→</i></span>' +
@@ -968,7 +970,7 @@ const heroSlideCss =
   '[data-hx=big] b{color:#FF3B45;font-weight:800}' +
   '[data-hx=rows]{margin-top:38px;max-width:520px;border-top:1px solid rgba(255,255,255,.16)}' +
   // 한 줄 = 학교 | 학과 | 인원. 학과가 긴 줄(청강대)은 가운데 칸 안에서 줄바꿈된다.
-  '[data-hx=r]{display:grid!important;grid-template-columns:auto 1fr auto;align-items:baseline;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
+  '[data-hx=r]{display:grid!important;grid-template-columns:auto 1fr;align-items:baseline;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
   '[data-hx=r] strong{font-size:19px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}' +
   '[data-hx=r] em{font-style:normal;font-size:14px;font-weight:600;color:#B4B4BA;min-width:0;line-height:1.45}' +
   '[data-hx=r] > span{font-size:16px;font-weight:800;color:#FF3B45;text-align:right;white-space:nowrap}' +
