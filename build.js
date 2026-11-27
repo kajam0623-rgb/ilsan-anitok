@@ -1344,8 +1344,10 @@ const mobileCss = `
   }
   .rail .rail-i svg { flex: 0 0 auto; }
   .rail .rail-t { margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: -.02em; }
+  /* 테두리를 흰색으로: 수업과목 아래 빨간 상담 띠 위를 지날 때 빨간 버튼이 같은 빨강에
+   * 묻혀 사라졌다(2026-11-27 점검). 흰 테두리로 어느 배경에서든 버튼 윤곽이 보인다. */
   .rail .pri {
-    background: ${hex(RED.to).toUpperCase()}; border-color: ${hex(RED.to).toUpperCase()};
+    background: ${hex(RED.to).toUpperCase()}; border-color: rgba(255,255,255,.7);
     box-shadow: 0 8px 28px rgba(${RED.to.join(',')},.42);
   }
   .rail .rail-i:hover, .rail .rail-i:focus-visible {
