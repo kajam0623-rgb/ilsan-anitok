@@ -81,22 +81,24 @@ const TRIAL_NOTE = '무료 체험 · 고등반 2회 · 주니어반 · 성인취
 // 자정(한국 시간)이 넘으면 스스로 숨긴다.
 const SEMINAR = {
   until: '2026-12-13T23:59:59+09:00',
-  dateLabel: '12월 13일(토)',
+  // 2026-12-13 은 일요일이다(작업 지시서의 '(토)' 는 잘못 적힌 것, 원장 확인 2026-11-27).
+  dateLabel: '12월 13일(일)',
+  // 진행 순서대로 둔다: 오후 2시 애니고 · 예고, 오후 4시 고1 · 2 · 3 미대 입시.
   tracks: [
     {
-      key: 'high',
-      title: '예비 고1 · 2 · 3 입시 설명회',
-      topic: '청강대 · 한예종 · 미대 웹툰 / 애니 입시 전략',
-      time: null,
+      key: 'mid',
+      title: '예비 중3 애니고 · 예고 입시 설명회',
+      topic: '한국애니고 · 경기예고 · 서울웹툰애니고 대비',
+      time: '오후 2:00',
       place: null,
       seats: null,
       url: null,
     },
     {
-      key: 'mid',
-      title: '예비 중3 애니고 · 예고 입시 설명회',
-      topic: '한국애니고 · 경기예고 · 서울웹툰애니고 대비',
-      time: null,
+      key: 'high',
+      title: '예비 고1 · 2 · 3 미대 입시 설명회',
+      topic: '청강대 · 한예종 · 미대 웹툰 / 애니 입시 전략',
+      time: '오후 4:00',
       place: null,
       seats: null,
       url: null,
@@ -757,7 +759,9 @@ const seminarInfo = (t) => {
     t.place ? ['장소', t.place] : null,
     t.seats ? ['정원', t.seats + '명 (선착순)'] : null,
   ].filter(Boolean);
-  const pending = !t.time || !t.place;
+  // 아직 정해지지 않은 것만 골라 '따로 안내드립니다' 앞에 붙인다.
+  const missing = [!t.time && '시간', !t.place && '장소'].filter(Boolean);
+  const pending = missing.length > 0;
   return (
     '<dl style="margin:22px 0 0;padding:0;border-top:1px solid rgba(255,255,255,.1)">' +
     rows
@@ -771,7 +775,7 @@ const seminarInfo = (t) => {
     '</dl>' +
     (pending
       ? '<p style="margin:14px 0 0;font-size:13px;color:#9A9A9A;word-break:keep-all">' +
-        '세부 시간과 장소는 신청하신 분께 따로 안내드립니다.</p>'
+        `세부 ${missing.join('과 ')}${missing.length === 1 && missing[0] === '시간' ? '은' : '는'} 신청하신 분께 따로 안내드립니다.</p>`
       : '')
   );
 };
