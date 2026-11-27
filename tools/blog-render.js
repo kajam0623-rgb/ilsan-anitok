@@ -349,6 +349,7 @@ function page({ title, description, canonical, head = '', body }) {
     `<title>${esc(title)}</title>` +
     `<meta name="description" content="${esc(description)}">` +
     `<link rel="canonical" href="${canonical}">` +
+    `<link rel="alternate" type="application/rss+xml" title="${esc(ORG)} 학원 이야기" href="${SITE}/blog/rss.xml">` +
     `<meta name="robots" content="index, follow, max-image-preview:large">` +
     `<link rel="icon" href="/favicon.ico" sizes="any">` +
     `<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">` +
@@ -619,4 +620,36 @@ fs.writeFileSync(
     `\n</urlset>\n`
 );
 
-console.log('\n' + posts.length + ' post(s) rendered, /blog/ index and sitemap.xml updated');
+// RSS. 네이버 서치어드바이저는 사이트맵과 별도로 RSS 를 제출받아 새 글을 더 자주
+// 가져간다. 사이트맵이 '무엇이 있는가' 라면 RSS 는 '무엇이 새로 생겼는가' 다.
+// 최근 30편만 싣는다 — 피드가 길어지면 로봇이 오래된 글까지 매번 다시 읽는다.
+{
+  const xml = (s) => esc(s).replace(/'/g, '&apos;');
+  // 글 날짜는 시각이 없다. 한국 시간 오전 9시로 둔다(RFC 822 형식).
+  const rfc822 = (d) => new Date(d + 'T09:00:00+09:00').toUTCString().replace('GMT', '+0000');
+  const recent = [...posts].sort((a, b) => String(b.meta.date).localeCompare(String(a.meta.date))).slice(0, 30);
+  const items = recent
+    .map((p) => {
+      const url = SITE + '/blog/' + p.meta.slug + '/';
+      return (
+        `  <item>\n    <title>${xml(p.meta.title)}</title>\n    <link>${url}</link>\n` +
+        `    <guid isPermaLink="true">${url}</guid>\n` +
+        `    <description>${xml(p.meta.description || '')}</description>\n` +
+        (category(p.meta.category) ? `    <category>${xml(category(p.meta.category))}</category>\n` : '') +
+        `    <pubDate>${rfc822(p.meta.date)}</pubDate>\n  </item>`
+      );
+    })
+    .join('\n');
+  fs.writeFileSync(
+    path.join(ROOT, 'blog', 'rss.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n<channel>\n` +
+      `  <title>${xml(ORG)} 학원 이야기</title>\n  <link>${SITE}/blog/</link>\n` +
+      `  <atom:link href="${SITE}/blog/rss.xml" rel="self" type="application/rss+xml"/>\n` +
+      `  <description>일산 만화 · 웹툰 · 애니 입시와 수업 이야기</description>\n  <language>ko</language>\n` +
+      (recent.length ? `  <lastBuildDate>${rfc822(recent[0].meta.date)}</lastBuildDate>\n` : '') +
+      items +
+      `\n</channel>\n</rss>\n`
+  );
+}
+
+console.log('\n' + posts.length + ' post(s) rendered, /blog/ index, sitemap.xml and blog/rss.xml updated');
