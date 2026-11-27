@@ -145,7 +145,10 @@ function markdown(md) {
         .map((l) => `<tr>${cells(l).map((c) => `<td>${inline(c)}</td>`).join('')}</tr>`)
         .join('');
       // 좁은 화면에서 표가 본문을 밀지 않도록 가로 스크롤 상자에 넣는다.
-      out.push(`<div class="tw"><table><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`);
+      // 최소 폭(460px)은 열이 4개 이상인 넓은 표에만 건다. 모든 표에 걸었더니
+      // 2~3열짜리 작은 표까지 390px 폰에서 화면 밖으로 넘쳐 옆으로 밀어야 보였다.
+      const wide = cells(lines[0]).length >= 4 ? ' class="wide"' : '';
+      out.push(`<div class="tw"><table${wide}><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`);
       continue;
     }
 
@@ -270,7 +273,7 @@ p{font-size:16px;color:#D6D6DA;margin-bottom:18px;word-break:keep-all}
 ul,ol{margin:0 0 18px 20px}li{font-size:16px;color:#D6D6DA;margin-bottom:8px;word-break:keep-all}
 ol{list-style:decimal}ol li::marker{color:#FF3B45;font-weight:800}
 .tw{margin:0 0 24px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-table{border-collapse:collapse;width:100%;min-width:460px;font-size:15px}
+table{border-collapse:collapse;width:100%;font-size:15px}table.wide{min-width:460px}
 th,td{border:1px solid #232326;padding:11px 13px;text-align:left;vertical-align:top;word-break:keep-all}
 th{background:#141416;font-weight:800;color:#fff;font-size:14px}
 td{color:#D6D6DA}

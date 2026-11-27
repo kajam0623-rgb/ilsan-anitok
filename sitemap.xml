@@ -8,9 +8,33 @@
   </url>
   <url>
     <loc>https://ilsan.anitok.com/blog/</loc>
-    <lastmod>2026-11-06</lastmod>
+    <lastmod>2026-11-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ilsan.anitok.com/blog/korea-anigo-2027-comics-interview/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ilsan.anitok.com/blog/cheonggang-animation-2027-interview/</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ilsan.anitok.com/blog/cheonggang-webtoon-2027-feedback-interview/</loc>
+    <lastmod>2026-11-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://ilsan.anitok.com/blog/cheonggang-comics-2027-shonen-interview/</loc>
+    <lastmod>2026-11-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://ilsan.anitok.com/blog/cheonggang-2027-early-admission-results/</loc>
