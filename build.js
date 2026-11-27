@@ -693,18 +693,28 @@ swapAll('2026 합격생 명단 보러가기 →', '2027 합격생 명단 보러�
 // 처음엔 통이미지 한 장으로 구웠는데, 화면 비율이 이미지와 다르면 object-fit 이
 // 아래위를 잘라 문구가 사라졌다. 글자는 HTML 로 두고 사진만 이미지로 쓴다.
 // 오른쪽 세 기둥은 합격생 재현작이다(원본에서 블러가 없는 왼쪽 절반).
+// 처음엔 청강대 수시(11/6 발표) 3명만 실었다. 그 뒤 한국애니고 · 경기대 · 상명대 ·
+// 서울웹툰애니고 합격이 이어져, 첫 화면이 청강대만 말하고 나머지 2027 합격을 빠뜨렸다
+// (원장 지적 2026-11-27). 학교별 한 줄로 2027 합격 전체를 싣는다. 이름은 오른쪽
+// 작품 기둥의 캡션에 그대로 남는다. 합격 명단(PASS)에 줄을 더하면 여기도 같이 고친다.
+// [학교, 학과, 인원]
 const HX_ROWS = [
-  ['애니메이션스쿨', '이 · 정', '저현고'],
-  ['웹툰만화콘텐츠전공', '이 · 진', '덕이고'],
-  ['웹툰만화콘텐츠전공', '김 · 빈', '한빛고'],
+  ['청강대', '애니메이션스쿨 1 · 웹툰만화콘텐츠전공 2', 3],
+  ['경기대', '애니메이션과', 1],
+  ['상명대', '디지털만화영상', 1],
+  ['한국애니고', '만화과', 1],
+  ['서울웹툰애니고', '', 1],
 ];
+const HX_TOTAL = HX_ROWS.reduce((n, r) => n + r[2], 0);
 const HX_WORKS = [
   ['k', '웹툰과 칸만화', '김 · 빈', '2027 청강대 웹툰과 합격 재현작'],
   ['j', '웹툰과 칸만화', '이 · 진', '2027 청강대 웹툰과 합격 재현작'],
   ['a', '애니과 상황표현', '이 · 정', '2027 청강대 애니메이션스쿨 합격 재현작'],
 ];
 const heroSlide =
-  '<a data-heroslide="1" data-noreveal="1" href="#pass-list" aria-label="2027 수시 청강대 3명 합격 — 합격생 명단 보기">' +
+  `<a data-heroslide="1" data-noreveal="1" href="#pass-list" aria-label="2027 합격 ${HX_TOTAL}명 — ` +
+  HX_ROWS.map(([s, , n]) => s + ' ' + n + '명').join(', ') +
+  ' · 합격생 명단 보기">' +
   '<span data-hx="works">' +
   HX_WORKS.map(
     ([f, cap, nm, alt], i) =>
@@ -713,19 +723,19 @@ const heroSlide =
   ).join('') +
   '</span>' +
   '<span data-hx="copy">' +
-  '<span data-hx="kick"><i></i>2027학년도 수시 · 청강문화산업대학교</span>' +
-  '<span data-hx="l"><span style="--i:0">일산애니톡 단독 합격</span></span>' +
-  '<span data-hx="big"><span style="--i:1">청강대 <b>3</b>명</span></span>' +
+  '<span data-hx="kick"><i></i>2027학년도 대학 수시 · 고교 입시</span>' +
+  '<span data-hx="l"><span style="--i:0">일산애니톡 2027 합격</span></span>' +
+  `<span data-hx="big"><span style="--i:1">합격 <b>${HX_TOTAL}</b>명</span></span>` +
   '<span data-hx="rows">' +
   HX_ROWS.map(
-    ([d, n, s], i) => `<span data-hx="r" style="--i:${i}"><em>${d}</em><strong>${n}</strong><span>${s}</span></span>`
+    ([s, d, n], i) => `<span data-hx="r" style="--i:${i}"><strong>${s}</strong><em>${d}</em><span>${n}명</span></span>`
   ).join('') +
   '</span>' +
   '<span data-hx="more">전체 합격 명단 보기 <i aria-hidden="true">→</i></span>' +
   '</span>' +
   '</a>' +
   '<div data-herodots="1" data-noreveal="1" role="group" aria-label="첫 화면 슬라이드">' +
-  '<button type="button" data-herodot="0" aria-label="2027 청강대 합격 소식"></button>' +
+  '<button type="button" data-herodot="0" aria-label="2027 합격 소식"></button>' +
   '<button type="button" data-herodot="1" aria-label="학원 소개"></button>' +
   '</div>';
 // ── 상담 · 설명회 동선 (2026-11-27 전환 개선) ──
@@ -865,16 +875,24 @@ const heroBarCss =
   // 합격 슬라이드 문구는 세로 가운데 정렬이라, 1280x800 에서는 '전체 합격 명단 보기'
   // (666~682px)가 버튼 줄(654~708px)과 겹쳤다. 버튼 줄 몫만큼 아래를 비워 위로 올린다.
   // (padding 의 % 는 높이가 아니라 폭 기준이라 OVERHANG 을 여기 쓰면 안 된다.)
-  '[data-heroslide] [data-hx=copy]{padding-bottom:150px}' +
+  '[data-heroslide] [data-hx=copy]{padding-bottom:190px}' +
   `[data-herodots]{bottom:calc(40px + ${OVERHANG})}` +
-  // 폰: 히어로가 620px 로 고정되고 원래 히어로 문구가 560px 근처에서 끝난다.
-  // 두 버튼을 한 줄로 나눠 그 아래, 슬라이드 점 위에 둔다.
-  '@media (max-width: 760px){' +
-  '[data-herobar]{left:16px;right:16px;bottom:58px;flex-wrap:nowrap;gap:8px}' +
+  // 폰 · 태블릿: 버튼 줄을 화면 아래 고정 줄로 띄운다.
+  // 처음엔 히어로 바닥(574~626px)에 두었는데, 실제 폰(삼성 인터넷, 주소창 · 하단
+  // 도구막대 포함)은 보이는 높이가 약 670px 이라 그 자리가 반 바로가기 줄과 하단 바
+  // 뒤로 통째로 가려졌다(원장 스크린샷 2026-11-27). 화면 높이에 기대지 않도록, 첫
+  // 화면에서는 반 바로가기 자리에 이 두 버튼을 띄우고, 히어로를 지나면
+  // (<html data-pasthero>) 원래 반 바로가기로 바꿔 끼운다.
+  '@media (max-width: 860px){' +
+  '[data-herobar]{position:fixed;left:0;right:0;bottom:calc(68px + env(safe-area-inset-bottom,0px));z-index:69;' +
+  'flex-wrap:nowrap;gap:6px;padding:6px 8px;background:rgba(9,9,11,.94);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);' +
+  'border-top:1px solid rgba(255,255,255,.1)}' +
   // !important: 페이지의 다른 규칙이 이 링크들에 flex:0 0 auto 를 걸어 두 버튼 폭이
   // 글자 길이대로(168 / 150px) 달라졌다.
-  '[data-herobar] a{flex:1 1 0!important;min-width:0;min-height:52px;padding:6px 8px;font-size:14.5px;white-space:normal;text-align:center}' +
+  '[data-herobar] a{flex:1 1 0!important;min-width:0;min-height:50px;padding:5px 8px;font-size:14.5px;white-space:normal;text-align:center;box-shadow:none}' +
   '[data-herobar] small{font-size:10.5px;margin-top:2px}' +
+  'html:not([data-pasthero]) [data-classnav]{display:none!important}' +
+  'html[data-pasthero] [data-herobar]{display:none!important}' +
   '[data-herodots]{bottom:18px}' +
   // 히어로 바닥 가운데의 '스크롤' 마우스 모양이 버튼 줄 바로 아래에 붙는다. 폰에서는
   // 버튼 줄이 그 역할(아래에 더 있다)을 대신하므로 뺀다.
@@ -886,6 +904,18 @@ const heroBarCss =
   'html[data-seminar-over] [data-herobar] [data-hb=sub]{background:#BD0D16;border-color:#BD0D16;box-shadow:0 10px 30px rgba(189,13,22,.38)}' +
   '</style>';
 seo(/<\/head>/i, () => heroBarCss + '</head>');
+// 히어로를 60% 넘게 지나면 <html data-pasthero> 를 단다. 위 규칙이 이 속성으로 폰의
+// 고정 줄을 '설명회 · 체험 버튼' 과 '반 바로가기' 사이에서 바꿔 끼운다. #top 은 React
+// 가 스크립트보다 늦게 그리므로 매번 찾는다.
+seo(
+  /<\/body>/,
+  () =>
+    '<script>(function(){var h=document.documentElement,on=false;' +
+    'function f(){var t=document.getElementById("top");var lim=t?t.offsetHeight*0.6:400;var v=window.scrollY>lim;' +
+    'if(v!==on){on=v;if(v)h.setAttribute("data-pasthero","1");else h.removeAttribute("data-pasthero");}}' +
+    'window.addEventListener("scroll",f,{passive:true});window.addEventListener("load",f);f();})();</' +
+    'script></body>'
+);
 if (seminarOn) {
   const overScript =
     '<script>if(Date.now()>Date.parse("' + SEMINAR.until + '"))' +
@@ -937,10 +967,11 @@ const heroSlideCss =
   'font-weight:800;letter-spacing:-.055em;line-height:1.02;white-space:nowrap}' +
   '[data-hx=big] b{color:#FF3B45;font-weight:800}' +
   '[data-hx=rows]{margin-top:38px;max-width:520px;border-top:1px solid rgba(255,255,255,.16)}' +
-  '[data-hx=r]{display:grid!important;grid-template-columns:1fr 92px 64px;align-items:baseline;gap:12px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
-  '[data-hx=r] em{font-style:normal;font-size:14px;font-weight:600;color:#B4B4BA}' +
-  '[data-hx=r] strong{font-size:19px;font-weight:800;letter-spacing:.02em}' +
-  '[data-hx=r] > span{font-size:14px;color:#8A8A90;text-align:right}' +
+  // 한 줄 = 학교 | 학과 | 인원. 학과가 긴 줄(청강대)은 가운데 칸 안에서 줄바꿈된다.
+  '[data-hx=r]{display:grid!important;grid-template-columns:auto 1fr auto;align-items:baseline;gap:14px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
+  '[data-hx=r] strong{font-size:19px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}' +
+  '[data-hx=r] em{font-style:normal;font-size:14px;font-weight:600;color:#B4B4BA;min-width:0;line-height:1.45}' +
+  '[data-hx=r] > span{font-size:16px;font-weight:800;color:#FF3B45;text-align:right;white-space:nowrap}' +
   '[data-hx=more]{margin-top:30px;font-size:14px;font-weight:700;color:#FFFFFF}' +
   '[data-hx=more] i{display:inline-block;font-style:normal;margin-left:6px;transition:transform .5s ' + EASE + '}' +
   '[data-heroslide]:hover [data-hx=more] i{transform:translateX(6px)}' +
@@ -971,8 +1002,8 @@ const heroSlideCss =
   '[data-hx=l]{margin-top:22px;font-size:20px}' +
   '[data-hx=big]{font-size:68px}' +
   '[data-hx=rows]{margin-top:22px;max-width:none}' +
-  '[data-hx=r]{grid-template-columns:1fr 70px 52px;padding:11px 0}' +
-  '[data-hx=r] em,[data-hx=r] > span{font-size:13px}[data-hx=r] strong{font-size:16px}' +
+  '[data-hx=r]{gap:10px;padding:8px 0}' +
+  '[data-hx=r] em{font-size:12.5px}[data-hx=r] > span{font-size:14px}[data-hx=r] strong{font-size:15.5px}' +
   '[data-hx=more]{margin-top:18px;font-size:13px}' +
   '}' +
   // 슬라이드 점
