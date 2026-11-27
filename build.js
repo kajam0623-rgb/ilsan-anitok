@@ -67,6 +67,43 @@ const CLARITY_ID = '';
 // it is filled in, so an empty id never ships a loader that reports to nobody.
 const GA_ID = 'G-FT5DQ3M85P';
 
+// 무료 체험 한 줄 안내. 히어로 버튼, 수업과목 아래 띠, 설명회 칸, 질문 아래, 오시는 길
+// 다섯 곳이 이 한 문장을 같이 쓴다 — 횟수가 바뀌면 여기만 고친다.
+const TRIAL_NOTE = '무료 체험 · 고등반 2회 · 주니어반 · 성인취미반 1회';
+
+// ── 12/13 입시설명회 ──────────────────────────────────────────────────────────
+// 원장님이 채울 값은 null 로 둔다. null 인 칸은 화면에 '[시간 확인]' 같은 빈칸으로
+// 나가지 않고 그 줄만 빠지며, 빌드가 아직 비어 있는 칸을 마지막에 알려 준다.
+//   url   : 네이버 예약에 설명회 상품을 만들면 그 주소. 비워 두면 상담 예약으로 보낸다.
+//   time  : 예) '오후 2:00 ~ 3:30'      place : 예) '일산애니톡 본관 3층 강의실'
+//   seats : 예) 20  (숫자만)
+// until 이 지나면 빌드는 설명회를 통째로 빼고, 이미 배포된 페이지도 그날 밤
+// 자정(한국 시간)이 넘으면 스스로 숨긴다.
+const SEMINAR = {
+  until: '2026-12-13T23:59:59+09:00',
+  dateLabel: '12월 13일(토)',
+  tracks: [
+    {
+      key: 'high',
+      title: '예비 고1 · 2 · 3 입시 설명회',
+      topic: '청강대 · 한예종 · 미대 웹툰 / 애니 입시 전략',
+      time: null,
+      place: null,
+      seats: null,
+      url: null,
+    },
+    {
+      key: 'mid',
+      title: '예비 중3 애니고 · 예고 입시 설명회',
+      topic: '한국애니고 · 경기예고 · 서울웹툰애니고 대비',
+      time: null,
+      place: null,
+      seats: null,
+      url: null,
+    },
+  ],
+};
+
 const EXT = {
   'font/woff2': '.woff2',
   'font/woff': '.woff',
@@ -596,6 +633,55 @@ swapAll('2026 합격생 명단 보러가기 →', '2027 합격생 명단 보러�
   );
 }
 
+// ── 2027 경기대 · 상명대 · 서울웹툰애니고 합격 (학원 전달 2026-11-27) ──
+// 이름과 출신 학교는 받지 않아 비워 둔다(학원 요청: 학교명만). 위 묶음에서 학교가
+// 없으면 괄호를 빼도록 고쳐 두었으므로, 이름까지 비면 줄에는 학교·학과만 남는다.
+// 인원은 학교마다 1명으로 전달받았다.
+{
+  const one = (from, to, want) => {
+    const n = template.split(from).length - 1;
+    if (n !== want) {
+      console.error(`2027 추가 합격 패치: "${from.slice(0, 40)}" 을 ${n}곳 찾았다 (${want}곳이어야 한다)`);
+      process.exit(1);
+    }
+    template = template.split(from).join(to);
+    seoEdits += n;
+  };
+  const ANIGO_2027 = "  ['2027', '한국애니고 만화과', '이 · 교', ''],\n";
+  one(
+    ANIGO_2027,
+    ANIGO_2027 +
+      "  ['2027', '경기대학교 애니메이션과', '', ''],\n" +
+      "  ['2027', '상명대학교 디지털만화영상', '', ''],\n" +
+      "  ['2027', '서울웹툰애니고', '', ''],\n",
+    1
+  );
+  // 이름이 비면 오른쪽 칸이 빈 span 으로 남는다. 줄 모양이 흐트러지지 않게 그대로 둔다.
+  one('2027 한국애니고 1명<br>', '2027 한국애니고 1명<br>2027 서울웹툰애니고 1명<br>', 1);
+  // 질문 답은 화면 한 번, FAQPage 구조화 데이터 한 번 — 같은 문장을 같이 고친다.
+  one(
+    '2027학년도 수시에서 청강문화산업대학교 애니메이션스쿨과 웹툰만화콘텐츠전공에 3명이 합격했습니다.',
+    '2027학년도 수시에서 청강문화산업대학교 애니메이션스쿨과 웹툰만화콘텐츠전공에 3명, ' +
+      '경기대학교 애니메이션과와 상명대학교 디지털만화영상에 각 1명이 합격했습니다.',
+    2
+  );
+  one(
+    '2027학년도에는 한국애니고 만화과에 1명이 지원해 합격했습니다.',
+    '2027학년도에는 한국애니고 만화과에 1명이 지원해 합격했고, 서울웹툰애니고에도 1명이 합격했습니다.',
+    2
+  );
+  // 메타 설명(검색 결과 문구). 몇 곳에 있든 같은 문장이므로 전부 바꾸되 0곳이면 멈춘다.
+  const META_FROM = '2027 수시 청강대 3명 합격, 2026학년도 상명대·명지대·계원예대 합격.';
+  const metaN = template.split(META_FROM).length - 1;
+  if (!metaN) {
+    console.error('2027 추가 합격 패치: 메타 설명 문장을 찾지 못했다');
+    process.exit(1);
+  }
+  template = template.split(META_FROM).join('2027 수시 청강대 3명 · 경기대 · 상명대 합격, 2026학년도 명지대 · 계원예대 합격.');
+  seoEdits += metaN;
+  console.log(`pass 2027    ${String(3).padStart(6)}     경기대 · 상명대 · 서울웹툰애니고 (메타 ${metaN}곳)`);
+}
+
 // ── 히어로 1번 슬라이드: 2027 수시 청강대 합격 ──
 // 첫 화면에 합격 소식을 먼저 보여 주고, 8초 뒤 원래 히어로(학원 사진 + 제목)로
 // 넘어간다. 원래 히어로 위에 겹친 층이라 h1 과 사진은 그대로 문서에 남는다.
@@ -640,7 +726,175 @@ const heroSlide =
   '<button type="button" data-herodot="0" aria-label="2027 청강대 합격 소식"></button>' +
   '<button type="button" data-herodot="1" aria-label="학원 소개"></button>' +
   '</div>';
-seo(/(<section id="top" style="[^"]*">)/, (_, a) => a + '\n    ' + heroSlide);
+// ── 상담 · 설명회 동선 (2026-11-27 전환 개선) ──
+// 첫 화면에 예약 버튼이 하나도 없었다. 원래 히어로의 예약 · 전화 버튼은 아래에서
+// 일부러 걷어 냈고(같은 버튼이 상단바 · 하단바에 있다는 이유), 그 위를 합격 슬라이드가
+// 덮고 있어 광고로 들어온 사람이 처음 보는 화면에 '무엇을 하면 되는지' 가 없었다.
+// 이번에는 같은 예약 버튼을 되살리는 대신 지금 이 학원이 받고 싶은 두 행동을 건다:
+// 12/13 입시설명회 신청(1차)과 무료 체험 신청(2차).
+//
+// 버튼 줄은 두 슬라이드 위에 함께 뜨도록 슬라이드와 형제로 둔다. 합격 슬라이드는
+// 통째로 <a> 라 그 안에 링크를 넣을 수 없다(a 안의 a).
+const escHtml = (s) =>
+  String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const seminarOn = Date.now() <= Date.parse(SEMINAR.until);
+if (!seminarOn) console.log('seminar      (skipped)     ' + SEMINAR.until + ' 이 지났다');
+const SEM_ATTR = 'data-seminarlink="1"';
+const heroBar =
+  '<div data-herobar="1" data-noreveal="1">' +
+  (seminarOn
+    ? `<a href="#seminar" ${SEM_ATTR} data-cta="seminar" data-loc="hero" data-hb="pri">` +
+      `${escHtml(SEMINAR.dateLabel.replace(/\(.\)$/, ''))} 입시설명회 신청</a>`
+    : '') +
+  `<a href="{{ bookingUrl }}" target="_blank" rel="noopener" data-cta="trial" data-loc="hero" data-hb="${seminarOn ? 'sub' : 'pri'}">` +
+  '무료 체험 신청<small>고등반 2회 · 주니어 · 취미반 1회</small></a>' +
+  '</div>';
+
+// 설명회 칸. 원장님이 아직 채우지 않은 값은 줄째로 뺀다.
+const seminarInfo = (t) => {
+  const rows = [
+    ['일시', SEMINAR.dateLabel + (t.time ? ' ' + t.time : '')],
+    t.place ? ['장소', t.place] : null,
+    t.seats ? ['정원', t.seats + '명 (선착순)'] : null,
+  ].filter(Boolean);
+  const pending = !t.time || !t.place;
+  return (
+    '<dl style="margin:22px 0 0;padding:0;border-top:1px solid rgba(255,255,255,.1)">' +
+    rows
+      .map(
+        ([k, v]) =>
+          '<div style="display:flex;gap:16px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:15px">' +
+          `<dt style="flex:0 0 44px;margin:0;color:#8C8C8C;font-weight:600">${k}</dt>` +
+          `<dd style="margin:0;font-weight:700;word-break:keep-all">${escHtml(v)}</dd></div>`
+      )
+      .join('') +
+    '</dl>' +
+    (pending
+      ? '<p style="margin:14px 0 0;font-size:13px;color:#9A9A9A;word-break:keep-all">' +
+        '세부 시간과 장소는 신청하신 분께 따로 안내드립니다.</p>'
+      : '')
+  );
+};
+const seminarCard = (t, i) =>
+  '<div style="background:#1A1A1D;border:1px solid rgba(255,255,255,.08);border-radius:16px;' +
+  'padding:clamp(24px,3vw,34px);display:flex;flex-direction:column;text-align:left">' +
+  `<div style="font-size:12px;font-weight:800;letter-spacing:.16em;color:#FF3B45">TRACK 0${i + 1}</div>` +
+  `<h3 style="margin:12px 0 0;font-size:clamp(21px,2.2vw,26px);font-weight:800;letter-spacing:-.04em;line-height:1.3;word-break:keep-all">${escHtml(t.title)}</h3>` +
+  `<p style="margin:10px 0 0;font-size:15px;line-height:1.7;color:#C9C9C9;word-break:keep-all">${escHtml(t.topic)}</p>` +
+  seminarInfo(t) +
+  // 두 카드의 버튼 높이를 맞추려고 남는 세로 공간을 버튼 위에 몰아 준다.
+  '<div style="margin-top:auto;padding-top:26px">' +
+  `<a href="${t.url ? escHtml(t.url) : '{{ bookingUrl }}'}" target="_blank" rel="noopener" ` +
+  `data-cta="seminar" data-loc="seminar-${t.key}" ` +
+  'style="display:inline-flex;align-items:center;gap:8px;padding:14px 26px;background:#BD0D16;color:#FFFFFF;' +
+  'font-size:15px;font-weight:800;border-radius:999px;text-decoration:none">설명회 신청하기 →</a>' +
+  '</div></div>';
+const seminarSection = !seminarOn
+  ? ''
+  : '<section id="seminar" data-seminar="1" style="scroll-margin-top:72px;background:#0F0F11;' +
+    'padding:clamp(84px,10vw,140px) clamp(20px,4vw,48px)">' +
+    '<div style="max-width:1200px;margin:0 auto">' +
+    '<div style="font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#8C8C8C">Admission Briefing</div>' +
+    `<h2 style="margin:14px 0 0;font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;font-weight:800;word-break:keep-all">${escHtml(SEMINAR.dateLabel)} 입시설명회</h2>` +
+    '<p style="margin:14px 0 0;font-size:15px;line-height:1.7;color:#9A9A9A;word-break:keep-all">' +
+    '준비하는 시험이 달라 두 개 설명회로 나눠 진행합니다. 학년에 맞는 쪽으로 신청해 주세요.</p>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px;margin-top:40px">' +
+    SEMINAR.tracks.map(seminarCard).join('') +
+    '</div>' +
+    `<p style="margin:28px 0 0;font-size:14px;color:#9A9A9A;word-break:keep-all">${escHtml(TRIAL_NOTE)} — 설명회와 별도로 언제든 신청하실 수 있습니다.</p>` +
+    '</div></section>';
+
+// 수업과목을 다 읽은 자리에 상담 띠를 하나 둔다. 히어로 다음 예약 버튼까지
+// 약 9,500px 이 비어 있었다(실측: 문서 높이 14,286px 중 1,017~10,504px).
+const midBand =
+  '<section data-midcta="1" style="background:#BD0D16;padding:clamp(52px,6vw,76px) clamp(20px,4vw,48px)">' +
+  '<div style="max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px 40px">' +
+  '<div style="flex:1 1 420px;min-width:0;text-align:left">' +
+  '<div style="font-size:clamp(22px,2.4vw,30px);font-weight:800;letter-spacing:-.04em;line-height:1.35;word-break:keep-all">' +
+  '어느 반이 맞을지, 수업으로 먼저 확인해 보세요</div>' +
+  `<p style="margin:10px 0 0;font-size:15px;color:rgba(255,255,255,.88);word-break:keep-all">${escHtml(TRIAL_NOTE)}</p>` +
+  '</div>' +
+  '<div style="display:flex;flex-wrap:wrap;gap:10px">' +
+  '<a href="{{ bookingUrl }}" target="_blank" rel="noopener" data-cta="trial" data-loc="classes-band" ' +
+  'style="display:inline-flex;align-items:center;padding:15px 28px;background:#FFFFFF;color:#BD0D16;font-size:15px;font-weight:800;border-radius:999px;text-decoration:none">무료 체험 신청 →</a>' +
+  (seminarOn
+    ? `<a href="#seminar" ${SEM_ATTR} data-cta="seminar" data-loc="classes-band" ` +
+      'style="display:inline-flex;align-items:center;padding:15px 28px;border:1px solid rgba(255,255,255,.7);color:#FFFFFF;font-size:15px;font-weight:700;border-radius:999px;text-decoration:none">' +
+      `${escHtml(SEMINAR.dateLabel)} 입시설명회</a>`
+    : '') +
+  '</div></div></section>';
+
+seo(/(<section id="top" style="[^"]*">)/, (_, a) => a + '\n    ' + heroSlide + heroBar);
+seo(
+  /<div (style="position:absolute;bottom:26px;left:50%;transform:translateX\(-50%\);width:22px;height:34px;)/,
+  (_, s) => '<div data-scrollhint="1" ' + s
+);
+if (seminarOn) {
+  // #top 이 닫히는 자리 바로 뒤. 히어로 안에는 다른 section 이 없다.
+  const topAt = template.indexOf('<section id="top"');
+  const topEnd = template.indexOf('</section>', topAt);
+  if (topAt < 0 || topEnd < 0) throw new Error('설명회: 히어로 끝을 찾지 못했다');
+  template = template.slice(0, topEnd + 10) + '\n\n  ' + seminarSection + template.slice(topEnd + 10);
+  seoEdits++;
+}
+seo(/(\{\{ classGroups \}\}\s*<\/div>\s*<\/section>)/, (_, a) => a + '\n\n  ' + midBand);
+
+// 버튼 줄 모양. 인라인 스타일이 아니라 머리말의 규칙으로 준다 — 이 줄은 React 가
+// 다시 그리는 트리 안에 있어 인라인 값은 재렌더링 때 템플릿 값으로 되돌아간다.
+// 아래끝은 '히어로가 화면보다 긴 만큼' 을 더해 올린다. 1920x1080 에서 히어로가
+// 화면 아래로 21px 넘쳐, 바닥에 붙인 것들이 그만큼 잘려 보였다.
+const OVERHANG = 'max(0px, 100% + 64px - 100vh)';
+const heroBarCss =
+  '<style>' +
+  `[data-herobar]{position:absolute;z-index:5;left:calc(max(0px,(100% - 1400px)/2) + clamp(20px,4vw,56px));bottom:calc(92px + ${OVERHANG});` +
+  'display:flex;flex-wrap:wrap;gap:10px}' +
+  '[data-herobar] a{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-height:54px;padding:8px 26px;' +
+  'border-radius:999px;font-size:16px;font-weight:800;letter-spacing:-.02em;line-height:1.2;text-decoration:none;white-space:nowrap;' +
+  'transition:background .3s ease,color .3s ease,border-color .3s ease}' +
+  '[data-herobar] small{display:block;margin-top:3px;font-size:11.5px;font-weight:600;opacity:.82;letter-spacing:0}' +
+  '[data-herobar] [data-hb=pri]{background:#BD0D16;color:#FFFFFF;border:1px solid #BD0D16;box-shadow:0 10px 30px rgba(189,13,22,.38)}' +
+  '[data-herobar] [data-hb=pri]:hover{background:#FFFFFF;color:#BD0D16;border-color:#FFFFFF}' +
+  '[data-herobar] [data-hb=sub]{background:rgba(11,11,12,.55);color:#FFFFFF;border:1px solid rgba(255,255,255,.55);' +
+  '-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}' +
+  '[data-herobar] [data-hb=sub]:hover{background:#FFFFFF;color:#111111;border-color:#FFFFFF}' +
+  `[data-heroslide] [data-hx=cap]{bottom:calc(30px + ${OVERHANG})}` +
+  // 합격 슬라이드 문구는 세로 가운데 정렬이라, 1280x800 에서는 '전체 합격 명단 보기'
+  // (666~682px)가 버튼 줄(654~708px)과 겹쳤다. 버튼 줄 몫만큼 아래를 비워 위로 올린다.
+  // (padding 의 % 는 높이가 아니라 폭 기준이라 OVERHANG 을 여기 쓰면 안 된다.)
+  '[data-heroslide] [data-hx=copy]{padding-bottom:150px}' +
+  `[data-herodots]{bottom:calc(40px + ${OVERHANG})}` +
+  // 폰: 히어로가 620px 로 고정되고 원래 히어로 문구가 560px 근처에서 끝난다.
+  // 두 버튼을 한 줄로 나눠 그 아래, 슬라이드 점 위에 둔다.
+  '@media (max-width: 760px){' +
+  '[data-herobar]{left:16px;right:16px;bottom:58px;flex-wrap:nowrap;gap:8px}' +
+  // !important: 페이지의 다른 규칙이 이 링크들에 flex:0 0 auto 를 걸어 두 버튼 폭이
+  // 글자 길이대로(168 / 150px) 달라졌다.
+  '[data-herobar] a{flex:1 1 0!important;min-width:0;min-height:52px;padding:6px 8px;font-size:14.5px;white-space:normal;text-align:center}' +
+  '[data-herobar] small{font-size:10.5px;margin-top:2px}' +
+  '[data-herodots]{bottom:18px}' +
+  // 히어로 바닥 가운데의 '스크롤' 마우스 모양이 버튼 줄 바로 아래에 붙는다. 폰에서는
+  // 버튼 줄이 그 역할(아래에 더 있다)을 대신하므로 뺀다.
+  '[data-scrollhint]{display:none!important}' +
+  '}' +
+  // 설명회 날짜가 지나면 페이지가 스스로 설명회 칸과 링크를 숨긴다(재배포를 놓쳐도).
+  'html[data-seminar-over] [data-seminar],html[data-seminar-over] [data-seminarlink]{display:none!important}' +
+  // 설명회 버튼이 빠지면 무료 체험이 혼자 남으므로 보조 모양 대신 주 버튼 모양으로 바꾼다.
+  'html[data-seminar-over] [data-herobar] [data-hb=sub]{background:#BD0D16;border-color:#BD0D16;box-shadow:0 10px 30px rgba(189,13,22,.38)}' +
+  '</style>';
+seo(/<\/head>/i, () => heroBarCss + '</head>');
+if (seminarOn) {
+  const overScript =
+    '<script>if(Date.now()>Date.parse("' + SEMINAR.until + '"))' +
+    'document.documentElement.setAttribute("data-seminar-over","1");</' +
+    'script>';
+  // 머리말에서 바로 돌려 첫 화면부터 숨긴다. <html> 속성이라 재렌더링이 지우지 못한다.
+  seo(/<\/head>/i, () => overScript + '</head>');
+  const empty = SEMINAR.tracks.flatMap((t) =>
+    ['time', 'place', 'seats', 'url'].filter((k) => !t[k]).map((k) => `${t.key}.${k}`)
+  );
+  console.log('seminar      ' + String(SEMINAR.tracks.length).padStart(6) + '     ' +
+    (empty.length ? '아직 빈 칸: ' + empty.join(' ') : '전부 채워짐'));
+}
 // 모션: 슬라이드가 다시 앞으로 올 때마다 처음부터 다시 돈다. 애니메이션 규칙을
 // html:not([data-hs="1"]) 아래에만 두었기 때문에, 속성이 지워지는 순간 새로 걸린다.
 // 기본 상태가 '다 나타난 상태' 라서 모션을 끈 사람에게도 내용은 전부 보인다.
@@ -671,7 +925,12 @@ const heroSlideCss =
   '[data-hx=kick] i{display:block;width:44px;height:2px;background:#FF3B45;transform-origin:left}' +
   '[data-hx=l],[data-hx=big]{overflow:hidden;padding-bottom:.06em}' +
   '[data-hx=l]{margin-top:30px;font-size:clamp(22px,2.2vw,30px);font-weight:700;letter-spacing:-.03em;line-height:1.3}' +
-  '[data-hx=big]{margin-top:6px;font-size:clamp(76px,9.2vw,148px);font-weight:800;letter-spacing:-.055em;line-height:1.02;white-space:nowrap}' +
+  // 글자 크기는 '왼쪽 여백 끝 ~ 작품 기둥 시작' 사이에 들어가는 만큼으로 정한다.
+  // 예전 값 9.2vw(최대 148px)는 1920px 에서 '청강대 3명' 이 768px 로 그려져, 46%
+  // 지점(883px)에서 시작하는 작품 사진 밑으로 '명' 이 200px 가량 들어갔다.
+  // 5.3 은 이 문구의 글자 폭 대 글자 크기 비(실측 5.19)에 여유를 둔 값이다.
+  '[data-hx=big]{margin-top:6px;font-size:clamp(52px,calc((46vw - max(0px,(100vw - 1400px)/2) - clamp(20px,4vw,56px) - 48px) / 5.3),148px);' +
+  'font-weight:800;letter-spacing:-.055em;line-height:1.02;white-space:nowrap}' +
   '[data-hx=big] b{color:#FF3B45;font-weight:800}' +
   '[data-hx=rows]{margin-top:38px;max-width:520px;border-top:1px solid rgba(255,255,255,.16)}' +
   '[data-hx=r]{display:grid!important;grid-template-columns:1fr 92px 64px;align-items:baseline;gap:12px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.08)}' +
@@ -878,6 +1137,28 @@ const classNavScript =
   '});</' +
   'script>';
 seo(/<\/body>/, () => classNavScript + '</body>');
+
+// ── GA4 전환 이벤트 ──
+// 버튼 19곳에 data-cta / data-loc 라벨은 붙어 있었지만 그 값을 GA4 로 보내는 코드가
+// 한 줄도 없어, GA4 에는 페이지뷰만 쌓이고 '어느 버튼이 상담으로 이어졌는가' 는
+// 남지 않았다. document 에 한 번 걸어 위임한다 — 버튼은 React 가 스크립트보다 늦게
+// 그리고 재렌더링 때 새로 만들어서, 버튼마다 거는 방식은 아무것에도 걸리지 않는다.
+//   tel_click : 전화 링크.  cta_click : 그 밖에 data-cta 가 붙은 모든 링크
+//               (cta_type = booking · trial · seminar · results · visit · blog ...)
+// GA4 관리 화면에서 cta_click(cta_type = booking · trial · seminar)과 tel_click 을
+// '주요 이벤트(전환)' 로 표시해야 구글 애즈 전환으로 가져갈 수 있다.
+if (GA_ID) {
+  const gaEvents =
+    '<script>document.addEventListener("click",function(e){' +
+    'var a=e.target&&e.target.closest?e.target.closest("a"):null;if(!a||typeof gtag!=="function")return;' +
+    'var h=a.getAttribute("href")||"",loc=a.getAttribute("data-loc")||"body";' +
+    'if(h.indexOf("tel:")===0){gtag("event","tel_click",{location:loc,link_url:h});return}' +
+    'var c=a.getAttribute("data-cta");if(!c)return;' +
+    'gtag("event","cta_click",{cta_type:c,location:loc,link_url:a.href});' +
+    '},true);</' +
+    'script>';
+  seo(/<\/body>/, () => gaEvents + '</body>');
+}
 
 // Clarity, loaded last and async so it never blocks first paint. Same reason as the
 // class-nav script: it goes after </x-dc> rather than inside the tree React renders.
@@ -1395,8 +1676,11 @@ if (helmet) {
 // 데이터가 화면에 없는 내용을 말하게 된다. 체험을 그만두면 이 묶음을 통째로 지운다.
 {
   const TRIAL_Q = '체험 수업을 받아 볼 수 있나요?';
+  // 반마다 횟수가 다르다(원장 확정 2026-11-27): 고등반 2회, 주니어반 · 성인취미반 1회.
+  // 예전 문장은 고등반만 적어 '전체 2회' 로 읽혔고, 네이버 예약 쿠폰(1회)과 어긋났다.
   const TRIAL_A =
-    '고1~고3과 N수생은 수업 2회를 무료로 체험해 보실 수 있습니다. 네이버 예약이나 031-994-3134로 상담을 먼저 신청해 주세요.';
+    '고등반(고1~고3 · N수생)은 수업 2회, 초 · 중등 주니어반과 성인취미반은 수업 1회를 무료로 체험해 보실 수 있습니다. ' +
+    '네이버 예약이나 031-994-3134로 상담을 먼저 신청해 주세요.';
   const once = (re, build, what) => {
     let n = 0;
     template = template.replace(re, (...a) => (n++, build(...a)));
@@ -1423,7 +1707,7 @@ if (helmet) {
     'FAQPage 구조화 데이터'
   );
 
-  const NOTE = '고1~고3 · N수생은 수업 2회 무료 체험';
+  const NOTE = TRIAL_NOTE;
   once(
     /(<div data-reveal="0" style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:)44px(">\s*<a data-cta="booking" data-loc="faq")/,
     (_, a, b) =>
@@ -1437,6 +1721,81 @@ if (helmet) {
     '오시는 길 상담 칸'
   );
   console.log('trial             4     질문 1 · 구조화 데이터 1 · 안내 2');
+}
+
+// ── 원본 HTML 프리렌더 ──
+// 수업과목 · 합격 명단 · 수업 절차 · 작품 갤러리 세 곳은 템플릿에 {{ classGroups }}
+// 같은 자리표시만 있고, 내용은 브라우저에서 React 가 채웠다. 사람 눈에는 멀쩡하지만
+// 스크립트를 돌리지 않는 네이버 로봇 · AI 봇 · 링크 미리보기는 그 자리를 빈칸(또는
+// 날것의 {{ }})으로 읽어, 이 페이지의 핵심 내용이 0개로 잡혔다. 예약 버튼 다섯 곳의
+// href="{{ bookingUrl }}" 도 같은 이유로 깨진 상대 주소였다.
+//
+// 페이지 스크립트를 그대로 Node 에서 돌려 같은 요소 트리를 받고, 그걸 HTML 로 적어
+// 자리표시 대신 넣는다. 런타임은 <x-dc> 안의 마크업을 템플릿으로 읽어 그리므로,
+// 자리표시가 HTML 로 바뀌어도 React 가 같은 요소를 같은 속성으로 그린다 — 등장 효과
+// (data-reveal) · 카드 들림(data-lift) · 단계 원(data-step) · 반 바로가기(id) 가 모두
+// 속성으로 붙어 있어 그대로 동작한다. 데이터를 고칠 곳은 여전히 스크립트의 배열 하나다.
+{
+  const vm = require('vm');
+  const scriptMatch = template.match(/<script type="text\/x-dc" data-dc-script="">([\s\S]*?)<\/script>/);
+  if (!scriptMatch) throw new Error('프리렌더: 페이지 스크립트를 찾지 못했다');
+
+  const el = (type, props, ...children) => ({ type, props: props || {}, children });
+  const ctx = {
+    window: { __resources: resourceMap },
+    React: { createElement: el, Fragment: 'fragment' },
+    DCLogic: class { constructor(props) { this.props = props || {}; } },
+    document: {}, location: { search: '' },
+  };
+  vm.createContext(ctx);
+  vm.runInContext(scriptMatch[1] + '\n;this.__vals = new Component({}).renderVals();', ctx, { timeout: 2000 });
+  const vals = ctx.__vals;
+
+  // React 가 단위 없이 쓰는 숫자 속성. 여기 없는 숫자가 나오면 px 를 붙여야 하는지
+  // 따져 봐야 하므로 빌드를 멈춘다.
+  const UNITLESS = new Set(['fontWeight', 'lineHeight', 'opacity', 'zIndex', 'flex', 'flexGrow', 'flexShrink', 'order']);
+  const kebab = (k) => k.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
+  const css = (style) =>
+    Object.entries(style)
+      .filter(([, v]) => v != null && v !== '')
+      .map(([k, v]) => {
+        if (typeof v === 'number' && !UNITLESS.has(k) && v !== 0) throw new Error(`프리렌더: ${k}=${v} 단위 확인 필요`);
+        return `${kebab(k)}:${v}`;
+      })
+      .join(';');
+  const VOID = new Set(['img', 'br', 'hr', 'input', 'source']);
+  const render = (n) => {
+    if (n == null || n === false || n === true) return '';
+    if (Array.isArray(n)) return n.map(render).join('');
+    if (typeof n === 'string' || typeof n === 'number') return escHtml(n);
+    if (n.type === 'fragment') return render(n.children);
+    if (typeof n.type !== 'string') throw new Error('프리렌더: 알 수 없는 요소 ' + n.type);
+    let attrs = '';
+    for (const [k, v] of Object.entries(n.props)) {
+      if (k === 'key' || k === 'children' || v == null || v === false) continue;
+      const name = k === 'className' ? 'class' : k === 'htmlFor' ? 'for' : k;
+      attrs += ' ' + name + '="' + escHtml(k === 'style' ? css(v) : v) + '"';
+    }
+    if (VOID.has(n.type)) return `<${n.type}${attrs}>`;
+    return `<${n.type}${attrs}>${render(n.children)}</${n.type}>`;
+  };
+
+  const SLOTS = ['steps', 'classGroups', 'passList', 'highA', 'hobbyA', 'galleryA'];
+  for (const k of SLOTS) {
+    const slot = `{{ ${k} }}`;
+    const n = template.split(slot).length - 1;
+    if (n !== 1) throw new Error(`프리렌더: ${slot} 를 ${n}곳 찾았다 (1곳이어야 한다)`);
+    template = template.replace(slot, () => render(vals[k]));
+  }
+  const bookingN = template.split('{{ bookingUrl }}').length - 1;
+  template = template.split('{{ bookingUrl }}').join(escHtml(vals.bookingUrl));
+  const left = template.match(/\{\{[^}]*\}\}/g);
+  if (left) throw new Error('프리렌더: 남은 자리표시 ' + [...new Set(left)].join(' '));
+  console.log(
+    `prerender    ${String(SLOTS.length).padStart(6)}     ` +
+      `수업과목 ${vals.classGroups.length} · 합격 ${vals.passList.length} · 절차 ${vals.steps.length} · ` +
+      `갤러리 ${vals.highA.length + vals.hobbyA.length + vals.galleryA.length} · 예약 주소 ${bookingN}곳`
+  );
 }
 
 // 결과를 파일로 내보낸다. 한 번 이 줄이 사라진 적이 있다. 사이트맵 담당을 옮기는
