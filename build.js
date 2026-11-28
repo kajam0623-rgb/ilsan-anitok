@@ -1180,17 +1180,27 @@ seo(/<\/body>/, () => classNavScript + '</body>');
 // 한 줄도 없어, GA4 에는 페이지뷰만 쌓이고 '어느 버튼이 상담으로 이어졌는가' 는
 // 남지 않았다. document 에 한 번 걸어 위임한다 — 버튼은 React 가 스크립트보다 늦게
 // 그리고 재렌더링 때 새로 만들어서, 버튼마다 거는 방식은 아무것에도 걸리지 않는다.
-//   tel_click : 전화 링크.  cta_click : 그 밖에 data-cta 가 붙은 모든 링크
-//               (cta_type = booking · trial · seminar · results · visit · blog ...)
-// GA4 관리 화면에서 cta_click(cta_type = booking · trial · seminar)과 tel_click 을
-// '주요 이벤트(전환)' 로 표시해야 구글 애즈 전환으로 가져갈 수 있다.
+//   tel_click           : 전화 링크
+//   naver_booking_click : 네이버 예약 페이지로 가는 링크
+//   cta_click           : 그 밖에 data-cta 가 붙은 모든 링크
+//                         (cta_type = booking · trial · seminar · results · visit · blog ...)
+//
+// 네이버 예약 클릭은 naver_booking_click 이라는 이름으로도 함께 보낸다. 구글 애즈
+// 계정 321-800-9421 의 기본 전환 '네이버 예약 이동 클릭' 이 GA4 속성
+// 'CICLO | ilsan.anitok.com' (측정 ID G-FT5DQ3M85P) 의 바로 이 이벤트를 듣고 있다.
+// 이 이름이 없으면 광고비는 나가는데 전환은 0으로 남는다(마지막 전환 기록 2026-10-19).
+// cta_click 을 naver_booking_click 으로 바꾸지 않고 하나 더 보내는 이유: 예약이 아닌
+// 클릭(설명회 앵커·합격 명단·오시는 길)까지 전환으로 세지 않기 위해서다.
 if (GA_ID) {
   const gaEvents =
     '<script>document.addEventListener("click",function(e){' +
     'var a=e.target&&e.target.closest?e.target.closest("a"):null;if(!a||typeof gtag!=="function")return;' +
     'var h=a.getAttribute("href")||"",loc=a.getAttribute("data-loc")||"body";' +
     'if(h.indexOf("tel:")===0){gtag("event","tel_click",{location:loc,link_url:h});return}' +
-    'var c=a.getAttribute("data-cta");if(!c)return;' +
+    'var c=a.getAttribute("data-cta")||"";' +
+    'if(h.indexOf("booking.naver.com")>-1){gtag("event","naver_booking_click",' +
+    '{cta_type:c||"booking",location:loc,link_url:a.href});}' +
+    'if(!c)return;' +
     'gtag("event","cta_click",{cta_type:c,location:loc,link_url:a.href});' +
     '},true);</' +
     'script>';
